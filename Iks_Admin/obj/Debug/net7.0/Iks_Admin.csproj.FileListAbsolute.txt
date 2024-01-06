@@ -1,0 +1,12 @@
+D:\__plgns\Iks_Admin\Iks_Admin\bin\Debug\net7.0\Iks_Admin.deps.json
+D:\__plgns\Iks_Admin\Iks_Admin\bin\Debug\net7.0\Iks_Admin.dll
+D:\__plgns\Iks_Admin\Iks_Admin\bin\Debug\net7.0\Iks_Admin.pdb
+D:\__plgns\Iks_Admin\Iks_Admin\obj\Debug\net7.0\Iks_Admin.csproj.AssemblyReference.cache
+D:\__plgns\Iks_Admin\Iks_Admin\obj\Debug\net7.0\Iks_Admin.GeneratedMSBuildEditorConfig.editorconfig
+D:\__plgns\Iks_Admin\Iks_Admin\obj\Debug\net7.0\Iks_Admin.AssemblyInfoInputs.cache
+D:\__plgns\Iks_Admin\Iks_Admin\obj\Debug\net7.0\Iks_Admin.AssemblyInfo.cs
+D:\__plgns\Iks_Admin\Iks_Admin\obj\Debug\net7.0\Iks_Admin.csproj.CoreCompileInputs.cache
+D:\__plgns\Iks_Admin\Iks_Admin\obj\Debug\net7.0\Iks_Admin.dll
+D:\__plgns\Iks_Admin\Iks_Admin\obj\Debug\net7.0\refint\Iks_Admin.dll
+D:\__plgns\Iks_Admin\Iks_Admin\obj\Debug\net7.0\Iks_Admin.pdb
+D:\__plgns\Iks_Admin\Iks_Admin\obj\Debug\net7.0\ref\Iks_Admin.dll

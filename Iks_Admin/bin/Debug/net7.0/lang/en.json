@@ -1,0 +1,7 @@
+{
+	"PluginTag" : "{white}[{darkblue}ADMIN{white}]",
+	
+	"HaveNotAccess" : "{red}У вас нету доступа к этой команде!",
+	
+	"reload_admins" : "{darkblue} Список администраторов успешено перезагружен! \n {darkblue} Список {white}ВСЕХ {darkblue}админов:"
+}
