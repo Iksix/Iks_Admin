@@ -115,6 +115,30 @@ public class BanManager
         
         return false;
     }
+    public async Task<bool> IsPlayerMutedAsync(string sid)
+    {
+        try
+        {
+            using (var connection = new MySqlConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string sql = $"SELECT * FROM iks_mutes WHERE sid='{sid}' AND end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+                var comm = new MySqlCommand(sql, connection);
+                if (await comm.ExecuteScalarAsync() == null)
+                {
+                    return false;
+                }
+                Console.WriteLine("Player is muted");
+                return true;
+            }
+        }
+        catch (MySqlException ex)
+        {
+            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
+        }
+        
+        return false;
+    }
     public bool IsPlayerGagged(string sid)
     {
         try
@@ -125,6 +149,30 @@ public class BanManager
                 string sql = $"SELECT * FROM iks_gags WHERE sid='{sid}' AND end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
                 var comm = new MySqlCommand(sql, connection);
                 if (comm.ExecuteScalar() == null)
+                {
+                    return false;
+                }
+                Console.WriteLine("Player is gagged");
+                return true;
+            }
+        }
+        catch (MySqlException ex)
+        {
+            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
+        }
+        
+        return false;
+    }
+    public async Task<bool> IsPlayerGaggedAsync(string sid)
+    {
+        try
+        {
+            using (var connection = new MySqlConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string sql = $"SELECT * FROM iks_gags WHERE sid='{sid}' AND end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+                var comm = new MySqlCommand(sql, connection);
+                if (await comm.ExecuteScalarAsync() == null)
                 {
                     return false;
                 }

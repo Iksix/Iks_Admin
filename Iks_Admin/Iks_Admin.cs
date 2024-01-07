@@ -168,6 +168,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         AdminManager am = new AdminManager(_dbConnectionString);
         admins = am.ReloadAdmins();
+        SetGaggedPlayers();
+        SetMutedPlayers();
         
         Console.WriteLine("[Iks_Admin] Admins reloaded!");
         Console.WriteLine("[Iks_Admin] Admins list:");
@@ -453,7 +455,6 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         Console.WriteLine("Gag Players setted");
     }
 
-    
     // Menu constructors
     public ChatMenu AdminMenuConstructor(Admin admin)
     {
@@ -504,7 +505,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["KickMenuTitle"]}");
         
-        // Закрыть меню
+        // Назад
         menu.AddMenuOption($" {Localizer["Options.Back"]}", (controller, option) =>
         {
             ChatMenus.OpenMenu(activator, AdminMenuConstructor(GetAdminBySid(activator.SteamID.ToString())));
@@ -520,6 +521,14 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             if (player.IsBot) continue;
             if (!player.IsValid) continue;
             if (player == activator) continue;
+            if (GetAdminBySid(player.SteamID.ToString()) != null)
+            {
+                if (GetAdminBySid(player.SteamID.ToString()).Immunity > GetAdminBySid(activator.SteamID.ToString()).Immunity)
+                {
+                    continue;
+                }
+            }
+            
             
             menu.AddMenuOption($" {player.PlayerName}", (controller, option) =>
             {
@@ -583,6 +592,13 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             if (player.IsBot) continue;
             if (!player.IsValid) continue;
             if (player == activator) continue;
+            if (GetAdminBySid(player.SteamID.ToString()) != null)
+            {
+                if (GetAdminBySid(player.SteamID.ToString()).Immunity > GetAdminBySid(activator.SteamID.ToString()).Immunity)
+                {
+                    continue;
+                }
+            }
             
             menu.AddMenuOption($" {player.PlayerName}", (controller, option) =>
             {
@@ -702,7 +718,13 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             if (player.IsBot) continue;
             if (!player.IsValid) continue;
             if (player == activator) continue;
-            
+            if (GetAdminBySid(player.SteamID.ToString()) != null)
+            {
+                if (GetAdminBySid(player.SteamID.ToString()).Immunity > GetAdminBySid(activator.SteamID.ToString()).Immunity)
+                {
+                    continue;
+                }
+            }
             menu.AddMenuOption($" {player.PlayerName}", (controller, option) =>
             {
                 ChatMenu MuteMenuTimes = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["TimesTitle"]}");
@@ -825,7 +847,13 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             if (player.IsBot) continue;
             if (!player.IsValid) continue;
             if (player == activator) continue;
-            
+            if (GetAdminBySid(player.SteamID.ToString()) != null)
+            {
+                if (GetAdminBySid(player.SteamID.ToString()).Immunity > GetAdminBySid(activator.SteamID.ToString()).Immunity)
+                {
+                    continue;
+                }
+            }
             menu.AddMenuOption($" {player.PlayerName}", (controller, option) =>
             {
                 ChatMenu MuteMenuTimes = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["TimesTitle"]}");
@@ -874,7 +902,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         ChatMenu MuteMenuReasons =
             new ChatMenu($" {Localizer["PluginTag"]} {Localizer["GagMenuReasonsTitle"]}");
-        foreach (var reason in Config.MuteReason)
+        foreach (var reason in Config.GagReason)
         {
             MuteMenuReasons.AddMenuOption($"{reason}", (playerController, menuOption) =>
             {
