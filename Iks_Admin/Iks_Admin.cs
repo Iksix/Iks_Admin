@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Config;
 using CounterStrikeSharp.API.Modules.Menu;
+using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using MySqlConnector;
 
@@ -56,7 +57,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
 
-        sql = "CREATE TABLE IF NOT EXISTS `iks_bans` ( `id` INT NOT NULL AUTO_INCREMENT , `name` VARCHAR(32) NOT NULL ,`sid` VARCHAR(32) NOT NULL, `ip` VARCHAR(32) NULL , `adminsid` VARCHAR(32) NOT NULL , `created` INT NOT NULL , `time` INT NOT NULL , `end` INT NOT NULL , `reason` VARCHAR(255) NOT NULL, `Unbanned` INT(1) NOT NULL DEFAULT '0', `UnbannedBy` VARCHAR(32) NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;";
+        sql = "CREATE TABLE IF NOT EXISTS `iks_bans` ( `id` INT NOT NULL AUTO_INCREMENT , `name` VARCHAR(32) NOT NULL ,`sid` VARCHAR(32) NOT NULL, `ip` VARCHAR(32) NULL , `adminsid` VARCHAR(32) NOT NULL , `created` INT NOT NULL , `time` INT NOT NULL , `end` INT NOT NULL , `reason` VARCHAR(255) NOT NULL, `BanType` INT(1) NOT NULL DEFAULT '0', `Unbanned` INT(1) NOT NULL DEFAULT '0', `UnbannedBy` VARCHAR(32) NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;";
         try
         {
             using (var connection = new MySqlConnection(_dbConnectionString))
@@ -110,6 +111,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         AddCommandListener("say", OnSay);
         AddCommandListener("say_team", OnSay);
+        AddTimer(3, () =>
+        {
+            List<string> sids = GetListSids();
+            Task.Run(async () =>
+            {
+                await SetMutedPlayers(sids);
+                await SetGaggedPlayers(sids);
+            });
+        }, TimerFlags.REPEAT);
     }
 
     // COMMANDS
@@ -163,7 +173,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         ChatMenus.OpenMenu(controller, menu);
     }
     
-    [ConsoleCommand("css_ban", "css_ban uid/sid duration reason")]
+    [ConsoleCommand("css_ban", "css_ban uid/sid duration reason <name if neded>")]
     public void OnBanCommand(CCSPlayerController? controller, CommandInfo info)
     {
         if (info.GetArg(1).Trim() == "")
@@ -219,10 +229,11 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         if (target == null && info.GetArg(1).Length >= 17)
         {
-            string dname = "UNDEFINED";
+            string dname = info.GetArg(4) ?? "UNDEFINED";
             string dsid = info.GetArg(1);
             string dip = "UNDEFINED";
             string dadminsid = controller == null ? "Console" : controller.SteamID.ToString();
+            string dadminName = controller == null ? "Console" : controller.PlayerName;
             int dtime = Int32.Parse(info.GetArg(2));
             string dreason = info.GetArg(3);
 
@@ -236,7 +247,21 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await bm.BanPlayer(dname, dsid, dip, dadminsid, dtime, dreason);
             });
-            Console.WriteLine($"[IKS_ADMIN] PlayerSid: {dsid} was banned");
+            string dtitle = $"{dtime}{Localizer["min"]}";
+            if (dtime == 0)
+            {
+                dtitle = $" {Localizer["Options.Infinity"]}";
+            }
+            foreach (var str in Localizer["BanMessage"].ToString().Split("\n"))
+            {
+                Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+                    .Replace("{name}", dname)
+                    .Replace("{admin}", dadminName)
+                    .Replace("{reason}", dreason)
+                    .Replace("{duration}", dtitle)
+                }");
+            }
+            info.ReplyToCommand($"[IKS_ADMIN] PlayerSid: {dsid} was banned");
             return;
         }
 
@@ -248,21 +273,21 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         int time = Int32.Parse(info.GetArg(2));
         string reason = info.GetArg(3);
         string adminName = controller == null ? "Console" : controller.PlayerName;
-        if (bm.IsPlayerBanned(sid))
-        {
-            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerAlredyBanned"]}");
-            return;
-        }
-        Task.Run(async () =>
-        {
-            await bm.BanPlayer(name, sid, ip, adminsid, time, reason);
-        });
-        NativeAPI.IssueServerCommand($"kickid {target.UserId}");
-        string title = $"{time}{Localizer["min"]}";
-        if (time == 0)
-        {
-            title = $" {Localizer["Options.Infinity"]}";
-        }
+         if (bm.IsPlayerBanned(sid))
+         {
+             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerAlredyBanned"]}");
+             return;
+         }
+         Task.Run(async () =>
+         {
+             await bm.BanPlayer(name, sid, ip, adminsid, time, reason);
+         });
+         NativeAPI.IssueServerCommand($"kickid {target.UserId}");
+         string title = $"{time}{Localizer["min"]}";
+         if (time == 0)
+         {
+             title = $" {Localizer["Options.Infinity"]}";
+         }
         foreach (var str in Localizer["BanMessage"].ToString().Split("\n"))
         {
             Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
@@ -297,12 +322,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
             return;
         }
+        string adminsid = admin.SteamId;
         Task.Run(async () =>
         {
-            await bm.UnBanPlayer(sid, "Console");
+            await bm.UnBanPlayer(sid, adminsid);
         });
         controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["UnBanMessage"]}");
     }
+    
+    
     
     // FUNC
     public void ReloadAdmins()
@@ -461,9 +489,10 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         Task.Run(async () =>
                         {
                             await bm.MutePlayer(name, sid, adminsid, Btime, reason);
-                            Server.NextFrame(() =>
+                            List<string> sids = GetListSids();
+                            Task.Run(async () =>
                             {
-                                SetMutedPlayers();
+                                await SetMutedPlayers(sids);
                             });
                         });
 
@@ -512,10 +541,11 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         Task.Run(async () =>
                         {
                             await bm.GagPlayer(name, sid, adminsid, Btime, reason);
-                            Server.NextFrame(() =>
-                            {
-                                SetGaggedPlayers();
-                            });
+                        });
+                        List<string> gagCheckSids = GetListSids(); 
+                        Task.Run(async () =>
+                        {
+                            await SetGaggedPlayers(gagCheckSids);
                         });
                         NativeAPI.IssueServerCommand("css_chatcolors_setgaggedplayers");
 
@@ -547,7 +577,6 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [GameEventHandler]
     public HookResult OnPlayerConnect(EventPlayerConnectFull @event, GameEventInfo info)
     {
-        SetMutedPlayers();
         BanManager bm = new BanManager(_dbConnectionString);
         if (bm.IsPlayerBanned(@event.Userid.SteamID.ToString()))
         {
@@ -573,50 +602,85 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [GameEventHandler]
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
-        SetGaggedPlayers();
-        SetMutedPlayers();
+        List<string> gagCheckSids = GetListSids(); 
+        Task.Run(async () =>
+        {
+            await SetGaggedPlayers(gagCheckSids);
+        });
+        Task.Run(async () =>
+        {
+            List<string> sids = GetListSids();
+            await SetMutedPlayers(sids);
+        });
         return HookResult.Continue;
     }
-    
-    public void SetMutedPlayers()
+
+    public async Task SetMutedPlayers(List<string> sids) // IN FUTURE
     {
-        MutedSids.Clear();
         BanManager bm = new BanManager(_dbConnectionString);
+        
+        List<string> muted = new List<string>();
+        foreach (var sid in sids)
+        {
+            if (await bm.IsPlayerMutedAsync(sid))
+            {
+                muted.Add(sid);
+            }
+        }
+
+        MutedSids = muted;
+        Server.NextFrame(() =>
+        {
+            SetMuteForPlayers();
+        });
+
+    }
+    
+    public void SetMuteForPlayers()
+    {
         foreach (var p in Utilities.GetPlayers())
         {
-            if (p.IsBot) continue;
-            if (p.IsValid)
+            if (!p.IsBot && p.IsValid)
             {
-                Console.WriteLine($"Check sid: {p.SteamID.ToString()} is mutted");
-
-                if (bm.IsPlayerMuted(p.SteamID.ToString()))
+                if (MutedSids.Contains(p.SteamID.ToString()))
                 {
-                    MutedSids.Add(p.SteamID.ToString());
                     p.VoiceFlags = VoiceFlags.Muted;
-                    Console.WriteLine($"{p.PlayerName} {p.VoiceFlags}");
-                    continue;
                 }
-                p.VoiceFlags = VoiceFlags.Normal;
-
+                else
+                {
+                    p.VoiceFlags = VoiceFlags.Normal;
+                }
             }
         }
     }
-    public void SetGaggedPlayers()
+
+    public List<string> GetListSids()
     {
-        GaggedSids.Clear();
-        BanManager bm = new BanManager(_dbConnectionString);
+        List<string> sids = new List<string>();
         foreach (var p in Utilities.GetPlayers())
         {
-            if (p.IsBot) return;
-            if (!p.IsValid) return;
-
-            if (bm.IsPlayerGagged(p.SteamID.ToString()))
+            if (!p.IsBot && p.IsValid)
             {
-                GaggedSids.Add(p.SteamID.ToString());
-            } 
+                sids.Add(p.SteamID.ToString());
+            }
         }
-        Console.WriteLine("Gag Players setted");
+
+        return sids;
+    }
+    public async Task SetGaggedPlayers(List<string> sids)
+    {
+        BanManager bm = new BanManager(_dbConnectionString);
         
+        List<string> muted = new List<string>();
+        foreach (var sid in sids)
+        {
+            if (await bm.IsPlayerGaggedAsync(sid))
+            {
+                muted.Add(sid);
+            }
+        }
+
+        GaggedSids = muted;
     }
 
     // Menu constructors
@@ -848,7 +912,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         .Replace("{name}", player.PlayerName)
                         .Replace("{admin}", ccsPlayerController.PlayerName)
                         .Replace("{reason}", reason)
-                        .Replace("{time}", title)
+                        .Replace("{duration}", title)
                     }");
                 }
             });
@@ -986,9 +1050,10 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 Task.Run(async () =>
                 {
                     await bm.MutePlayer(name, sid, adminsid, time, reason);
-                    Server.NextFrame(() =>
+                    List<string> sids = GetListSids();
+                    Task.Run(async () =>
                     {
-                        SetMutedPlayers();
+                        await SetMutedPlayers(sids);
                     });
                 });
                 
@@ -1138,11 +1203,11 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 Task.Run(async () =>
                 {
                     await bm.GagPlayer(name, sid, adminsid, time, reason);
-                    Server.NextFrame(() =>
-                    {
-                        SetGaggedPlayers();
-                    });
-
+                });
+                List<string> gagCheckSids = GetListSids(); 
+                Task.Run(async () =>
+                {
+                    await SetGaggedPlayers(gagCheckSids);
                 });
                 
                 NativeAPI.IssueServerCommand("css_chatcolors_setgaggedplayers");
@@ -1240,17 +1305,20 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         Task.Run(async () =>
                         {
                             await bm.UnGagPlayer(player.SteamID.ToString(), playerController.SteamID.ToString());
-                            Server.NextFrame(() =>
-                            {
-                                SetGaggedPlayers();
-                            });
-
+                        });
+                        List<string> gagCheckSids = GetListSids(); 
+                        Task.Run(async () =>
+                        {
+                            await SetGaggedPlayers(gagCheckSids);
                         });
                         NativeAPI.IssueServerCommand("css_chatcolors_setgaggedplayers");
-
-                        Server.PrintToChatAll($" {Localizer["PluginTag"]} {Localizer["UnGagMessage"].ToString()
-                            .Replace("{name}", player.PlayerName)
-                            .Replace("{admin}", activator.PlayerName)}");
+                        foreach (var str in Localizer["UnGagMessage"].ToString().Split("\n"))
+                        {
+                            Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+                                .Replace("{name}", player.PlayerName)
+                                .Replace("{admin}", activator.PlayerName)}");
+                        }
+                        
                     });
                 }
                 if (playerMuted)
@@ -1261,14 +1329,18 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         Task.Run(async () =>
                         {
                             await bm.UnMutePlayer(player.SteamID.ToString(), playerController.SteamID.ToString());
-                            Server.NextFrame(() =>
+                            List<string> sids = GetListSids();
+                            Task.Run(async () =>
                             {
-                                SetMutedPlayers();
+                                await SetMutedPlayers(sids);
                             });
                         });
-                        Server.PrintToChatAll($" {Localizer["PluginTag"]} {Localizer["UnMuteMessage"].ToString()
-                            .Replace("{name}", player.PlayerName)
-                            .Replace("{admin}", activator.PlayerName)}");
+                        foreach (var str in Localizer["UnMuteMessage"].ToString().Split("\n"))
+                        {
+                            Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+                                .Replace("{name}", player.PlayerName)
+                                .Replace("{admin}", activator.PlayerName)}");
+                        }
                     });
                 }
 
