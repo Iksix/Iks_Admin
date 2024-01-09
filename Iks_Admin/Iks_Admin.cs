@@ -26,9 +26,11 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public string?[] Actions = new String[64];
     public CCSPlayerController?[] ActionTargets = new CCSPlayerController[64];
     public int[] ActionTimes = new Int32[64];
+    
 
     private List<string> GaggedSids = new List<string>();
     private List<string> MutedSids = new List<string>();
+    
 
     private List<Admin> admins = new List<Admin>();
 
@@ -329,10 +331,104 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         });
         controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["UnBanMessage"]}");
     }
-    
+
+    [ConsoleCommand("css_searchbans", "!searchbans sid")]
+    public void OnSearchBansCommand(CCSPlayerController? controller, CommandInfo info)
+    {
+        BanManager bm = new BanManager(_dbConnectionString);
+        string? cSid = controller == null ? null : controller.SteamID.ToString();
+        string sid = info.GetArg(1);
+        List<BannedPlayer> playerBans = new List<BannedPlayer>();
+        Task.Run(async () =>
+        {
+            playerBans = await bm.GetPlayerBansBySid(sid);
+            
+            Server.NextFrame(() =>
+            {
+                WritePlayerBans(cSid, info, playerBans);
+            });
+        });
+    }
+
+    public void WritePlayerBans(string? cSid, CommandInfo info, List<BannedPlayer> playerBans)
+    {
+        if (cSid == null)
+        {
+            info.ReplyToCommand("[Iks_Admin] Player bans:");
+        }
+        CCSPlayerController? controller = null;
+        if (cSid != null)
+        {
+            controller = Utilities.GetPlayerFromSteamId(UInt64.Parse(cSid));
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["searchbansTitle"]}");
+
+        }
+        foreach (var p in playerBans)
+        {
+
+            DateTime utcDateTime = UnixTimeStampToDateTime(p.BanCreated);
+            string CreatedTimeString = utcDateTime.ToString("dd/MM/yy HH:mm:ss");
+                
+            utcDateTime = UnixTimeStampToDateTime(p.BanTimeEnd);
+            string EndTimeString = utcDateTime.ToString("dd/MM/yy HH:mm:ss");
+            
+            Admin? admin = GetAdminBySid(p.AdminSid);
+            string AdminName = admin == null ? p.AdminSid : admin.Name;
+                
+            string UbanAdminName = "";
+            if (p.Unbanned)
+            {
+                Admin? UnbannedAdmin = GetAdminBySid(p.UnbannedBy); 
+                UbanAdminName = UnbannedAdmin == null ? p.UnbannedBy : UnbannedAdmin.Name;
+            }
+            if (controller == null)
+            {
+                info.ReplyToCommand("[Iks_Admin] ====================");
+                info.ReplyToCommand($"[Iks_Admin] Player name: {p.Name}");
+                info.ReplyToCommand($"[Iks_Admin] Player ip: {p.Ip}");
+                info.ReplyToCommand($"[Iks_Admin] Admin: {AdminName}");
+                info.ReplyToCommand($"[Iks_Admin] Ban reason: {p.BanReason}");
+                info.ReplyToCommand($"[Iks_Admin] Ban Time: {p.BanTime}sec.");
+                info.ReplyToCommand($"[Iks_Admin] Ban Created: {CreatedTimeString}");
+                info.ReplyToCommand($"[Iks_Admin] Ban End: {EndTimeString}");
+                info.ReplyToCommand($"[Iks_Admin] Unbanned: {p.Unbanned}");
+                info.ReplyToCommand($"[Iks_Admin] UnbannedBy: {AdminName}");
+                info.ReplyToCommand("[Iks_Admin] ====================");
+            }
+
+            if (controller != null)
+            {
+                foreach (var str in Localizer["css_searchbans"].ToString().Split("\n"))
+                {
+                    controller.PrintToChat($" {Localizer["PluginTag"]} {str
+                        .Replace("{name}", p.Name)
+                        .Replace("{ip}", p.Ip)
+                        .Replace("{admin}", AdminName)
+                        .Replace("{reason}", p.BanReason)
+                        .Replace("{time}", p.BanTime.ToString())
+                        .Replace("{created}", CreatedTimeString)
+                        .Replace("{end}", EndTimeString)
+                        .Replace("{unbanned}", p.Unbanned.ToString())
+                        .Replace("{unbannedBy}", AdminName)
+                    }");
+                }
+            }
+            
+        }
+        info.ReplyToCommand("end?");
+
+        
+    }
     
     
     // FUNC
+    public static DateTime UnixTimeStampToDateTime( double unixTimeStamp )
+    {
+        // Unix timestamp is seconds past epoch
+        DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        dateTime = dateTime.AddSeconds( unixTimeStamp ).ToLocalTime();
+        return dateTime;
+    }
     public void ReloadAdmins()
     {
         AdminManager am = new AdminManager(_dbConnectionString);
@@ -382,6 +478,23 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         if (GaggedSids.Contains(controller.SteamID.ToString()))
         {
             return HookResult.Stop;
+        }
+       
+
+        if (
+            info.GetArg(1).StartsWith("!0") ||
+            info.GetArg(1).StartsWith("!1") ||
+            info.GetArg(1).StartsWith("!2") ||
+            info.GetArg(1).StartsWith("!3") ||
+            info.GetArg(1).StartsWith("!4") ||
+            info.GetArg(1).StartsWith("!5") ||
+            info.GetArg(1).StartsWith("!6") ||
+            info.GetArg(1).StartsWith("!7") ||
+            info.GetArg(1).StartsWith("!8") ||
+            info.GetArg(1).StartsWith("!9")
+            )
+        {
+            return HookResult.Continue;
         }
         
         if (!info.GetArg(1).StartsWith("!") || info.GetArg(1).Trim() == "")
@@ -599,6 +712,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         }
         return HookResult.Continue;
     }
+
     [GameEventHandler]
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {

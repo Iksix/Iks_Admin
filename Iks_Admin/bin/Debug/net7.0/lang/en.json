@@ -44,5 +44,8 @@
 	"PlayerAlredyBanned" : "{red}Игрок уже наказан!",
 	"min" : "{white}мин.",
 	"MUTED" : "{darkblue}[M]",	
-	"GAGGED" : "{darkblue}[G]"
+	"GAGGED" : "{darkblue}[G]",
+	
+	"searchbansTitle" : "{darkblue}Баны игрока:",
+	"css_searchbans" : "======================= \n Ник: {darkblue}{name} \n Айпи: {darkblue}{ip} \n Админ: {darkblue}{admin} \n Причина: {darkblue}{reason} \n Время: {darkblue}{time} \n Бан выдан: {darkblue}{created} \nБан закончится: {darkblue}{end} \nРазбанен: {darkblue}{unbanned} \nРазбанен админом: {darkblue}{unbannedBy} \n======================="
 }

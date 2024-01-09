@@ -302,4 +302,57 @@ public class BanManager
     
     #endregion
 
+    public async Task<List<BannedPlayer>> GetPlayerBansBySid(string sid)
+    {
+        List<BannedPlayer> playerBans = new List<BannedPlayer>();
+
+        try
+        {
+            using (var connection = new MySqlConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string sql = $"SELECT * FROM iks_bans WHERE sid={sid} ORDER BY created DESC";
+                var comm = new MySqlCommand(sql, connection);
+                MySqlDataReader reader = await comm.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    string Name = reader.GetString("name") ;
+                    string Sid = reader.GetString("sid") ;
+                    string Ip = reader.GetString("ip") ;
+                    string BanReason = reader.GetString("reason") ;
+                    int BanCreated = reader.GetInt32("created") ;
+                    int BanTime = reader.GetInt32("time") ;
+                    int BanTimeEnd = reader.GetInt32("end") ;
+                    string AdminSid = reader.GetString("adminsid") ;
+                    int Unbanned = reader.GetInt32("Unbanned") ;
+                    string UnbannedBy = "";
+                    if (Unbanned == 1)
+                    {
+                        UnbannedBy = reader.GetString("UnbannedBy");
+                    }
+                    BannedPlayer player = new BannedPlayer(
+                        Name,
+                        Sid,
+                        Ip,
+                        BanReason,
+                        BanCreated,
+                        BanTime,
+                        BanTimeEnd,
+                        AdminSid,
+                        Unbanned,
+                        UnbannedBy
+                        );
+                    
+                    playerBans.Add(player);
+                }
+            }
+        }
+        catch (MySqlException ex)
+        {
+            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
+        }
+        
+        return playerBans;
+    }
+
 }

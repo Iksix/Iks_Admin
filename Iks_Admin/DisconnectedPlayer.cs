@@ -1,6 +1,7 @@
 ﻿namespace Iks_Admin;
 
-public class LastPlayer
+public class DisconnectedPlayer
 {
-    string 
+    public string Name;
+    public string Sid;
 }
