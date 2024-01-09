@@ -37,7 +37,7 @@ public class BanManager
         }
     }
     
-    public async Task rBanPlayer(string name, string sid, string ip, string adminsid, int time, string reason)
+    public async Task rBanPlayer(string name, string sid, string ip, string adminsid, int time, string reason, int BanType)
     {
         if (ip == "-")
         {
@@ -48,7 +48,7 @@ public class BanManager
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
-                string sql = $"INSERT INTO iks_bans (`name`, `sid`, `ip`, `adminsid`, `created`, `time`, `end`, `reason`) VALUES ('{name}', '{sid}', 'Undefined[RconBan]', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time*60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time*60}', '{reason}')";
+                string sql = $"INSERT INTO iks_bans (`name`, `sid`, `ip`, `adminsid`, `created`, `time`, `end`, `reason`, `BanType`) VALUES ('{name}', '{sid}', '{ip}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time*60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time*60}', '{reason}', '{BanType}')";
                 var comm = new MySqlCommand(sql, connection);
                 
                 await comm.ExecuteNonQueryAsync();

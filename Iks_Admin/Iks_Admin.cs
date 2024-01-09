@@ -174,6 +174,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         ChatMenus.OpenMenu(controller, menu);
     }
+
+    #region Admin Console Commands
     
     [ConsoleCommand("css_ban", "css_ban uid/sid duration reason <name if neded>")]
     public void OnBanCommand(CCSPlayerController? controller, CommandInfo info)
@@ -331,6 +333,9 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         });
         controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["UnBanMessage"]}");
     }
+    
+
+ 
 
     [ConsoleCommand("css_searchbans", "!searchbans sid")]
     public void OnSearchBansCommand(CCSPlayerController? controller, CommandInfo info)
@@ -349,76 +354,77 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             });
         });
     }
-
     public void WritePlayerBans(string? cSid, CommandInfo info, List<BannedPlayer> playerBans)
-    {
-        if (cSid == null)
         {
-            info.ReplyToCommand("[Iks_Admin] Player bans:");
-        }
-        CCSPlayerController? controller = null;
-        if (cSid != null)
-        {
-            controller = Utilities.GetPlayerFromSteamId(UInt64.Parse(cSid));
-            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["searchbansTitle"]}");
-
-        }
-        foreach (var p in playerBans)
-        {
-
-            DateTime utcDateTime = UnixTimeStampToDateTime(p.BanCreated);
-            string CreatedTimeString = utcDateTime.ToString("dd/MM/yy HH:mm:ss");
-                
-            utcDateTime = UnixTimeStampToDateTime(p.BanTimeEnd);
-            string EndTimeString = utcDateTime.ToString("dd/MM/yy HH:mm:ss");
-            
-            Admin? admin = GetAdminBySid(p.AdminSid);
-            string AdminName = admin == null ? p.AdminSid : admin.Name;
-                
-            string UbanAdminName = "";
-            if (p.Unbanned)
+            if (cSid == null)
             {
-                Admin? UnbannedAdmin = GetAdminBySid(p.UnbannedBy); 
-                UbanAdminName = UnbannedAdmin == null ? p.UnbannedBy : UnbannedAdmin.Name;
+                info.ReplyToCommand("[Iks_Admin] Player bans:");
             }
-            if (controller == null)
+            CCSPlayerController? controller = null;
+            if (cSid != null)
             {
-                info.ReplyToCommand("[Iks_Admin] ====================");
-                info.ReplyToCommand($"[Iks_Admin] Player name: {p.Name}");
-                info.ReplyToCommand($"[Iks_Admin] Player ip: {p.Ip}");
-                info.ReplyToCommand($"[Iks_Admin] Admin: {AdminName}");
-                info.ReplyToCommand($"[Iks_Admin] Ban reason: {p.BanReason}");
-                info.ReplyToCommand($"[Iks_Admin] Ban Time: {p.BanTime}sec.");
-                info.ReplyToCommand($"[Iks_Admin] Ban Created: {CreatedTimeString}");
-                info.ReplyToCommand($"[Iks_Admin] Ban End: {EndTimeString}");
-                info.ReplyToCommand($"[Iks_Admin] Unbanned: {p.Unbanned}");
-                info.ReplyToCommand($"[Iks_Admin] UnbannedBy: {AdminName}");
-                info.ReplyToCommand("[Iks_Admin] ====================");
-            }
+                controller = Utilities.GetPlayerFromSteamId(UInt64.Parse(cSid));
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["searchbansTitle"]}");
 
-            if (controller != null)
+            }
+            foreach (var p in playerBans)
             {
-                foreach (var str in Localizer["css_searchbans"].ToString().Split("\n"))
+
+                DateTime utcDateTime = UnixTimeStampToDateTime(p.BanCreated);
+                string CreatedTimeString = utcDateTime.ToString("dd/MM/yy HH:mm:ss");
+                    
+                utcDateTime = UnixTimeStampToDateTime(p.BanTimeEnd);
+                string EndTimeString = utcDateTime.ToString("dd/MM/yy HH:mm:ss");
+                
+                Admin? admin = GetAdminBySid(p.AdminSid);
+                string AdminName = admin == null ? p.AdminSid : admin.Name;
+                    
+                string UbanAdminName = "";
+                if (p.Unbanned)
                 {
-                    controller.PrintToChat($" {Localizer["PluginTag"]} {str
-                        .Replace("{name}", p.Name)
-                        .Replace("{ip}", p.Ip)
-                        .Replace("{admin}", AdminName)
-                        .Replace("{reason}", p.BanReason)
-                        .Replace("{time}", p.BanTime.ToString())
-                        .Replace("{created}", CreatedTimeString)
-                        .Replace("{end}", EndTimeString)
-                        .Replace("{unbanned}", p.Unbanned.ToString())
-                        .Replace("{unbannedBy}", AdminName)
-                    }");
+                    Admin? UnbannedAdmin = GetAdminBySid(p.UnbannedBy); 
+                    UbanAdminName = UnbannedAdmin == null ? p.UnbannedBy : UnbannedAdmin.Name;
                 }
+                if (controller == null)
+                {
+                    info.ReplyToCommand("[Iks_Admin] ====================");
+                    info.ReplyToCommand($"[Iks_Admin] Player name: {p.Name}");
+                    info.ReplyToCommand($"[Iks_Admin] Player ip: {p.Ip}");
+                    info.ReplyToCommand($"[Iks_Admin] Admin: {AdminName}");
+                    info.ReplyToCommand($"[Iks_Admin] Ban reason: {p.BanReason}");
+                    info.ReplyToCommand($"[Iks_Admin] Ban Time: {p.BanTime}sec.");
+                    info.ReplyToCommand($"[Iks_Admin] Ban Created: {CreatedTimeString}");
+                    info.ReplyToCommand($"[Iks_Admin] Ban End: {EndTimeString}");
+                    info.ReplyToCommand($"[Iks_Admin] Unbanned: {p.Unbanned}");
+                    info.ReplyToCommand($"[Iks_Admin] UnbannedBy: {UbanAdminName}");
+                    info.ReplyToCommand("[Iks_Admin] ====================");
+                }
+
+                if (controller != null)
+                {
+                    foreach (var str in Localizer["css_searchbans"].ToString().Split("\n"))
+                    {
+                        controller.PrintToChat($" {Localizer["PluginTag"]} {str
+                            .Replace("{name}", p.Name)
+                            .Replace("{ip}", p.Ip)
+                            .Replace("{admin}", AdminName)
+                            .Replace("{reason}", p.BanReason)
+                            .Replace("{time}", p.BanTime.ToString())
+                            .Replace("{created}", CreatedTimeString)
+                            .Replace("{end}", EndTimeString)
+                            .Replace("{unbanned}", p.Unbanned.ToString())
+                            .Replace("{unbannedBy}", UbanAdminName)
+                        }");
+                    }
+                }
+                
             }
+            info.ReplyToCommand("end?");
+
             
         }
-        info.ReplyToCommand("end?");
-
-        
-    }
+    #endregion
+    
     
     
     // FUNC
