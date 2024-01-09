@@ -180,16 +180,34 @@ public class BanManager
         return false;
     }
     
-    public bool IsPlayerBannedIp(string ip)
+    public async Task<bool> IsPlayerBannedAsync(string arg)
     {
         try
         {
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
-                string sql = $"SELECT * FROM iks_bans WHERE ip='{ip}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0 AND BanType=1";
+                string sql = $"SELECT * FROM iks_bans WHERE sid='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
                 var comm = new MySqlCommand(sql, connection);
-                if (comm.ExecuteScalar() != null)
+                if (await comm.ExecuteScalarAsync() != null)
+                {
+                    Console.WriteLine("Player is banned");
+                    return true;
+                }
+            }
+        }
+        catch (MySqlException ex)
+        {
+            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
+        }
+        try
+        {
+            using (var connection = new MySqlConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string sql = $"SELECT * FROM iks_bans WHERE ip='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
+                var comm = new MySqlCommand(sql, connection);
+                if (await comm.ExecuteScalarAsync() != null)
                 {
                     Console.WriteLine("Player is banned");
                     return true;
@@ -203,30 +221,7 @@ public class BanManager
         
         return false;
     }
-    public bool IsPlayerMuted(string sid)
-    {
-        try
-        {
-            using (var connection = new MySqlConnection(_dbConnectionString))
-            {
-                connection.Open();
-                string sql = $"SELECT * FROM iks_mutes WHERE sid='{sid}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
-                var comm = new MySqlCommand(sql, connection);
-                if (comm.ExecuteScalar() == null)
-                {
-                    return false;
-                }
-                Console.WriteLine("Player is muted");
-                return true;
-            }
-        }
-        catch (MySqlException ex)
-        {
-            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
-        }
-        
-        return false;
-    }
+    
     public async Task<bool> IsPlayerMutedAsync(string sid)
     {
         try
@@ -241,30 +236,6 @@ public class BanManager
                     return false;
                 }
                 Console.WriteLine("Player is muted");
-                return true;
-            }
-        }
-        catch (MySqlException ex)
-        {
-            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
-        }
-        
-        return false;
-    }
-    public bool IsPlayerGagged(string sid)
-    {
-        try
-        {
-            using (var connection = new MySqlConnection(_dbConnectionString))
-            {
-                connection.Open();
-                string sql = $"SELECT * FROM iks_gags WHERE sid='{sid}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
-                var comm = new MySqlCommand(sql, connection);
-                if (comm.ExecuteScalar() == null)
-                {
-                    return false;
-                }
-                Console.WriteLine("Player is gagged");
                 return true;
             }
         }

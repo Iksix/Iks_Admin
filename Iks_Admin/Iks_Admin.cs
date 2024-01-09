@@ -176,131 +176,11 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     }
 
     #region Admin Console Commands
-    
+
     [ConsoleCommand("css_ban", "css_ban uid/sid duration reason <name if neded>")]
     public void OnBanCommand(CCSPlayerController? controller, CommandInfo info)
     {
-        if (info.GetArg(1).Trim() == "")
-        {
-            return;
-        }
-        bool canBan = false;
-        if (controller == null)
-        {
-            canBan = true;
-        }
-        Admin? admin = null;
-        if (controller != null)
-        {
-            admin = GetAdminBySid(controller.SteamID.ToString());
-        }
-        if (admin == null && canBan == false)
-        {
-            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
-            return;
-        }
-
-        if (controller != null)
-        {
-            if (admin.Flags.Contains("z") || admin.Flags.Contains("b"))
-            {
-                canBan = true;
-            }
-        }
-
-        if (!canBan)
-        {
-            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
-            return;
-        }
         
-        CCSPlayerController? target = null;
-
-        if (info.GetArg(1).Length < 17)
-        {
-            target = Utilities.GetPlayerFromUserid(Int32.Parse(info.GetArg(1)));
-        }
-        else
-        {
-            target = Utilities.GetPlayerFromSteamId(UInt64.Parse(info.GetArg(1)));
-        }
-        
-        if (target == null && info.GetArg(1).Length < 17)
-        {
-            return;
-        }
-        BanManager bm = new BanManager(_dbConnectionString);
-
-        if (target == null && info.GetArg(1).Length >= 17)
-        {
-            string dname = info.GetArg(4) ?? "UNDEFINED";
-            string dsid = info.GetArg(1);
-            string dip = "UNDEFINED";
-            string dadminsid = controller == null ? "Console" : controller.SteamID.ToString();
-            string dadminName = controller == null ? "Console" : controller.PlayerName;
-            int dtime = Int32.Parse(info.GetArg(2));
-            string dreason = info.GetArg(3);
-
-            if (bm.IsPlayerBanned(dsid))
-            {
-                Console.WriteLine($"[IKS_ADMIN] PlayerSid: {dsid} ALREDY banned");
-                return;
-            }
-            
-            Task.Run(async () =>
-            {
-                await bm.BanPlayer(dname, dsid, dip, dadminsid, dtime, dreason);
-            });
-            string dtitle = $"{dtime}{Localizer["min"]}";
-            if (dtime == 0)
-            {
-                dtitle = $" {Localizer["Options.Infinity"]}";
-            }
-            foreach (var str in Localizer["BanMessage"].ToString().Split("\n"))
-            {
-                Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
-                    .Replace("{name}", dname)
-                    .Replace("{admin}", dadminName)
-                    .Replace("{reason}", dreason)
-                    .Replace("{duration}", dtitle)
-                }");
-            }
-            info.ReplyToCommand($"[IKS_ADMIN] PlayerSid: {dsid} was banned");
-            return;
-        }
-
-        string name = target.PlayerName;
-        string sid = target.SteamID.ToString();
-        string? ip = target.IpAddress;
-        
-        string adminsid = controller == null ? "Console" : controller.SteamID.ToString();
-        int time = Int32.Parse(info.GetArg(2));
-        string reason = info.GetArg(3);
-        string adminName = controller == null ? "Console" : controller.PlayerName;
-         if (bm.IsPlayerBanned(sid))
-         {
-             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerAlredyBanned"]}");
-             return;
-         }
-         Task.Run(async () =>
-         {
-             await bm.BanPlayer(name, sid, ip, adminsid, time, reason);
-         });
-         NativeAPI.IssueServerCommand($"kickid {target.UserId}");
-         string title = $"{time}{Localizer["min"]}";
-         if (time == 0)
-         {
-             title = $" {Localizer["Options.Infinity"]}";
-         }
-        foreach (var str in Localizer["BanMessage"].ToString().Split("\n"))
-        {
-            Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
-                .Replace("{name}", name)
-                .Replace("{admin}", adminName)
-                .Replace("{reason}", reason)
-                .Replace("{duration}", title)
-            }");
-        }
     }
 
     [ConsoleCommand("css_unban", "css_ban sid")]
@@ -334,8 +214,6 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["UnBanMessage"]}");
     }
     
-
- 
 
     [ConsoleCommand("css_searchbans", "!searchbans sid")]
     public void OnSearchBansCommand(CCSPlayerController? controller, CommandInfo info)
@@ -549,7 +427,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             OwnReasonsTyper[i].PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerAlredyBanned"]}");
                             break;
                         }
-
+                        
                         string name = ActionTargets[i].PlayerName;
                         string sid = ActionTargets[i].SteamID.ToString();
                         string? ip = ActionTargets[i].IpAddress;
@@ -593,7 +471,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             title = Localizer["Options.Infinity"].ToString();
                         }
                         bm = new BanManager(_dbConnectionString);
-                        if (bm.IsPlayerMuted(ActionTargets[i].SteamID.ToString()))
+                        if (MutedSids.Contains(ActionTargets[i].SteamID.ToString()))
                         {
                             OwnReasonsTyper[i].PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerAlredyBanned"]}");
                             break;
@@ -645,7 +523,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             title = Localizer["Options.Infinity"].ToString();
                         }
                         bm = new BanManager(_dbConnectionString);
-                        if (bm.IsPlayerGagged(ActionTargets[i].SteamID.ToString()))
+                        if (GaggedSids.Contains(ActionTargets[i].SteamID.ToString()))
                         {
                             OwnReasonsTyper[i].PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerAlredyBanned"]}");
                             break;
@@ -1381,11 +1259,11 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             BanManager bm = new BanManager(_dbConnectionString);
             bool playerGagged = false;
             bool playerMuted = false;
-            if (bm.IsPlayerGagged(player.SteamID.ToString()))
+            if (GaggedSids.Contains(player.SteamID.ToString()))
             {
                 playerGagged = true;
             }
-            if (bm.IsPlayerMuted(player.SteamID.ToString()))
+            if (MutedSids.Contains(player.SteamID.ToString()))
             {
                 playerMuted = true;
             }
