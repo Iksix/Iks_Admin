@@ -18,7 +18,7 @@ public class BanManager
     
 
     
-    public async Task BanPlayer(string name, string sid, string? ip, string adminsid, int time, string reason)
+    public async Task BanPlayer(string name, string sid, string ip, string adminsid, int time, string reason)
     {
         try
         {
@@ -26,6 +26,25 @@ public class BanManager
             {
                 connection.Open();
                 string sql = $"INSERT INTO iks_bans (`name`, `sid`, `ip`, `adminsid`, `created`, `time`, `end`, `reason`) VALUES ('{name}', '{sid}', '{ip}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time*60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time*60}', '{reason}')";
+                var comm = new MySqlCommand(sql, connection);
+                
+                await comm.ExecuteNonQueryAsync();
+            }
+        }
+        catch (MySqlException ex)
+        {
+            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
+        }
+    }
+
+    public async Task BanPlayerIp(string name, string sid, string ip, string adminsid, int time, string reason)
+    {
+        try
+        {
+            using (var connection = new MySqlConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string sql = $"INSERT INTO iks_bans (`name`, `sid`, `ip`, `adminsid`, `created`, `time`, `end`, `reason`, `BanType`) VALUES ('{name}', '{sid}', '{ip}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time*60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time*60}', '{reason}')";
                 var comm = new MySqlCommand(sql, connection);
                 
                 await comm.ExecuteNonQueryAsync();
@@ -180,8 +199,12 @@ public class BanManager
         return false;
     }
     
-    public async Task<bool> IsPlayerBannedAsync(string arg)
+    public async Task<bool> IsPlayerBannedAsync(string? arg)
     {
+        if (arg == null || arg.ToLower() == "undefined")
+        {
+            return false;
+        }
         try
         {
             using (var connection = new MySqlConnection(_dbConnectionString))

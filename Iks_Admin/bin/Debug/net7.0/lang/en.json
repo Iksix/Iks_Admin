@@ -41,11 +41,15 @@
 	"GagMenuReasonsTitle" : "Причина гага:",
 	"GagMessage" : "Игрок {red}{name}{white} был гагнут админом {darkblue}{admin} \n Причина: {darkblue}{reason} \n Срок: {darkblue}{duration}",
 	
-	"PlayerAlredyBanned" : "{red}Игрок уже наказан!",
+	"PlayerAlredyBanned" : "{red}Игрок {name} уже наказан!",
 	"min" : "{white}мин.",
 	"MUTED" : "{darkblue}[M]",	
 	"GAGGED" : "{darkblue}[G]",
 	
 	"searchbansTitle" : "{darkblue}Баны игрока:",
-	"css_searchbans" : "======================= \n Ник: {darkblue}{name} \n Айпи: {darkblue}{ip} \n Админ: {darkblue}{admin} \n Причина: {darkblue}{reason} \n Время: {darkblue}{time} \n Бан выдан: {darkblue}{created} \nБан закончится: {darkblue}{end} \nРазбанен: {darkblue}{unbanned} \nРазбанен админом: {darkblue}{unbannedBy} \n======================="
+	"css_searchbans" : "======================= \n Ник: {darkblue}{name} \n Айпи: {darkblue}{ip} \n Админ: {darkblue}{admin} \n Причина: {darkblue}{reason} \n Время: {darkblue}{time} \n Бан выдан: {darkblue}{created} \nБан закончится: {darkblue}{end} \nРазбанен: {darkblue}{unbanned} \nРазбанен админом: {darkblue}{unbannedBy} \n=======================",
+
+	"IfTargetImmunity" : "{red}У игрока {darkblue}{name}{red} иммунитет >= вашему!",
+	"IncorrectSid" : "{red}Некоректный SteamId64!"
+
 }
