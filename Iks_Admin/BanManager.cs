@@ -78,14 +78,33 @@ public class BanManager
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
     }
-    public async Task UnBanPlayer(string sid, string adminsid)
+    public async Task UnBanPlayer(string arg, string adminsid)
     {
+        if (arg == null || arg.ToLower() == "undefined")
+        {
+            return;
+        }
         try
         {
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
-                string sql = $"UPDATE iks_bans SET `Unbanned` = 1, `UnbannedBy` = '{adminsid}' WHERE sid='{sid}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND `Unbanned` = 0";
+                string sql = $"UPDATE iks_bans SET `Unbanned` = 1, `UnbannedBy` = '{adminsid}' WHERE sid='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND `Unbanned` = 0";
+                var comm = new MySqlCommand(sql, connection);
+                
+                await comm.ExecuteNonQueryAsync();
+            }
+        }
+        catch (MySqlException ex)
+        {
+            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
+        }
+        try
+        {
+            using (var connection = new MySqlConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string sql = $"UPDATE iks_bans SET `Unbanned` = 1, `UnbannedBy` = '{adminsid}' WHERE ip='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned = 0 AND BanType=1";
                 var comm = new MySqlCommand(sql, connection);
                 
                 await comm.ExecuteNonQueryAsync();
