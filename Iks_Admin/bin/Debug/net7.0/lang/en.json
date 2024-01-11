@@ -33,7 +33,7 @@
 	"BanMenuTitle" : "Бан | Меню:",
 	"BanMenuReasonsTitle" : "Причина бана:",
 	"BanMessage" : "Игрок {red}{name}{white} был забанен админом {darkblue}{admin} \n Причина: {darkblue}{reason} \n Срок: {darkblue}{duration}",
-	"UnBanMessage" : "Игрок был разбанен!",
+	"UnBanMessage" : "Игрок {red}{name}{white} был разбанен админом {darkblue}{admin}",
 	"MuteMenuTitle" : "Мут | Меню:",
 	"MuteMenuReasonsTitle" : "Причина мута:",
 	"MuteMessage" : "Игрок {red}{name}{white} был замучен админом {darkblue}{admin} \n Причина: {darkblue}{reason} \n Срок: {darkblue}{duration}",

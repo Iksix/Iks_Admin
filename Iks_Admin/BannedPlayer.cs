@@ -12,8 +12,9 @@ public class BannedPlayer
     public string AdminSid = "";
     public bool Unbanned = false;
     public string UnbannedBy = "";
+    public int BanType = 0;
 
-    public BannedPlayer(string name, string sid, string ip, string banReason, int banCreated, int banTime, int banTimeEnd, string adminSid, int unbanned, string unbannedBy)
+    public BannedPlayer(string name, string sid, string ip, string banReason, int banCreated, int banTime, int banTimeEnd, string adminSid, int unbanned, string unbannedBy, int banType)
     {
         Name = name;
         Sid = sid;
@@ -25,5 +26,6 @@ public class BannedPlayer
         AdminSid = adminSid;
         Unbanned = unbanned == 1;
         UnbannedBy = unbannedBy;
+        BanType = banType;
     }
 }

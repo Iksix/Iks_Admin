@@ -115,6 +115,7 @@ public class BanManager
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
     }
+    
     public async Task MutePlayer(string name, string sid, string adminsid, int time, string reason)
     {
         try
@@ -301,7 +302,6 @@ public class BanManager
                 {
                     return false;
                 }
-                Console.WriteLine("Player is gagged");
                 return true;
             }
         }
@@ -337,6 +337,7 @@ public class BanManager
                     int BanTime = reader.GetInt32("time") ;
                     int BanTimeEnd = reader.GetInt32("end") ;
                     string AdminSid = reader.GetString("adminsid") ;
+                    int BanType = reader.GetInt32("BanType") ;
                     int Unbanned = reader.GetInt32("Unbanned") ;
                     string UnbannedBy = "";
                     if (Unbanned == 1)
@@ -353,7 +354,8 @@ public class BanManager
                         BanTimeEnd,
                         AdminSid,
                         Unbanned,
-                        UnbannedBy
+                        UnbannedBy,
+                        BanType
                         );
                     
                     playerBans.Add(player);
@@ -368,4 +370,226 @@ public class BanManager
         return playerBans;
     }
 
+
+    #region Gets
+
+    public async Task<BannedPlayer?> GetPlayerBan(string? arg)
+    {
+        if (arg == null || arg.ToLower() == "undefined")
+        {
+            return null;
+        }
+        try
+        {
+            using (var connection = new MySqlConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string sql = $"SELECT * FROM iks_bans WHERE sid='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
+                var comm = new MySqlCommand(sql, connection);
+                MySqlDataReader reader = await comm.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    string Name = reader.GetString("name") ;
+                    string Sid = reader.GetString("sid") ;
+                    string Ip = reader.GetString("ip") ;
+                    string BanReason = reader.GetString("reason") ;
+                    int BanCreated = reader.GetInt32("created") ;
+                    int BanTime = reader.GetInt32("time") ;
+                    int BanTimeEnd = reader.GetInt32("end") ;
+                    string AdminSid = reader.GetString("adminsid") ;
+                    int Unbanned = reader.GetInt32("Unbanned") ;
+                    int BanType = reader.GetInt32("BanType") ;
+                    string UnbannedBy = "";
+                    if (Unbanned == 1)
+                    {
+                        UnbannedBy = reader.GetString("UnbannedBy");
+                    }
+                    BannedPlayer player = new BannedPlayer(
+                        Name,
+                        Sid,
+                        Ip,
+                        BanReason,
+                        BanCreated,
+                        BanTime,
+                        BanTimeEnd,
+                        AdminSid,
+                        Unbanned,
+                        UnbannedBy,
+                        BanType
+                        );
+                    
+                    return player;
+                }
+            }
+        }
+        catch (MySqlException ex)
+        {
+            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
+        }
+        try
+        {
+            using (var connection = new MySqlConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string sql = $"SELECT * FROM iks_bans WHERE ip='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
+                var comm = new MySqlCommand(sql, connection);
+                MySqlDataReader reader = await comm.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    string Name = reader.GetString("name") ;
+                    string Sid = reader.GetString("sid") ;
+                    string Ip = reader.GetString("ip") ;
+                    string BanReason = reader.GetString("reason") ;
+                    int BanCreated = reader.GetInt32("created") ;
+                    int BanTime = reader.GetInt32("time") ;
+                    int BanTimeEnd = reader.GetInt32("end") ;
+                    string AdminSid = reader.GetString("adminsid") ;
+                    int Unbanned = reader.GetInt32("Unbanned") ;
+                    int BanType = reader.GetInt32("BanType") ;
+                    string UnbannedBy = "";
+                    if (Unbanned == 1)
+                    {
+                        UnbannedBy = reader.GetString("UnbannedBy");
+                    }
+                    BannedPlayer player = new BannedPlayer(
+                        Name,
+                        Sid,
+                        Ip,
+                        BanReason,
+                        BanCreated,
+                        BanTime,
+                        BanTimeEnd,
+                        AdminSid,
+                        Unbanned,
+                        UnbannedBy,
+                        BanType
+                        );
+                    
+                    return player;
+                }
+            }
+        }
+        catch (MySqlException ex)
+        {
+            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
+        }
+        
+        return null;
+    }
+
+    public async Task<BannedPlayer?> GetPlayerGag(string? arg)
+    {
+        if (arg == null || arg.ToLower() == "undefined")
+        {
+            return null;
+        }
+        try
+        {
+            using (var connection = new MySqlConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string sql = $"SELECT * FROM iks_gags WHERE sid='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
+                var comm = new MySqlCommand(sql, connection);
+                MySqlDataReader reader = await comm.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    string Name = reader.GetString("name") ;
+                    string Sid = reader.GetString("sid") ;
+                    string Ip = reader.GetString("ip") ;
+                    string BanReason = reader.GetString("reason") ;
+                    int BanCreated = reader.GetInt32("created") ;
+                    int BanTime = reader.GetInt32("time") ;
+                    int BanTimeEnd = reader.GetInt32("end") ;
+                    string AdminSid = reader.GetString("adminsid") ;
+                    int Unbanned = reader.GetInt32("Unbanned") ;
+                    int BanType = 0 ;
+                    string UnbannedBy = "";
+                    if (Unbanned == 1)
+                    {
+                        UnbannedBy = reader.GetString("UnbannedBy");
+                    }
+                    BannedPlayer player = new BannedPlayer(
+                        Name,
+                        Sid,
+                        Ip,
+                        BanReason,
+                        BanCreated,
+                        BanTime,
+                        BanTimeEnd,
+                        AdminSid,
+                        Unbanned,
+                        UnbannedBy,
+                        BanType
+                        );
+                    
+                    return player;
+                }
+            }
+        }
+        catch (MySqlException ex)
+        {
+            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
+        }
+        
+        return null;
+    }
+
+    public async Task<BannedPlayer?> GetPlayerMute(string? arg)
+    {
+        if (arg == null || arg.ToLower() == "undefined")
+        {
+            return null;
+        }
+        try
+        {
+            using (var connection = new MySqlConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string sql = $"SELECT * FROM iks_mutes WHERE sid='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
+                var comm = new MySqlCommand(sql, connection);
+                MySqlDataReader reader = await comm.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    string Name = reader.GetString("name") ;
+                    string Sid = reader.GetString("sid") ;
+                    string Ip = reader.GetString("ip") ;
+                    string BanReason = reader.GetString("reason") ;
+                    int BanCreated = reader.GetInt32("created") ;
+                    int BanTime = reader.GetInt32("time") ;
+                    int BanTimeEnd = reader.GetInt32("end") ;
+                    string AdminSid = reader.GetString("adminsid") ;
+                    int Unbanned = reader.GetInt32("Unbanned") ;
+                    int BanType = 0 ;
+                    string UnbannedBy = "";
+                    if (Unbanned == 1)
+                    {
+                        UnbannedBy = reader.GetString("UnbannedBy");
+                    }
+                    BannedPlayer player = new BannedPlayer(
+                        Name,
+                        Sid,
+                        Ip,
+                        BanReason,
+                        BanCreated,
+                        BanTime,
+                        BanTimeEnd,
+                        AdminSid,
+                        Unbanned,
+                        UnbannedBy,
+                        BanType
+                        );
+                    
+                    return player;
+                }
+            }
+        }
+        catch (MySqlException ex)
+        {
+            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
+        }
+        
+        return null;
+    }
+
+    #endregion
 }
