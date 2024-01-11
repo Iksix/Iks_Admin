@@ -20,6 +20,8 @@ public class BanManager
     
     public async Task BanPlayer(string name, string sid, string ip, string adminsid, int time, string reason)
     {
+        if (ip.Split(":").Length > 0)
+            ip = ip.Split(":")[0];
         try
         {
             using (var connection = new MySqlConnection(_dbConnectionString))
@@ -39,12 +41,18 @@ public class BanManager
 
     public async Task BanPlayerIp(string name, string sid, string ip, string adminsid, int time, string reason)
     {
+        if (ip.Split(":").Length > 0)
+        {
+            Console.WriteLine("Ip Checked");
+            ip = ip.Split(":")[0];
+        }
+            
         try
         {
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
-                string sql = $"INSERT INTO iks_bans (`name`, `sid`, `ip`, `adminsid`, `created`, `time`, `end`, `reason`, `BanType`) VALUES ('{name}', '{sid}', '{ip}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time*60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time*60}', '{reason}')";
+                string sql = $"INSERT INTO iks_bans (`name`, `sid`, `ip`, `adminsid`, `created`, `time`, `end`, `reason`, `BanType`) VALUES ('{name}', '{sid}', '{ip}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time*60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time*60}', '{reason}', 1)";
                 var comm = new MySqlCommand(sql, connection);
                 
                 await comm.ExecuteNonQueryAsync();
@@ -224,6 +232,11 @@ public class BanManager
         if (arg == null || arg.ToLower() == "undefined")
         {
             return false;
+        }
+        if (arg.Split(":").Length > 0)
+        {
+            Console.WriteLine("Ip Checked");
+            arg = arg.Split(":")[0];
         }
         try
         {

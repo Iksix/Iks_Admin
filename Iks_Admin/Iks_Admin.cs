@@ -2,6 +2,7 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Config;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Timers;
@@ -288,6 +289,132 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             NativeAPI.IssueServerCommand($"kickid {target.UserId}");
     }
 
+
+
+    [ConsoleCommand("css_banip", "css_banip uid/sid/ip(if offline) duration reason <name if needed>")]
+    public void OnBanIpCommand(CCSPlayerController? controller, CommandInfo info)
+    {
+        BanManager bm = new BanManager(_dbConnectionString);
+
+        string[] args = info.GetCommandString.Split(" ");
+
+        string identity = info.GetArg(1);
+        int time = Int32.Parse(info.GetArg(2));
+        string reason = args[3];
+        string name = "Undefined";
+        string ip = "Undefined";  
+        string sid = identity.Length >= 17 ? identity : "Undefined";
+
+        // Установка Name
+        if (args.Length > 4)
+        {
+            if(args[4].Trim() != "")
+            {
+                name = args[4];
+            }
+        }
+
+
+        CCSPlayerController? target = GetPlayerFromSidOrUid(identity); // Проверка есть ли игрок которого банят на сервере
+
+        if(target == null)
+        {
+            ip = identity;
+        }
+
+        
+        // Установки если игрок на сервере
+        if (target != null) 
+        {
+            if (name == "Undefined")
+            {
+                name = target.PlayerName;
+            }
+            ip = target.IpAddress ?? "Undefined";
+            sid = target.SteamID.ToString();
+        }
+
+        if(ip == "Undefined")
+        {
+            info.ReplyToCommand("[IKS_Admin] Incorrect Ip Address");
+        }
+
+        if (!isSteamId(sid))
+        {
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["IncorrectSid"]}");
+            return;
+        }
+
+        string AdminSid = "CONSOLE";
+        string AdminName = "CONSOLE";
+
+        if (controller != null)
+        {
+            AdminSid = controller.SteamID.ToString();
+            AdminName = controller.PlayerName;
+        }
+        
+        if (controller != null) // Проверка на админа и флаги и иммунитет
+        {
+            Admin? admin = GetAdminBySid(controller.SteamID.ToString());
+            Admin? targetAdmin = null;
+            targetAdmin = GetAdminBySid(sid); // Попытка получить админа по стим айди игрока
+            
+            if (admin != null)
+            {
+                if (!admin.Flags.Contains("b") && !admin.Flags.Contains("z")) // Проверка админ флага
+                { 
+                    controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                    return;
+                }
+                if (targetAdmin != null) // Если цель админ
+                {
+                    if (targetAdmin.Immunity >= admin.Immunity) //Проверка иммунитета цели
+                    {
+                        controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["IfTargetImmunity"].ToString().Replace("{name}", name)}");
+                        return;
+                    }
+                }
+            } else // Если игрок не админ: HaveNotAccess
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+            
+        }
+
+        Task.Run(async () =>
+        {
+            if (await bm.IsPlayerBannedAsync(identity)) // Проверка есть ли бан по identity
+            {
+                Server.NextFrame(() => {
+                    NotifyIfPlayerAlredyBanned(name, AdminSid);
+                });
+                return;
+            }
+            if (await bm.IsPlayerBannedAsync(ip)) // Проверка есть ли бан по ip
+            {
+                Server.NextFrame(() => {
+                    NotifyIfPlayerAlredyBanned(name, AdminSid);
+                });
+                return;
+            }
+
+            //Если всё нормально то баним ПО АЙПИ
+            await bm.BanPlayerIp(name, sid, ip, AdminSid, time, reason);
+
+            Server.NextFrame(() => {
+                PrintBanMessage(name, AdminName, time, reason);
+            });
+        });
+
+        // Кикаем игрока после бана
+        if (target != null)
+            NativeAPI.IssueServerCommand($"kickid {target.UserId}");
+    }
+
+
+
     [ConsoleCommand("css_unban", "css_unban sid/ip")]
     public void OnUnBanCommand(CCSPlayerController? controller, CommandInfo info)
     {
@@ -540,7 +667,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     }
 
     // MUTE
-    [ConsoleCommand("css_mute", "css_gag uid/sid duration reason <name if needed>")]
+    [ConsoleCommand("css_mute", "css_mute uid/sid duration reason <name if needed>")]
     public void OnMuteCommand(CCSPlayerController? controller, CommandInfo info)
     {
         BanManager bm = new BanManager(_dbConnectionString);
@@ -639,7 +766,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
     }
 
-    [ConsoleCommand("css_unmute", "css_unmute sid")]
+    [ConsoleCommand("css_unmute", "css_unmute sid/uid")]
     public void OnUnMuteCommand(CCSPlayerController? controller, CommandInfo info)
     {
         BanManager bm = new BanManager(_dbConnectionString);
@@ -1220,12 +1347,34 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public HookResult OnPlayerConnect(EventPlayerConnectFull @event, GameEventInfo info)
     {
         BanManager bm = new BanManager(_dbConnectionString);
-        if (bm.IsPlayerBanned(@event.Userid.SteamID.ToString()))
-        {
-            NativeAPI.IssueServerCommand($"kickid {@event.Userid.UserId}");
-        }
+        if(@event.Userid.IsBot || !@event.Userid.IsValid) return HookResult.Continue;
+        int? uid =  @event.Userid.UserId;
+        string sid = @event.Userid.SteamID.ToString();
+        string ip = @event.Userid.IpAddress;
+        Task.Run(async () => {
+            if (await bm.IsPlayerBannedAsync(sid))
+            {
+                Server.NextFrame(() => {
+                    Kick(uid);
+                });
+            }
+            if (await bm.IsPlayerBannedAsync(ip))
+            {
+                Server.NextFrame(() => {
+                    Kick(uid);
+                });
+            }
+        });
+        
         return HookResult.Continue;
     }
+
+    public void Kick(int? uid)
+    {
+        NativeAPI.IssueServerCommand($"kickid {uid}");
+    }
+
+
     [GameEventHandler]
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
     {
