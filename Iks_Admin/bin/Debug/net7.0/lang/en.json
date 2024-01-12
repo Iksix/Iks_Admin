@@ -10,6 +10,7 @@
 	"Options.ExitMessage" : "Меню закрыто!",
 	"Options.Kick" : "{darkblue}Кик",
 	"Options.Ban" : "{darkblue}Бан",
+	"Options.BanDisconnected" : "{darkblue}Забанить вышедшего игрока",
 	"Options.Mute" : "{darkblue}Мут",
 	"Options.Gag" : "{darkblue}Гаг",
 	"Options.UnGagMute" : "{darkblue}Снять наказание",

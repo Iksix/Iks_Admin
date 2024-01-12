@@ -1,9 +1,11 @@
-﻿using CounterStrikeSharp.API;
+﻿using System.Text.RegularExpressions;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Config;
+using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
@@ -27,11 +29,14 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public CCSPlayerController?[] OwnReasonsTyper = new CCSPlayerController[64];
     public string?[] Actions = new String[64];
     public CCSPlayerController?[] ActionTargets = new CCSPlayerController[64];
+    public DisconnectedPlayer?[] ActionTargetsDisconnected = new DisconnectedPlayer[64];
     public int[] ActionTimes = new Int32[64];
     
 
     private List<string> GaggedSids = new List<string>();
     private List<string> MutedSids = new List<string>();
+
+    private List<DisconnectedPlayer> DisconnectedPlayers = new List<DisconnectedPlayer>();
     
 
     private List<Admin> admins = new List<Admin>();
@@ -183,6 +188,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public void OnKickCommand(CCSPlayerController? controller, CommandInfo info)
     {
         string reason = info.GetArg(2);
+        string AdminName = "Console";
         Admin? admin = null;
         CCSPlayerController? target = GetPlayerFromSidOrUid(info.GetArg(1));
         if (target == null && controller == null)
@@ -214,13 +220,14 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["IfTargetImmunity"]}");
                 return;
             }
+            AdminName = controller.PlayerName;
         }
 
         foreach (var str in Localizer["KickMessage"].ToString().Split("\n"))
         {
             Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
                 .Replace("{name}", target.PlayerName)
-                .Replace("{admin}", controller.PlayerName)
+                .Replace("{admin}", AdminName)
                 .Replace("{reason}", reason)
             }");
         }
@@ -236,7 +243,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         BanManager bm = new BanManager(_dbConnectionString);
 
-        string[] args = info.GetCommandString.Split(" ");
+        List<string> args = GetArgsFromCommandLine(info.GetCommandString);
+
 
         string identity = info.GetArg(1);
         int time = Int32.Parse(info.GetArg(2));
@@ -246,7 +254,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         string sid = identity.Length >= 17 ? identity : "Undefined";
 
         // Установка Name
-        if (args.Length > 4)
+        if (args.Count > 4)
         {
             if(args[4].Trim() != "")
             {
@@ -543,7 +551,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         BanManager bm = new BanManager(_dbConnectionString);
 
-        string[] args = info.GetCommandString.Split(" ");
+        List<string> args = GetArgsFromCommandLine(info.GetCommandString);
 
         string identity = info.GetArg(1);
         int time = Int32.Parse(info.GetArg(2));
@@ -552,7 +560,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         string sid = identity.Length >= 17 ? identity : "Undefined";
 
         // Установка Name
-        if (args.Length > 4)
+        if (args.Count > 4)
         {
             if(args[4].Trim() != "")
             {
@@ -724,7 +732,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         BanManager bm = new BanManager(_dbConnectionString);
 
-        string[] args = info.GetCommandString.Split(" ");
+        //Fix args Need to do in other commands
+        List<string> args = GetArgsFromCommandLine(info.GetCommandString);
 
         string identity = info.GetArg(1);
         int time = Int32.Parse(info.GetArg(2));
@@ -732,8 +741,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         string name = "Undefined";
         string sid = identity.Length >= 17 ? identity : "Undefined";
 
-        // Установка Name
-        if (args.Length > 4)
+        // Установка Name        
+        if (args.Count > 4)
         {
             if(args[4].Trim() != "")
             {
@@ -1053,6 +1062,17 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     
     
     #region FUNC
+
+    public List<string> GetArgsFromCommandLine(string commandLine)
+    {
+        List<string> args = new List<string>();
+        var regex = new Regex(@"(""((\\"")|([^""]))*"")|('((\\')|([^']))*')|(\S+)");
+        var matches = regex.Matches(commandLine);
+        foreach (Match match in matches) {
+            args.Add(match.Value);
+        }
+        return args;
+    }
     public void UpdateChatColorsGagged()
     {
         if (Config.HaveIksChatColors)
@@ -1236,6 +1256,18 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         
                         ChatMenus.OpenMenu(OwnReasonsTyper[i], BanMenuReasons);
                     break;
+                    case "banTimeDisconnected": // Для вышедших игроков
+                        time = Int32.Parse(info.GetArg(1).Replace("!", ""));
+                        title = $"{time}{Localizer["min"]}";
+                        if (time == 0)
+                        {
+                            title = Localizer["Options.Infinity"].ToString();
+                        }
+                        
+                        BanMenuReasons = BanMenuDisconnectedPlayersReasonsConstructor(OwnReasonsTyper[i], ActionTargetsDisconnected[i], time, title);
+                        
+                        ChatMenus.OpenMenu(OwnReasonsTyper[i], BanMenuReasons);
+                    break;
                     case "banReason":
                         title = $"{ ActionTimes[i]}{Localizer["min"]}";
                         if (ActionTimes[i] == 0)
@@ -1266,6 +1298,42 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         {
                             Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
                                 .Replace("{name}", ActionTargets[i].PlayerName)
+                                .Replace("{admin}", OwnReasonsTyper[i].PlayerName)
+                                .Replace("{reason}", info.GetArg(1).Replace("!", ""))
+                                .Replace("{duration}", title)
+                            }");
+                        }
+
+                        break;
+                    case "banReasonDisconnected":
+                        title = $"{ ActionTimes[i]}{Localizer["min"]}";
+                        if (ActionTimes[i] == 0)
+                        {
+                            title = Localizer["Options.Infinity"].ToString();
+                        }
+                        bm = new BanManager(_dbConnectionString);
+                        if (bm.IsPlayerBanned(ActionTargetsDisconnected[i].Sid))
+                        {
+                            OwnReasonsTyper[i].PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerAlredyBanned"]}");
+                            break;
+                        }
+
+                        name = ActionTargetsDisconnected[i].Name;
+                        sid = ActionTargetsDisconnected[i].Sid;
+                        ip = ActionTargetsDisconnected[i].Ip;
+                        adminsid = OwnReasonsTyper[i].SteamID.ToString();
+                        Btime = ActionTimes[i];
+                        reason = info.GetArg(1).Replace("!", "");
+                
+                        Task.Run(async () =>
+                        {
+                            await bm.BanPlayer(name, sid, ip, adminsid, Btime, reason);
+                        });
+
+                        foreach (var str in Localizer["BanMessage"].ToString().Split("\n"))
+                        {
+                            Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+                                .Replace("{name}", ActionTargetsDisconnected[i].Name)
                                 .Replace("{admin}", OwnReasonsTyper[i].PlayerName)
                                 .Replace("{reason}", info.GetArg(1).Replace("!", ""))
                                 .Replace("{duration}", title)
@@ -1386,6 +1454,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 OwnReasonsTyper[i] = null;
                 Actions[i] = "";
                 ActionTargets[i] = null;
+                ActionTargetsDisconnected[i] = null;
                 ActionTimes[i] = 0;
                 return HookResult.Stop;
             }
@@ -1419,6 +1488,18 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 });
             }
         });
+        CCSPlayerController controller = @event.Userid;
+
+        // Установка вышедших игроков
+
+        for (int i = 0; i < DisconnectedPlayers.Count; i++)
+        {
+            if (controller.SteamID.ToString() == DisconnectedPlayers[i].Sid)
+            {
+                DisconnectedPlayers.RemoveAt(i);
+            }
+        }
+
         
         return HookResult.Continue;
     }
@@ -1442,6 +1523,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 ActionTimes[i] = 0;
             }
         }
+
+        // Установка вышедших игроков
+        CCSPlayerController controller = @event.Userid;
+
+        DisconnectedPlayer disconnectedPlayer = new DisconnectedPlayer(controller.PlayerName, controller.SteamID.ToString(), controller.IpAddress);
+
+        DisconnectedPlayers.Add(disconnectedPlayer);
+
+
         return HookResult.Continue;
     }
 
@@ -1490,6 +1580,10 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             menu.AddMenuOption($" {Localizer["Options.Ban"]}", (controller, option) =>
             {
                 ChatMenus.OpenMenu(controller, BanMenuConstructor(controller));
+            });
+            menu.AddMenuOption($" {Localizer["Options.BanDisconnected"]}", (controller, option) =>
+            {
+                ChatMenus.OpenMenu(controller, BanMenuDisconnectedPlayersConstructor(controller));
             });
         }
         // Мут
@@ -1662,6 +1756,127 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         return menu;
     }
 
+    public ChatMenu BanMenuDisconnectedPlayersConstructor(CCSPlayerController activator)
+    {
+        ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["BanMenuTitle"]}");
+        
+        // Закрыть меню
+        menu.AddMenuOption($" {Localizer["Options.Back"]}", (controller, option) =>
+        {
+            ChatMenus.OpenMenu(activator, AdminMenuConstructor(GetAdminBySid(activator.SteamID.ToString())));
+        });
+        // Закрыть меню
+        menu.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
+        {
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+        });
+        DisconnectedPlayers.Reverse();
+        var DisconnectedPlayersReversed = DisconnectedPlayers;
+        DisconnectedPlayers.Reverse();
+        foreach (var player in DisconnectedPlayersReversed)
+        {
+            if (GetAdminBySid(player.Sid) != null)
+            {
+                if (GetAdminBySid(player.Sid).Immunity >= GetAdminBySid(activator.SteamID.ToString()).Immunity)
+                {
+                    continue;
+                }
+            }
+            
+            menu.AddMenuOption($" {player.Name}", (controller, option) =>
+            {
+                ChatMenu BanMenuTimes = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["TimesTitle"]}");
+
+                foreach (var time in Config.Times)
+                {
+                    string title = $"{time}{Localizer["min"]}";
+                    if (time == 0)
+                    {
+                        title = Localizer["Options.Infinity"].ToString();
+                    }
+
+                    BanMenuTimes.AddMenuOption(title, (ccsPlayerController, chatMenuOption) =>
+                    {
+
+                        ChatMenu BanMenuReasons = BanMenuDisconnectedPlayersReasonsConstructor(ccsPlayerController, player, time, title);
+                        
+                        ChatMenus.OpenMenu(ccsPlayerController, BanMenuReasons);
+                       
+                    });
+                }
+                
+
+                BanMenuTimes.AddMenuOption($"{Localizer["Options.OwnTime"]}", (playerController, menuOption) =>
+                {
+                    playerController.PrintToChat($" {Localizer["PluginTag"]} {Localizer[$"{Localizer["OwnTimeMessage"]}"]}");
+                    for (int i = 0; i < OwnReasonsTyper.Length; i++)
+                    {
+                        if (OwnReasonsTyper[i] == null)
+                        {
+                            OwnReasonsTyper[i] = playerController;
+                            Actions[i] = "banReasonDisconnected";
+                            ActionTargetsDisconnected[i] = player;
+                            return;
+                        }
+                    }
+                });
+                ChatMenus.OpenMenu(controller, BanMenuTimes);
+            });
+        }
+        
+        return menu;
+    }
+
+    public ChatMenu BanMenuDisconnectedPlayersReasonsConstructor(CCSPlayerController ccsPlayerController, DisconnectedPlayer player , int time, string title)
+    {
+        ChatMenu BanMenuReasons =
+            new ChatMenu($" {Localizer["PluginTag"]} {Localizer["BanMenuReasonsTitle"]}");
+        foreach (var reason in Config.BanReasons)
+        {
+            BanMenuReasons.AddMenuOption($"{reason}", (playerController, menuOption) =>
+            {
+                BanManager bm = new BanManager(_dbConnectionString);
+                if (bm.IsPlayerBanned(player.Sid))
+                {
+                    ccsPlayerController.PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerAlredyBanned"]}");
+                    return;
+                }
+
+                string adminsid = ccsPlayerController.SteamID.ToString();
+                
+                Task.Run(async () =>
+                {
+                    await bm.BanPlayer(player.Name, player.Sid, player.Ip, adminsid, time, reason);
+                });
+
+                foreach (var str in Localizer["BanMessage"].ToString().Split("\n"))
+                {
+                    Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+                        .Replace("{name}", player.Name)
+                        .Replace("{admin}", ccsPlayerController.PlayerName)
+                        .Replace("{reason}", reason)
+                        .Replace("{duration}", title)
+                    }");
+                }
+            });
+        }
+        BanMenuReasons.AddMenuOption($"{Localizer["Options.OwnReason"]}", (playerController, menuOption) =>
+        {
+            playerController.PrintToChat($" {Localizer["PluginTag"]} {Localizer[$"{Localizer["OwnReasonMessage"]}"]}");
+            for (int i = 0; i < OwnReasonsTyper.Length; i++)
+            {
+                if (OwnReasonsTyper[i] == null)
+                {
+                    OwnReasonsTyper[i] = playerController;
+                    Actions[i] = "banReason";
+                    ActionTargetsDisconnected[i] = player;
+                    ActionTimes[i] = time;
+                    return;
+                }
+            }
+        });
+        return BanMenuReasons;
+    }
     public ChatMenu BanMenuReasonsConstructor(CCSPlayerController ccsPlayerController, CCSPlayerController player, int time, string title)
     {
         ChatMenu BanMenuReasons =
