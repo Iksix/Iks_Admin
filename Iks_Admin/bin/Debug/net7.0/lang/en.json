@@ -50,6 +50,7 @@
 	"css_searchbans" : "======================= \n Ник: {darkblue}{name} \n Айпи: {darkblue}{ip} \n Админ: {darkblue}{admin} \n Причина: {darkblue}{reason} \n Время: {darkblue}{time} \n Бан выдан: {darkblue}{created} \nБан закончится: {darkblue}{end} \nРазбанен: {darkblue}{unbanned} \nРазбанен админом: {darkblue}{unbannedBy} \n=======================",
 
 	"IfTargetImmunity" : "{red}У игрока {darkblue}{name}{red} иммунитет >= вашему!",
-	"IncorrectSid" : "{red}Некоректный SteamId64!"
+	"IncorrectSid" : "{red}Некоректный SteamId64!",
+	"PlayerNotFinded" : "{red}Игрок не найден!"
 
 }
