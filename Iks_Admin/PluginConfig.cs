@@ -22,6 +22,24 @@ public class PluginConfig : BasePluginConfig
     [JsonPropertyName("Times")] public int[] Times { get; set; } = new [] {120, 60, 30, 15, 0};
 
 
+    [JsonPropertyName("ConvertedFlags")] public Dictionary<string, List<string>> ConvertedFlags { get; set; } = new Dictionary<string, List<string>>()
+    {
+        {"z", new List<string>(){
+            "@css/root"
+        }},
+        {"b", new List<string>(){
+            "@css/ban"
+        }},
+        {"m", new List<string>(){
+            "@css/mute"
+        }},
+        {"l", new List<string>(){
+            "@css/custom",
+            "@css/custom2",
+            "@css/custom3"
+        }},
+    };
+
     [JsonPropertyName("LogToVk")] public bool LogToVk { get; set; } = false;
     [JsonPropertyName("Token")] public string Token { get; set; } = "ваш токен";
     [JsonPropertyName("ChatId")] public string ChatId { get; set; } = "ваш чат айди";

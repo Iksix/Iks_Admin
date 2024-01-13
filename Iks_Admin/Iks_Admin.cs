@@ -13,6 +13,7 @@ using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.VisualBasic;
 using MySqlConnector;
 using Serilog.Sinks.File;
+using cssAdminManager = CounterStrikeSharp.API.Modules.Admin;
 
 namespace Iks_Admin;
 
@@ -148,6 +149,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     }
     public override void Load(bool hotReload)
     {
+
         AddCommandListener("say", OnSay);
         AddCommandListener("say_team", OnSay);
         AddTimer(3, () =>
@@ -1386,6 +1388,21 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 controller.PrintToChat("=============");
             }
         }
+
+        // Устанавливаем флаги CSS
+        foreach (var admin in admins)
+        {
+            foreach (var Flag in Config.ConvertedFlags)
+            {
+                if (admin.Flags.Contains(Flag.Key))
+                {
+                    Console.WriteLine(Flag.Key);
+                    SteamID steamID = new SteamID(UInt64.Parse(admin.SteamId));
+                    cssAdminManager.AdminManager.AddPlayerPermissions(steamID, Flag.Value.ToArray());
+                }
+            }
+        }
+        
     }
 
     public Admin? GetAdminBySid(string sid)
@@ -1730,6 +1747,20 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             if (controller.SteamID.ToString() == DisconnectedPlayers[i].Sid)
             {
                 DisconnectedPlayers.RemoveAt(i);
+            }
+        }
+        // Установка флагов CSS
+
+        Admin? admin = GetAdminBySid(controller.SteamID.ToString());
+        if (admin != null)
+        {
+            foreach (var Flag in Config.ConvertedFlags)
+            {
+                if (admin.Flags.Contains(Flag.Key))
+                {
+                    Console.WriteLine(Flag.Key);
+                    cssAdminManager.AdminManager.AddPlayerPermissions(controller, Flag.Value.ToArray());
+                }
             }
         }
 
