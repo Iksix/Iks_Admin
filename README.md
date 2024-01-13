@@ -1,5 +1,5 @@
 ## Iks_Admin
-Поддержать автора: https://www.donationalerts.com/r/iks__ <br>
+Поддержать автора: <a href="https://www.donationalerts.com/r/iks__">DonationAlerts</a> <br>
 Админ система с меню <br>
 ![image](imgs/MenuScreen.png)
 
