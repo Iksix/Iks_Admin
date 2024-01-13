@@ -1,4 +1,5 @@
 ## Iks_Admin
+Поддержать автора: https://www.donationalerts.com/r/iks__
 Админ система с меню <br>
 ![image](imgs/MenuScreen.png)
 
