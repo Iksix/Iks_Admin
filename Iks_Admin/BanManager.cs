@@ -509,19 +509,20 @@ public class BanManager
                 {
                     string Name = reader.GetString("name") ;
                     string Sid = reader.GetString("sid") ;
-                    string Ip = reader.GetString("ip") ;
+                    string Ip = "Undefined";
                     string BanReason = reader.GetString("reason") ;
                     int BanCreated = reader.GetInt32("created") ;
                     int BanTime = reader.GetInt32("time") ;
                     int BanTimeEnd = reader.GetInt32("end") ;
                     string AdminSid = reader.GetString("adminsid") ;
                     int Unbanned = reader.GetInt32("Unbanned") ;
-                    int BanType = 0 ;
+                    int BanType = 0;
                     string UnbannedBy = "";
                     if (Unbanned == 1)
                     {
                         UnbannedBy = reader.GetString("UnbannedBy");
                     }
+
                     BannedPlayer player = new BannedPlayer(
                         Name,
                         Sid,
@@ -535,7 +536,6 @@ public class BanManager
                         UnbannedBy,
                         BanType
                         );
-                    
                     return player;
                 }
             }
@@ -566,7 +566,7 @@ public class BanManager
                 {
                     string Name = reader.GetString("name") ;
                     string Sid = reader.GetString("sid") ;
-                    string Ip = reader.GetString("ip") ;
+                    string Ip = "Undefined";
                     string BanReason = reader.GetString("reason") ;
                     int BanCreated = reader.GetInt32("created") ;
                     int BanTime = reader.GetInt32("time") ;

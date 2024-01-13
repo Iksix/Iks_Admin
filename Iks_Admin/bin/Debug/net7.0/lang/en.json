@@ -20,8 +20,8 @@
 	"Options.OwnTime" : "Своё время",
 	"Options.Infinity" : "{purple}Навсегда",
 	
-	"OwnReasonMessage" : "Введите причину: {darkblue}!прчиина",
-	"OwnTimeMessage" : "Введите время: {darkblue}!время в минутах",
+	"OwnReasonMessage" : "Введите причину в {darkblue}чат!",
+	"OwnTimeMessage" : "Введите время в {darkblue}чат {white} в минутах!",
 	"AdminMenuTitle" : "Админ меню:",
 	"TimesTitle" : "Выберите срок:",
 	"UnGagMuteMenuTitle" : "Снять наказание | Меню:",
@@ -52,6 +52,12 @@
 
 	"IfTargetImmunity" : "{red}У игрока {darkblue}{name}{red} иммунитет >= вашему!",
 	"IncorrectSid" : "{red}Некоректный SteamId64!",
-	"PlayerNotFinded" : "{red}Игрок не найден!"
+	"PlayerNotFinded" : "{red}Игрок не найден!",
+
+	"AdminAlredyExist" : "{red}Админ с таким SteamId64 уже есть!",
+	"AdminNotExist" : "{red}Админ с таким SteamId64 не найден!",
+	"AdminCreated" : "{darkblue}Админ создан!",
+	"AdminDeleted" : "{red}Админ удалён!"
+
 
 }

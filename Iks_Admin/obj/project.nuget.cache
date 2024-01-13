@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "gL07Aw9MHDUj+pcvNmsVo5T0G//lTK2LLiwD0SYHJGz1wdDSzp9vwR8y4tOSuiRbsoJOxJHbCntFcWa8I/BW4A==",
+  "dgSpecHash": "Z5YUa355+XtMa/xZJRyjXWWK0yFf591w/G8+S+i8XKFzyVfs6O4z1v0j9IhpwdW9VwERP7haygIUGri0qeTrJg==",
   "success": true,
   "projectFilePath": "D:\\__plgns\\Iks_Admin\\Iks_Admin\\Iks_Admin.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\iks\\.nuget\\packages\\counterstrikesharp.api\\1.0.142\\counterstrikesharp.api.1.0.142.nupkg.sha512",
+    "C:\\Users\\iks\\.nuget\\packages\\htmlagilitypack\\1.11.53\\htmlagilitypack.1.11.53.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\mcmaster.netcore.plugins\\1.4.0\\mcmaster.netcore.plugins.1.4.0.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\microsoft.dotnet.apicompat.task\\7.0.404\\microsoft.dotnet.apicompat.task.7.0.404.nupkg.sha512",
@@ -37,6 +38,7 @@
     "C:\\Users\\iks\\.nuget\\packages\\microsoft.extensions.options.configurationextensions\\7.0.0\\microsoft.extensions.options.configurationextensions.7.0.0.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\microsoft.extensions.primitives\\7.0.0\\microsoft.extensions.primitives.7.0.0.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\mysqlconnector\\2.3.3\\mysqlconnector.2.3.3.nupkg.sha512",
+    "C:\\Users\\iks\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\scrutor\\4.2.2\\scrutor.4.2.2.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\serilog\\3.1.0\\serilog.3.1.0.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\serilog.extensions.logging\\7.0.0\\serilog.extensions.logging.7.0.0.nupkg.sha512",
@@ -47,8 +49,10 @@
     "C:\\Users\\iks\\.nuget\\packages\\system.diagnostics.eventlog\\7.0.0\\system.diagnostics.eventlog.7.0.0.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "C:\\Users\\iks\\.nuget\\packages\\system.text.encoding.codepages\\7.0.0\\system.text.encoding.codepages.7.0.0.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\system.text.encodings.web\\7.0.0\\system.text.encodings.web.7.0.0.nupkg.sha512",
-    "C:\\Users\\iks\\.nuget\\packages\\system.text.json\\7.0.0\\system.text.json.7.0.0.nupkg.sha512"
+    "C:\\Users\\iks\\.nuget\\packages\\system.text.json\\7.0.0\\system.text.json.7.0.0.nupkg.sha512",
+    "C:\\Users\\iks\\.nuget\\packages\\vknet\\1.78.0-alpha-99\\vknet.1.78.0-alpha-99.nupkg.sha512"
   ],
   "logs": []
 }
