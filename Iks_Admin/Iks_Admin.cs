@@ -206,7 +206,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
     #region Admin Console Commands
 
-    [ConsoleCommand("css_adminadd", "css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <time>")]
+    [ConsoleCommand("css_adminadd", "css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <time> <server_id>")]
     public void OnAdminAddCommand(CCSPlayerController? controller, CommandInfo info)
     {
         var args = GetArgsFromCommandLine(info.GetCommandString);
