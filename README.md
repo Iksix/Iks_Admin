@@ -48,6 +48,8 @@
 - `css_slay` - будет в меню
 - `css_switchteam` - будет в меню
 - `css_changeteam` - будет в меню
+- `css_csay uid/@all/@ct/@t time "message"` - Print To Center
+- `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
 - Конвертация из флагов Iks_Admin в CSS +
 
 
