@@ -47,7 +47,7 @@
 - `css_slay` - будет в меню
 - `css_switchteam` - будет в меню
 - `css_changeteam` - будет в меню
-- Интерпретатор из флагов Iks_Admin в CSS
+- Конвертация из флагов Iks_Admin в CSS +
 
 
 
