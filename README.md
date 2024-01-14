@@ -1,4 +1,62 @@
-## Iks_Admin
+## Iks_Admin EN
+Support the author: <a href="https://www.donationalerts.com/r/iks__">DonationAlerts</a> <br>
+Admin system with menu <br>
+![image](imgs/image.png)
+
+## Commands
+
+- `css_admin` - Open the admin menu | Flags are not needed
+- 
+- `css_ban uid/sid duration reason <name if needed>` - Ban a player | Flag: `b`
+- `css_banip uid/sid/ip(offline only) duration reason <name if needed>` - Ban the game by IP | Flag: `b`
+- `css_unban sid/ip` - Unban the player | Flag: `u`
+- `css_mute uid/sid duration reason <name if needed>` - Mute a player | Flag: `m`
+- `css_unmute uid/sid duration reason <name if needed>` - Unmute a player | Flag: `m`
+- `css_gag uid/sid duration reason <name if needed>` - Give a gag to the player | Flag: `g`
+- `css_ungag uid/sid` - Ungag the player | Flag: `g`
+- 
+- `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id>` - Add admin | Flag: `z`
+- `group_id` = -1 => No group
+- `immunity` = -1 => Immunity from group
+- `flags` = "" => Flags from group
+- `server_id` = "" => All servers
+- `endtime` - Time to end admin | `It is not functioning`
+- 
+- `css_admindel <sid>` - Delete admin | Flag: `z`
+- `css_reload_admins` - Reload admins | Flag: `z`
+- `css_reload_admins_cfg` - Reload plugin cfg | Flag: `z`
+
+## Settings
+- Configure the database `cfg`
+- Change the Server Id to the desired one `cfg`
+- Configure the reasons `cfg`
+- Set up translations `lang/en.json`
+- You can convert flags from the plugin to CSSharp flags `cfg - "ConvertedFlags"`
+
+## Flags:
+- `z` - All rights
+- `b` - Ban
+- `k` - Kick
+- `m` - Mute
+- `g` - Gag
+- `u` - Unban
+- `s` - css_slay `In the future..`
+- `t` - switch/change team `In the future..`
+
+## To Do
+- Log to discord
+- `css_slay` - In menu
+- `css_switchteam` - In menu
+- `css_changeteam` - In menu
+- `css_csay uid/@all/@ct/@t time "message"` - Print To Center
+- `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
+- Converting from Iks_Admin flags to CSS +
+- WebSite
+
+
+
+
+## Iks_Admin RU
 Поддержать автора: <a href="https://www.donationalerts.com/r/iks__">DonationAlerts</a> <br>
 Админ система с меню <br>
 ![image](imgs/MenuScreen.png)
@@ -51,6 +109,7 @@
 - `css_csay uid/@all/@ct/@t time "message"` - Print To Center
 - `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
 - Конвертация из флагов Iks_Admin в CSS +
+- Сайт
 
 
 
