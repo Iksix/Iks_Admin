@@ -163,6 +163,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         }, TimerFlags.REPEAT);
     }
 
+    
+
     // COMMANDS
     [ConsoleCommand("css_reload_admins")]
     public void OnReloadAdminsCommand(CCSPlayerController? controller, CommandInfo info)
@@ -275,7 +277,263 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         }
         Console.WriteLine("[Iks_Admin] Admin created!");
     }
+    #region RCON COMMANS
+    [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+    [ConsoleCommand("css_rban", "css_rban <sid> <ip/-(Auto)> <adminsid/CONSOLE> <duration> <reason> <BanType (0 - default / 1 - ip> <name if needed")]
+    public void OnRBanCommand(CCSPlayerController? controller, CommandInfo info)
+    {
+        var args = GetArgsFromCommandLine(info.GetCommandString);
+        string sid = args[1];
+        string ip = args[2];
+        string adminSid = args[3];
+        int duration = Int32.Parse(args[4]);
+        string reason = args[5];
+        int BanType = Int32.Parse(args[6]);
+        string name = "Undefined";
+        string adminName = GetAdminBySid(adminSid) != null ? GetAdminBySid(adminSid).Name : adminSid;
 
+        CCSPlayerController? target = Utilities.GetPlayerFromSteamId(UInt64.Parse(sid));
+        if (args.Count > 7)
+        {
+            name = args[7];
+        } else if (target != null)
+        {
+            name = target.PlayerName;
+        }
+        if (Helper.CanExecute(adminSid, sid, "b" , admins) == false && adminSid != "CONSOLE")
+        {
+            info.ReplyToCommand("[Iks_Admin] Selected Admin can't execute it For target!");
+            return;
+        }
+        if (ip == "-")
+        {
+            ip = "Undefined";
+        }
+        if (target != null)
+        {
+            ip = target.IpAddress;
+        }
+        if (ip == "Undefined" && BanType == 1)
+        {
+            info.ReplyToCommand("[Iks_Admin] Ip is Undefined!");
+            return;
+        }
+
+        BanManager bm = new BanManager(_dbConnectionString);
+        Task.Run(async () => {
+            if (await bm.IsPlayerBannedAsync(sid))
+            {
+                Console.WriteLine("[Iks_Admin] Player Alredy banned");
+                return;
+            }
+            if (BanType == 1)
+            {
+                await bm.BanPlayerIp(name, sid, ip, adminSid, duration, reason);
+            }
+            if (BanType == 0)
+            {
+                await bm.BanPlayer(name, sid, ip, adminSid, duration, reason);
+            }
+            Console.WriteLine("[Iks_Admin] Player banned!");
+
+            Server.NextFrame(() => {
+                PrintBanMessage(name, adminName, duration, reason);
+            });
+        });
+        if (target != null)
+        {
+            NativeAPI.IssueServerCommand($"kickid {target.UserId}");
+        }
+
+        
+    }
+
+    [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+    [ConsoleCommand("css_runban", "css_runban <sid> <adminsid/CONSOLE>")]
+    public void OnRUnBanCommand(CCSPlayerController? controller, CommandInfo info)
+    {
+        var args = GetArgsFromCommandLine(info.GetCommandString);
+        string sid = args[1];
+        string adminSid = args[2];
+        Admin? admin = GetAdminBySid(adminSid);
+
+        if (!Helper.AdminHaveFlag(adminSid, "u", admins))
+        {
+            info.ReplyToCommand("[Iks_Admin] Admin can't execute this command!");
+            return;
+        }
+
+        BanManager bm = new BanManager(_dbConnectionString);
+        BannedPlayer? bannedPlayer = null;
+        Task.Run(async () => {
+            bannedPlayer = await bm.GetPlayerBan(sid);
+            await bm.UnBanPlayer(sid, adminSid);
+            if (bannedPlayer != null && (admin != null || adminSid == "CONSOLE"))
+            {
+                Server.NextFrame(() => {
+                    PrintUnbanMessage(bannedPlayer.Name, admin != null ? admin.Name : adminSid);
+                });
+            }
+        });
+        info.ReplyToCommand("[Iks_Admin] Player Unbanned!");
+    }
+
+    [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+    [ConsoleCommand("css_rgag", "css_rgag <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed")]
+    public void OnRGagCommand(CCSPlayerController? controller, CommandInfo info)
+    {
+        var args = GetArgsFromCommandLine(info.GetCommandString);
+        string sid = args[1];
+        string adminSid = args[2];
+        int duration = Int32.Parse(args[3]);
+        string reason = args[4];
+        string name = "Undefined";
+        string adminName = GetAdminBySid(adminSid) != null ? GetAdminBySid(adminSid).Name : adminSid;
+
+        CCSPlayerController? target = Utilities.GetPlayerFromSteamId(UInt64.Parse(sid));
+        if (args.Count > 5)
+        {
+            name = args[5];
+        } else if (target != null)
+        {
+            name = target.PlayerName;
+        }
+        if (Helper.CanExecute(adminSid, sid, "g" , admins) == false && adminSid != "CONSOLE")
+        {
+            info.ReplyToCommand("[Iks_Admin] Selected Admin can't execute it For target!");
+            return;
+        }
+
+        BanManager bm = new BanManager(_dbConnectionString);
+        var sids = GetListSids();
+        Task.Run(async () => {
+            if (await bm.IsPlayerGaggedAsync(sid))
+            {
+                Console.WriteLine("[Iks_Admin] Player Alredy gagged");
+                return;
+            }
+            await bm.GagPlayer(name, sid, adminSid, duration, reason);
+            Console.WriteLine("[Iks_Admin] Player gagged!");
+            await SetGaggedPlayers(sids);
+            Server.NextFrame(() => {
+                UpdateChatColorsGagged();
+                PrintGagMessage(name, adminName, duration, reason);
+            });
+        });
+
+    }
+
+    [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+    [ConsoleCommand("css_rungag", "css_rungag <sid> <adminsid/CONSOLE>")]
+    public void OnRUnGagCommand(CCSPlayerController? controller, CommandInfo info)
+    {
+        var args = GetArgsFromCommandLine(info.GetCommandString);
+        string sid = args[1];
+        string adminSid = args[2];
+        Admin? admin = GetAdminBySid(adminSid);
+
+        if (!Helper.AdminHaveFlag(adminSid, "g", admins) && adminSid != "CONSOLE")
+        {
+            info.ReplyToCommand("[Iks_Admin] Admin can't execute this command!");
+            return;
+        }
+
+        BanManager bm = new BanManager(_dbConnectionString);
+        BannedPlayer? bannedPlayer = null;
+        var sids = GetListSids();
+        Task.Run(async () => {
+            bannedPlayer = await bm.GetPlayerGag(sid);
+            await bm.UnGagPlayer(sid, adminSid);
+            await SetGaggedPlayers(sids);
+            if (bannedPlayer != null && (admin != null || adminSid == "CONSOLE"))
+            {
+                Server.NextFrame(() => {
+                    PrintUnGagMessage(bannedPlayer.Name, admin != null ? admin.Name : adminSid);
+                    
+                });
+            }
+        });
+        UpdateChatColorsGagged();
+
+        info.ReplyToCommand("[Iks_Admin] Player Ungaged!");
+    }
+    
+    [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+    [ConsoleCommand("css_rmute", "css_rmute <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed")]
+    public void OnRMuteCommand(CCSPlayerController? controller, CommandInfo info)
+    {
+        var args = GetArgsFromCommandLine(info.GetCommandString);
+        string sid = args[1];
+        string adminSid = args[2];
+        int duration = Int32.Parse(args[3]);
+        string reason = args[4];
+        string name = "Undefined";
+        string adminName = GetAdminBySid(adminSid) != null ? GetAdminBySid(adminSid).Name : adminSid;
+
+        CCSPlayerController? target = Utilities.GetPlayerFromSteamId(UInt64.Parse(sid));
+        if (args.Count > 5)
+        {
+            name = args[5];
+        } else if (target != null)
+        {
+            name = target.PlayerName;
+        }
+        if (Helper.CanExecute(adminSid, sid, "m" , admins) == false && adminSid != "CONSOLE")
+        {
+            info.ReplyToCommand("[Iks_Admin] Selected Admin can't execute it For target!");
+            return;
+        }
+
+        BanManager bm = new BanManager(_dbConnectionString);
+        var sids = GetListSids();
+        Task.Run(async () => {
+            if (await bm.IsPlayerMutedAsync(sid))
+            {
+                Console.WriteLine("[Iks_Admin] Player Alredy muted!");
+                return;
+            }
+            await bm.MutePlayer(name, sid, adminSid, duration, reason);
+            Console.WriteLine("[Iks_Admin] Player muted!");
+            await SetMutedPlayers(sids);
+            Server.NextFrame(() => {
+                PrintMuteMessage(name, adminName, duration, reason);
+            });
+        });
+
+    }
+
+    [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+    [ConsoleCommand("css_runmute", "css_runmute <sid> <adminsid/CONSOLE>")]
+    public void OnRUnMuteCommand(CCSPlayerController? controller, CommandInfo info)
+    {
+        var args = GetArgsFromCommandLine(info.GetCommandString);
+        string sid = args[1];
+        string adminSid = args[2];
+        Admin? admin = GetAdminBySid(adminSid);
+
+        if (!Helper.AdminHaveFlag(adminSid, "m", admins) && adminSid != "CONSOLE")
+        {
+            info.ReplyToCommand("[Iks_Admin] Admin can't execute this command!");
+            return;
+        }
+
+        BanManager bm = new BanManager(_dbConnectionString);
+        BannedPlayer? bannedPlayer = null;
+        var sids = GetListSids();
+        Task.Run(async () => {
+            bannedPlayer = await bm.GetPlayerMute(sid);
+            await bm.UnMutePlayer(sid, adminSid);
+            await SetMutedPlayers(sids);
+            if (bannedPlayer != null && (admin != null || adminSid == "CONSOLE"))
+            {
+                Server.NextFrame(() => {
+                    PrintUnMuteMessage(bannedPlayer.Name, admin != null ? admin.Name : adminSid);
+                });
+            }
+        });
+        info.ReplyToCommand("[Iks_Admin] Player Unmuted!");
+    }
+    #endregion
     [ConsoleCommand("css_admindel", "css_admindel <sid>")]
     public void OnAdminDelCommand(CCSPlayerController? controller, CommandInfo info)
     {
@@ -1324,6 +1582,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 muted.Add(sid);
             }
         }
+        UpdateChatColorsGagged();
 
         GaggedSids = muted;
     }
