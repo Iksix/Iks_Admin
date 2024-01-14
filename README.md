@@ -25,6 +25,15 @@ Admin system with menu <br>
 - `css_admindel <sid>` - Delete admin | Flag: `z`
 - `css_reload_admins` - Reload admins | Flag: `z`
 - `css_reload_admins_cfg` - Reload plugin cfg | Flag: `z`
+## Rcon comands
+- `css_rban <sid> <ip/-(Auto)> <adminsid/CONSOLE> <duration> <reason> <BanType (0 - default / 1 - ip> <name if needed>`
+- `css_runban <sid> <adminsid/CONSOLE>`
+-
+- `css_rgag <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed>`
+- `css_rungag <sid> <adminsid/CONSOLE>`
+-
+- `css_rmute <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed`
+- `css_runmute <sid> <adminsid/CONSOLE>`
 
 ## Settings
 - Configure the database `cfg`
@@ -83,6 +92,16 @@ Admin system with menu <br>
 - `css_admindel <sid>` - Удалить админа | Флаг: `z`
 - `css_reload_admins` - Перезагрузить админов | Флаг: `z`
 - `css_reload_admins_cfg` - Перезагрузить конфиг | Флаг: `z`
+## Ркон команды
+- `css_rban <sid> <ip/-(Auto)> <adminsid/CONSOLE> <duration> <reason> <BanType (0 - default / 1 - ip> <name if needed>`
+- `css_runban <sid> <adminsid/CONSOLE>`
+-
+- `css_rgag <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed>`
+- `css_rungag <sid> <adminsid/CONSOLE>`
+-
+- `css_rmute <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed`
+- `css_runmute <sid> <adminsid/CONSOLE>`
+- Команда проеряет может ли админ выполнить её
 
 ## Настройка
 - Настройте базу данных `cfg`
