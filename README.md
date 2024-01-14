@@ -43,7 +43,7 @@ Admin system with menu <br>
 - `s` - css_slay `In the future..`
 - `t` - switch/change team `In the future..`
 
-## Plans
+## To Do
 - Log to discord
 - `css_slay` - In menu
 - `css_switchteam` - In menu
