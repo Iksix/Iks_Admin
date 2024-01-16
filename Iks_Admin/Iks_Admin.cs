@@ -7,6 +7,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Config;
 using CounterStrikeSharp.API.Modules.Entities;
+using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
@@ -57,7 +58,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                               + ";port=" + config.Port + ";User Id=" + config.Login + ";password=" + config.Password;
         
         string sql =
-            "CREATE TABLE IF NOT EXISTS `iks_admins` ( `id` INT NOT NULL AUTO_INCREMENT , `sid` VARCHAR(32) NOT NULL , `name` VARCHAR(32) NOT NULL , `flags` VARCHAR(32) NOT NULL , `immunity` INT NOT NULL, `group_id` INT NOT NULL DEFAULT '-1' ,`end` INT NOT NULL , `server_id` VARCHAR(64) NOT NULL , PRIMARY KEY (`id`), UNIQUE (`sid`), UNIQUE (`name`)) ENGINE = InnoDB;";
+            "CREATE TABLE IF NOT EXISTS `iks_admins` ( `id` INT NOT NULL AUTO_INCREMENT , `sid` VARCHAR(32) NOT NULL , `name` VARCHAR(32) NOT NULL , `flags` VARCHAR(32) NOT NULL , `immunity` INT NOT NULL, `group_id` INT NOT NULL DEFAULT '-1' ,`end` INT NOT NULL , `server_id` VARCHAR(64) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;";
         try
         {
             using (var connection = new MySqlConnection(_dbConnectionString))
@@ -190,6 +191,61 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         }
         ReloadAdmins(controller.SteamID.ToString()); 
         
+    }
+
+    [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+    [ConsoleCommand("css_reload_infractions", "css_reload_infractions {sid}")]
+    public void OnReloadInfractionsCommand(CCSPlayerController? controller, CommandInfo info)
+    {
+        BanManager bm = new BanManager(_dbConnectionString);
+        string identity = info.GetArg(1);
+        if (identity.Length < 17) return;
+        var sids = GetListSids();
+        Task.Run(async () => {
+            if (await bm.IsPlayerBannedAsync(identity))
+            {
+                Server.NextFrame(() => {
+                    KickBySid(identity);
+                });
+            }
+            if (await bm.IsPlayerGaggedAsync(identity))
+            {
+                if (!GaggedSids.Contains(identity))
+                {
+                    GaggedSids.Add(identity);
+                }
+            } else {
+                if (GaggedSids.Contains(identity))
+                {
+                    GaggedSids.Remove(identity);
+                }
+            }
+
+            if (await bm.IsPlayerMutedAsync(identity))
+            {
+                if (!MutedSids.Contains(identity))
+                {
+                    MutedSids.Add(identity);
+                }
+            } else {
+                if (MutedSids.Contains(identity))
+                {
+                    MutedSids.Remove(identity);
+                }
+            }
+            Server.NextFrame(() => {
+                SetMuteForPlayers();
+                UpdateChatColorsGagged();
+            });
+        });
+    }
+
+    public void KickBySid(string sid)
+    {
+        if (Utilities.GetPlayerFromSteamId(UInt64.Parse(sid)) != null)
+        {
+            NativeAPI.IssueServerCommand($"kickid {Utilities.GetPlayerFromSteamId(UInt64.Parse(sid)).UserId}");
+        }
     }
 
     [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
@@ -534,6 +590,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         info.ReplyToCommand("[Iks_Admin] Player Unmuted!");
     }
     #endregion
+    
+    
     [ConsoleCommand("css_admindel", "css_admindel <sid>")]
     public void OnAdminDelCommand(CCSPlayerController? controller, CommandInfo info)
     {
@@ -634,10 +692,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         }
         string name = target.PlayerName;
         string sid = target.SteamID.ToString();
+        string ip = "Undefined";
+        if (target != null)
+        {
+            ip = target.IpAddress;
+        }
         Task.Run(async () => {
             if (Config.LogToVk)
             {
-                await vkLog.sendPunMessage(Config.LogToVkMessages["KickMessage"], name, sid, "Undefined", AdminName, reason, 0);
+                await vkLog.sendPunMessage(Config.LogToVkMessages["KickMessage"], name, sid, ip, AdminName, reason, 0, false);
             }
         });
         
@@ -656,6 +719,11 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
 
         string identity = info.GetArg(1);
+        if (identity.Trim() == "")
+        {
+            return;
+        }
+
         int time = Int32.Parse(info.GetArg(2));
         string reason = args[3];
         string name = "Undefined";
@@ -728,6 +796,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             
         }
 
+        bool offline = target == null;
+
         Task.Run(async () =>
         {
             if (await bm.IsPlayerBannedAsync(identity)) // Проверка есть ли бан по identity
@@ -749,7 +819,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             await bm.BanPlayer(name, sid, ip, AdminSid, time, reason);  
             if (Config.LogToVk)
             {
-                await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, time);
+                await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, time, offline);
             }
             Server.NextFrame(() => {
                 PrintBanMessage(name, AdminName, time, reason);
@@ -854,7 +924,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             }
             
         }
-
+        bool offline = target == null;
         Task.Run(async () =>
         {
             if (await bm.IsPlayerBannedAsync(identity)) // Проверка есть ли бан по identity
@@ -876,7 +946,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             await bm.BanPlayerIp(name, sid, ip, AdminSid, time, reason);
             if (Config.LogToVk)
             {
-                await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, time);
+                await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, time, offline);
             }
             Server.NextFrame(() => {
                 PrintBanMessage(name, AdminName, time, reason);
@@ -897,6 +967,10 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         string arg = info.GetArg(1);
         string adminSid = "Console";
         string adminName = "Console";
+        if (arg.Trim() == "")
+        {
+            return;
+        }
 
         Admin? admin = null; // Тут мы получаем админа если команда от игрока
 
@@ -928,7 +1002,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             await bm.UnBanPlayer(arg, adminSid);
             if (Config.LogToVk)
             {
-                await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnBanMessage"], bannedPlayer.Name, arg, adminName);
+                await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnBanMessage"], bannedPlayer.Name, arg, adminName, bannedPlayer.Ip, true);
             }
         });
 
@@ -975,6 +1049,10 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         List<string> args = GetArgsFromCommandLine(info.GetCommandString);
 
         string identity = info.GetArg(1);
+        if (identity.Trim() == "")
+        {
+            return;
+        }
         int time = Int32.Parse(info.GetArg(2));
         string reason = args[3];
         string name = "Undefined";
@@ -1045,6 +1123,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             
         }
         List<string> sids = GetListSids();
+        bool offline = target == null;
+        string ip = "Undefined";
+        if (target != null)
+        {
+            ip = target.IpAddress;
+        }
         Task.Run(async () =>
         {
             if (await bm.IsPlayerGaggedAsync(sid)) // Проверка есть ли бан по identity
@@ -1054,12 +1138,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 });
                 return;
             }
-
+            
             //Если всё нормально то баним
             await bm.GagPlayer(name, sid, AdminSid, time, reason);
             if (Config.LogToVk)
             {
-                await vkLog.sendPunMessage(Config.LogToVkMessages["GagMessage"], name, sid, "Undefined", AdminName, reason, time);
+                await vkLog.sendPunMessage(Config.LogToVkMessages["GagMessage"], name, sid, ip, AdminName, reason, time, offline);
             }
             await SetGaggedPlayers(sids);
 
@@ -1075,52 +1159,70 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public void OnUnGagCommand(CCSPlayerController? controller, CommandInfo info)
     {
         BanManager bm = new BanManager(_dbConnectionString);
-        string arg = info.GetArg(1);
-        string adminSid = "Console";
-        string adminName = "Console";
-
-        CCSPlayerController? target = GetPlayerFromSidOrUid(arg);
-
-        if (target != null)
+        var args = GetArgsFromCommandLine(info.GetCommandString);
+        string identity = args[1];
+        if (identity.Trim() == "")
         {
-            arg = target.SteamID.ToString();
+            return;
         }
 
+        string sid = identity;
 
-        Admin? admin = null; // Тут мы получаем админа если команда от игрока
+        CCSPlayerController? target = GetPlayerFromSidOrUid(identity);
+
+        if (target != null) sid = target.SteamID.ToString();
+
+        if (sid.Length != 17)
+        {
+            Console.WriteLine($"[Iks_Admin] sid.Length = {sid.Length}!");
+            return;
+        }
+
+        Admin? admin = null;
         if (controller != null)
         {
             admin = GetAdminBySid(controller.SteamID.ToString());
-            if (admin == null)
-            {
-                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
-                return;
-            }
-            if (!admin.Flags.Contains("z") && !admin.Flags.Contains("g"))
-            {
-                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
-                return;
-            }
-            adminSid = controller.SteamID.ToString();
-            adminName = controller.PlayerName;
         }
-        List<string> sids = GetListSids();
-        BannedPlayer? bannedPlayer = null;
+        if (admin != null)
+        {
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "g", admins))
+            {
+                controller.PrintToChat($" {Localizer["PlguinTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
+
+        var sids = GetListSids();
+
+        BannedPlayer? mutedPlayer = null;
+
+        string adminName = controller == null ? "CONSOLE" : controller.PlayerName;
+        string adminSid = controller == null ? "CONSOLE" : controller.SteamID.ToString();
+
+        string ip = target != null ? target.IpAddress : "Undefined";
+        bool offline = target == null;
+
         Task.Run(async () => {
-            bannedPlayer = await bm.GetPlayerGag(arg);
-            Console.WriteLine("[Iks_Admin] player ungaged");
-            await bm.UnGagPlayer(arg, adminSid);
-            if (bannedPlayer != null)
+            if (await bm.IsPlayerGaggedAsync(sid) == false)
+            {
+                Console.WriteLine("[Iks_Admin] Player not gaged!");
+                return;
+            }
+            mutedPlayer = await bm.GetPlayerGag(sid);
+            if (mutedPlayer != null)
             {
                 Server.NextFrame(() => {
-                    PrintUnGagMessage(bannedPlayer.Name, adminName);
+                    PrintUnGagMessage(mutedPlayer.Name, adminName);
                 });
             }
+
+            await bm.UnGagPlayer(sid, adminSid);
+            Console.WriteLine("[Iks_Admin] Player ungaged!");
             if (Config.LogToVk)
             {
-                await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnGagMessage"], bannedPlayer.Name, arg, adminName);
+                await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnGagMessage"], mutedPlayer.Name, sid, adminName, ip, offline);
             }
-            await SetGaggedPlayers(sids);
+            await SetMutedPlayers(sids);
         });
 
 
@@ -1165,6 +1267,10 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         List<string> args = GetArgsFromCommandLine(info.GetCommandString);
 
         string identity = info.GetArg(1);
+        if (identity.Trim() == "")
+        {
+            return;
+        }
         int time = Int32.Parse(info.GetArg(2));
         string reason = args[3];
         string name = "Undefined";
@@ -1235,7 +1341,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             
         }
         List<string> sids = GetListSids();
-
+        bool offline = target == null;
+        string ip = "Undefined";
+        if (target != null)
+        {
+            ip = target.IpAddress;
+        }
         Task.Run(async () =>
         {
             if (await bm.IsPlayerMutedAsync(sid)) // Проверка есть ли бан по identity
@@ -1250,7 +1361,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             await bm.MutePlayer(name, sid, AdminSid, time, reason);
             if (Config.LogToVk)
             {
-                await vkLog.sendPunMessage(Config.LogToVkMessages["MuteMessage"], name, sid, "Undefined", AdminName, reason, time);
+                await vkLog.sendPunMessage(Config.LogToVkMessages["MuteMessage"], name, sid, ip, AdminName, reason, time, offline);
             }
             await SetMutedPlayers(sids);
             Server.NextFrame(() => {
@@ -1264,55 +1375,69 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public void OnUnMuteCommand(CCSPlayerController? controller, CommandInfo info)
     {
         BanManager bm = new BanManager(_dbConnectionString);
-        string arg = info.GetArg(1);
-        string adminSid = "Console";
-        string adminName = "Console";
-
-        CCSPlayerController? target = GetPlayerFromSidOrUid(arg);
-
-        if (target != null)
+        var args = GetArgsFromCommandLine(info.GetCommandString);
+        string identity = args[1];
+        if (identity.Trim() == "")
         {
-            arg = target.SteamID.ToString();
+            return;
         }
 
+        string sid = identity;
 
-        Admin? admin = null; // Тут мы получаем админа если команда от игрока
+        CCSPlayerController? target = GetPlayerFromSidOrUid(identity);
 
+        if (target != null) sid = target.SteamID.ToString();
+
+        if (sid.Length != 17)
+        {
+            Console.WriteLine($"[Iks_Admin] sid.Length = {sid.Length}!");
+            return;
+        }
+
+        Admin? admin = null;
         if (controller != null)
         {
             admin = GetAdminBySid(controller.SteamID.ToString());
-            if (admin == null)
-            {
-                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
-                return;
-            }
-            if (!admin.Flags.Contains("z") && !admin.Flags.Contains("g"))
-            {
-                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
-                return;
-            }
-            adminSid = controller.SteamID.ToString();
-            adminName = controller.PlayerName;
         }
-        List<string> sids = GetListSids();
-        BannedPlayer? bannedPlayer = null;
+        if (admin != null)
+        {
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "m", admins))
+            {
+                controller.PrintToChat($" {Localizer["PlguinTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
+
+        var sids = GetListSids();
+
+        BannedPlayer? mutedPlayer = null;
+
+        string adminName = controller == null ? "CONSOLE" : controller.PlayerName;
+        string adminSid = controller == null ? "CONSOLE" : controller.SteamID.ToString();
+        string ip = target != null ? target.IpAddress : "Undefined";
+        bool offline = target == null;
         Task.Run(async () => {
-            bannedPlayer = await bm.GetPlayerMute(arg);
-            if (bannedPlayer != null)
+            if (await bm.IsPlayerMutedAsync(sid) == false)
+            {
+                Console.WriteLine("[Iks_Admin] Player not muted!");
+                return;
+            }
+            mutedPlayer = await bm.GetPlayerMute(sid);
+            if (mutedPlayer != null)
             {
                 Server.NextFrame(() => {
-                    PrintUnMuteMessage(bannedPlayer.Name, adminName);
+                    PrintUnMuteMessage(mutedPlayer.Name, adminName);
                 });
             }
-            Console.WriteLine("[Iks_Admin] player unmuted");
-            await bm.UnMutePlayer(arg, adminSid);
+
+            await bm.UnMutePlayer(sid, adminSid);
+            Console.WriteLine("[Iks_Admin] Player unmuted!");
             if (Config.LogToVk)
             {
-                await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnMuteMessage"], bannedPlayer.Name, arg, adminName);
+                await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnMuteMessage"], mutedPlayer.Name, sid, adminName, ip, offline);
             }
             await SetMutedPlayers(sids);
         });
-
 
     }
    
@@ -1367,29 +1492,34 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public CCSPlayerController? GetPlayerFromSidOrUid(string arg)
     {
         CCSPlayerController? player = null;
-
-        int uid;
-        if (Int32.TryParse(arg, out uid))
+        if (arg.Length < 17)
         {
-            foreach (var p in Utilities.GetPlayers())
+            int uid;
+            if (Int32.TryParse(arg, out uid))
             {
-                if (!p.IsBot && p.IsValid)
+                foreach (var p in Utilities.GetPlayers())
                 {
-                    if (p.UserId == uid)
+                    if (!p.IsBot && p.IsValid)
                     {
-                        return p;
+                        if (p.UserId == uid)
+                        {
+                            return p;
+                        }
                     }
                 }
             }
         }
-
-        ulong sid;
-        if (UInt64.TryParse(arg, out sid))
+        
+        if (arg.Length == 17)
         {
-            if (Utilities.GetPlayerFromSteamId(sid) != null)
+            ulong sid;
+            if (UInt64.TryParse(arg, out sid))
             {
-                player = Utilities.GetPlayerFromSteamId(sid);
-                return player;
+                if (Utilities.GetPlayerFromSteamId(sid) != null)
+                {
+                    player = Utilities.GetPlayerFromSteamId(sid);
+                    return player;
+                }
             }
         }
         
@@ -1582,7 +1712,10 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 muted.Add(sid);
             }
         }
-        UpdateChatColorsGagged();
+        Server.NextFrame(() =>
+        {
+            UpdateChatColorsGagged();
+        });
 
         GaggedSids = muted;
     }
@@ -1714,12 +1847,13 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         NativeAPI.IssueServerCommand($"kickid {ActionTargets[i].UserId}");
                         string name = ActionTargets[i].PlayerName;
                         string sid = ActionTargets[i].SteamID.ToString();
+                        string ip = ActionTargets[i].IpAddress;
                         string adminName = OwnReasonsTyper[i].PlayerName;
                         string reason = info.GetArg(1).Replace("!", "");
                         Task.Run(async () => {
                             if (Config.LogToVk)
                             {
-                                await vkLog.sendPunMessage(Config.LogToVkMessages["KickMessage"], name, sid, "Undefined", adminName, reason, 0);
+                                await vkLog.sendPunMessage(Config.LogToVkMessages["KickMessage"], name, sid, ip, adminName, reason, 0, false);
                             }
                         });
                         foreach (var str in Localizer["KickMessage"].ToString().Split("\n"))
@@ -1770,7 +1904,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
                         name = ActionTargets[i].PlayerName;
                         sid = ActionTargets[i].SteamID.ToString();
-                        string? ip = ActionTargets[i].IpAddress;
+                        ip = ActionTargets[i].IpAddress;
                         string adminsid = OwnReasonsTyper[i].SteamID.ToString();
                         int Btime = ActionTimes[i];
                         reason = info.GetArg(1);
@@ -1780,7 +1914,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             await bm.BanPlayer(name, sid, ip, adminsid, Btime, reason);
                             if (Config.LogToVk)
                             {
-                                await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, Btime);
+                                await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, Btime, false);
                             }
                         });
                         NativeAPI.IssueServerCommand($"kickid {ActionTargets[i].UserId}");
@@ -1822,7 +1956,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             await bm.BanPlayer(name, sid, ip, adminsid, Btime, reason);
                             if (Config.LogToVk)
                             {
-                                await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, Btime);
+                                await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, Btime, true);
                             }   
                         });
 
@@ -1868,6 +2002,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         Btime = ActionTimes[i];
                         reason = info.GetArg(1).Replace("!", "");
                         AdminName =  OwnReasonsTyper[i].PlayerName;
+                        ip = ActionTargets[i].IpAddress;
 
                         
                 
@@ -1876,7 +2011,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             await bm.MutePlayer(name, sid, adminsid, Btime, reason);
                             if (Config.LogToVk)
                             {
-                                await vkLog.sendPunMessage(Config.LogToVkMessages["MuteMessage"], name, sid, "Undefined", AdminName, reason, Btime);
+                                await vkLog.sendPunMessage(Config.LogToVkMessages["MuteMessage"], name, sid, ip, AdminName, reason, Btime, false);
                             }
                             List<string> sids = GetListSids();
                             Task.Run(async () =>
@@ -1933,7 +2068,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             await bm.GagPlayer(name, sid, adminsid, Btime, reason);
                             if (Config.LogToVk)
                             {
-                                await vkLog.sendPunMessage(Config.LogToVkMessages["GagMessage"], name, sid, ip, AdminName, reason, Btime);
+                                await vkLog.sendPunMessage(Config.LogToVkMessages["GagMessage"], name, sid, ip, AdminName, reason, Btime, false);
                             }
                         });
                         List<string> gagCheckSids = GetListSids(); 
@@ -2134,6 +2269,13 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 ChatMenus.OpenMenu(controller, UnMuteGagMenuConstructor(controller));
             });
         }
+        if (admin.Flags.Contains("z") || admin.Flags.Contains("s") || admin.Flags.Contains("t"))
+        {
+            menu.AddMenuOption($" {Localizer["Options.Others"]}", (controller, option) =>
+            {
+                ChatMenus.OpenMenu(controller, OthersMenuConstructor(controller));
+            });
+        }
         
         return menu;
     }
@@ -2180,10 +2322,11 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         string name = player.PlayerName;
                         string sid = player.SteamID.ToString();
                         string adminName = playerController.PlayerName;
+                        string ip = player.IpAddress;
                         Task.Run(async () => {
                             if (Config.LogToVk)
                             {
-                                await vkLog.sendPunMessage(Config.LogToVkMessages["KickMessage"], name, sid, "Undefined", adminName, reason, 0);
+                                await vkLog.sendPunMessage(Config.LogToVkMessages["KickMessage"], name, sid, ip, adminName, reason, 0, false);
                             }
                         });
                         foreach (var str in Localizer["KickMessage"].ToString().Split("\n"))
@@ -2303,10 +2446,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         {
             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
         });
-        DisconnectedPlayers.Reverse();
-        var DisconnectedPlayersReversed = DisconnectedPlayers;
-        DisconnectedPlayers.Reverse();
-        foreach (var player in DisconnectedPlayersReversed)
+
+        foreach (var player in DisconnectedPlayers)
         {
             if (GetAdminBySid(player.Sid) != null)
             {
@@ -2382,7 +2523,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                     await bm.BanPlayer(player.Name, player.Sid, player.Ip, adminsid, time, reason);
                     if (Config.LogToVk)
                     {
-                        await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], player.Name, player.Sid, player.Ip, AdminName, reason, time);
+                        await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], player.Name, player.Sid, player.Ip, AdminName, reason, time, true);
                     }
                 });
 
@@ -2405,7 +2546,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 if (OwnReasonsTyper[i] == null)
                 {
                     OwnReasonsTyper[i] = playerController;
-                    Actions[i] = "banReason";
+                    Actions[i] = "banReasonDisconnected";
                     ActionTargetsDisconnected[i] = player;
                     ActionTimes[i] = time;
                     return;
@@ -2441,7 +2582,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                     await bm.BanPlayer(name, sid, ip, adminsid, time, reason);
                     if (Config.LogToVk)
                     {
-                        await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, time);
+                        await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, time, false);
                     }
                 });
                 NativeAPI.IssueServerCommand($"kickid {player.UserId}");
@@ -2587,13 +2728,13 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 string sid = player.SteamID.ToString();
                 string adminsid = ccsPlayerController.SteamID.ToString();
                 string AdminName =  ccsPlayerController.PlayerName;
-                
+                string ip = player.IpAddress;
                 Task.Run(async () =>
                 {
                     await bm.MutePlayer(name, sid, adminsid, time, reason);
                     if (Config.LogToVk)
                     {
-                        await vkLog.sendPunMessage(Config.LogToVkMessages["MuteMessage"], name, sid, "Undefined", AdminName, reason, time);
+                        await vkLog.sendPunMessage(Config.LogToVkMessages["MuteMessage"], name, sid, ip, AdminName, reason, time, false);
                     }
                     List<string> sids = GetListSids();
                     Task.Run(async () =>
@@ -2752,7 +2893,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                     await bm.GagPlayer(name, sid, adminsid, time, reason);
                     if (Config.LogToVk)
                     {
-                        await vkLog.sendPunMessage(Config.LogToVkMessages["GagMessage"], name, sid, ip, AdminName, reason, time);
+                        await vkLog.sendPunMessage(Config.LogToVkMessages["GagMessage"], name, sid, ip, AdminName, reason, time, false);
                     }
                 });
                 List<string> gagCheckSids = GetListSids(); 
@@ -2861,7 +3002,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             await bm.UnGagPlayer(player.SteamID.ToString(), playerController.SteamID.ToString());
                             if (Config.LogToVk)
                             {
-                                await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnGagMessage"], player.PlayerName, player.SteamID.ToString(), adminName);
+                                await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnGagMessage"], player.PlayerName, player.SteamID.ToString(), adminName, player.IpAddress, false);
                             }
                         });
                         List<string> gagCheckSids = GetListSids(); 
@@ -2892,7 +3033,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             await bm.UnMutePlayer(player.SteamID.ToString(), playerController.SteamID.ToString());
                             if (Config.LogToVk)
                             {
-                                await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnMuteMessage"], player.PlayerName, player.SteamID.ToString(), adminName);
+                                await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnMuteMessage"], player.PlayerName, player.SteamID.ToString(), adminName, player.IpAddress, false);
                             }
 
                             List<string> sids = GetListSids();
@@ -2918,6 +3059,79 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         return UnMenu;
     }
+
+
+    public ChatMenu OthersMenuConstructor(CCSPlayerController activator)
+    {
+        ChatMenu OthersMenu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.Others"]}");
+
+        if (Helper.AdminHaveFlag(activator.SteamID.ToString(), "s", admins))
+        {
+            OthersMenu.AddMenuOption(Localizer["Options.Slay"], (controller, info) => {
+                ChatMenus.OpenMenu(activator, SlayMenu(activator));
+                return;
+            });
+        }
+        
+
+        return OthersMenu;
+    }
+
+
+    public ChatMenu SlayMenu(CCSPlayerController activator)
+    {
+        ChatMenu SlayMenu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.Others"]}");
+        
+        foreach(var p in Utilities.GetPlayers())
+        {
+            if (!p.IsBot || !p.IsValid) continue;
+            if (!Helper.AdminHaveBiggerImmunity(activator.SteamID.ToString(), p.SteamID.ToString(), admins) && p != activator)
+            {
+                continue;
+            }
+
+            SlayMenu.AddMenuOption(p.PlayerName, (controller, info) => {
+                SlayFunc(p, activator);
+            });
+
+        }
+        
+
+        return SlayMenu;
+    }
+    public void SlayFunc(CCSPlayerController target, CCSPlayerController? admin)
+    {
+        string adminName = "CONSOLE";
+        if (admin != null)
+        {
+            adminName = admin.PlayerName;
+        }
+        target.CommitSuicide(true, true);
+
+        Server.PrintToChatAll($" {Localizer["PluginTag"]} {Localizer["SlayMessage"].ToString()
+        .Replace("{name}", target.PlayerName)
+        .Replace("{admin}", adminName)}");
+
+        string name = target.PlayerName;
+        string sid = target.SteamID.ToString();
+        string ip = target.IpAddress;
+
+        if (Config.LogToVk)
+        {
+            Task.Run(async () => {
+                await vkLog.sendPunMessage(Config.LogToDiscordMessages["SlayMessage"], name, sid, ip, adminName, "Undefined", 0, false);
+            });
+        }
+
+        Console.Write($"[Iks_Admin] {target.PlayerName} was killed by the admin {adminName}");
+    }
+
+
+
+
+
+
+
     #endregion
 
 }

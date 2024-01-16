@@ -19,6 +19,11 @@
 	"Options.OwnReason" : "Your reason",
 	"Options.OwnTime" : "Its time",
 	"Options.Infinity" : "{purple}Forever",
+
+	"Options.Others" : "{darkblue}Other",
+	"Options.Slay" : "{darkblue}Slay",
+	"Options.SwitchTeam" : "{darkblue}SwitchTeam",
+	"Options.ChangeTeam" : "{darkblue}ChangeTeam",
 	
 	"OwnReasonMessage" : "Enter the reason in {darkblue}chat!",
 	"OwnTimeMessage" : "Enter time in {darkblue}chat {white} in minutes!",
@@ -57,7 +62,9 @@
 	"AdminAlredyExist" : "{red}Admin with this SteamId64 has already!",
 	"AdminNotExist" : "{red}Admin with this SteamId64 dosent exist!",
 	"AdminCreated" : "{darkblue}Admin created!",
-	"AdminDeleted" : "{red}Admin deleted!"
+	"AdminDeleted" : "{red}Admin deleted!",
+
+	"SlayMessage" : "{red}{name} {white}was killed by the admin {darkblue}{admin}"
 
 
 }

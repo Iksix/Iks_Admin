@@ -58,6 +58,18 @@ class Helper{
         }
         return true;
     }
+    public static bool AdminHaveBiggerImmunity(string? sid, string targetSid, List<Admin> admins)
+    {
+        Admin? admin = GetAdminBySid(sid, admins);
+        Admin? target = GetAdminBySid(targetSid, admins);
+        if (admin == null) return false;
+        if (target == null) return true;
+        if (admin.Immunity <= target.Immunity)
+        {
+            return false;
+        }
+        return true;
+    }
     public static Admin? GetAdminBySid(string sid,  List<Admin> admins)
     {
         foreach (var admin in admins)

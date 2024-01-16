@@ -168,7 +168,7 @@ public class BanManager
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
-                string sql = $"UPDATE iks_mutes SET `Unbanned` = 1, `UnbannedBy` = '{adminsid}' WHERE sid='{sid}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND `Unbanned` = 0";
+                string sql = $"UPDATE iks_mutes SET Unbanned=1, UnbannedBy='{adminsid}' WHERE sid='{sid}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND `Unbanned` = 0";
                 var comm = new MySqlCommand(sql, connection);
                 
                 await comm.ExecuteNonQueryAsync();

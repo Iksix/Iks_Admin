@@ -46,13 +46,16 @@ public class PluginConfig : BasePluginConfig
     
     [JsonPropertyName("LogToVkMessages")] public Dictionary<string, string> LogToVkMessages { get; set; } = new Dictionary<string, string>()
     {
-        {"BanMessage" , "Админ {admin} забанил игрока {name} на {duration}! \n Причина: {reason}"},
+        {"BanMessage" , "Админ {admin} забанил игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"UnBanMessage", "Админ {admin} разбанил игрока {name}!"},
-        {"MuteMessage", "Админ {admin} замутил игрока {name} на {duration}! \n Причина: {reason}"},
+        {"MuteMessage", "Админ {admin} замутил игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"UnMuteMessage", "Админ {admin} размутил игрока {name}!"},
-        {"GagMessage", "Админ {admin} гагнул игрока {name} на {duration}! \n Причина: {reason}"},
+        {"GagMessage", "Админ {admin} гагнул игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"UnGagMessage", "Админ {admin} снял гаг игрока {name}!"},
-        {"KickMessage", "Админ {admin} кикнул игрока {name}! \n Причина: {reason}"}
+        {"KickMessage", "Админ {admin} кикнул игрока {name}! \n Причина: {reason}"},
+
+        {"OfflineOption", "Offline"},
+        {"OnlineOption", "Online"}
     };
 
     [JsonPropertyName("LogToDiscord")] public bool LogToDiscord { get; set; } = false;
