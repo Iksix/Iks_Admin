@@ -56,6 +56,7 @@ Admin system with menu <br>
 - Log to discord
 - `css_slay` - In menu
 - `css_switchteam` - In menu
+- `css_rename <uid> <name>` - In menu
 - `css_changeteam` - In menu
 - `css_csay uid/@all/@ct/@t time "message"` - Print To Center
 - `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
@@ -125,6 +126,7 @@ Admin system with menu <br>
 - `css_slay` - будет в меню
 - `css_switchteam` - будет в меню
 - `css_changeteam` - будет в меню
+- `css_rename <uid> <name>` - In menu
 - `css_csay uid/@all/@ct/@t time "message"` - Print To Center
 - `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
 - Конвертация из флагов Iks_Admin в CSS +
