@@ -14,6 +14,7 @@ Admin system with menu <br>
 - `css_unmute uid/sid duration reason <name if needed>` - Unmute a player | Flag: `m`
 - `css_gag uid/sid duration reason <name if needed>` - Give a gag to the player | Flag: `g`
 - `css_ungag uid/sid` - Ungag the player | Flag: `g`
+- `css_kick uid/sid reason` - Kick the player | Flag: `k`
 - 
 - `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id>` - Add admin | Flag: `z`
 - `group_id` = -1 => No group
@@ -56,6 +57,7 @@ Admin system with menu <br>
 - Log to discord
 - `css_slay` - In menu
 - `css_switchteam` - In menu
+- `css_rename <uid> <name>` - In menu
 - `css_changeteam` - In menu
 - `css_csay uid/@all/@ct/@t time "message"` - Print To Center
 - `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
@@ -81,6 +83,7 @@ Admin system with menu <br>
 - `css_unmute uid/sid duration reason <name if needed>` - Размутить игрока | Флаг: `m`
 - `css_gag uid/sid duration reason <name if needed>` - Дать гаг игроку | Флаг: `g`
 - `css_ungag uid/sid` - Снять гаг с игрока | Флаг: `g`
+- `css_kick uid/sid reason` - Кикнуть игрока | Флаг: `k`
 - 
 - `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id>` - Добавить админа | Флаг: `z`
 - `group_id` = -1 => Нет группы
@@ -125,6 +128,7 @@ Admin system with menu <br>
 - `css_slay` - будет в меню
 - `css_switchteam` - будет в меню
 - `css_changeteam` - будет в меню
+- `css_rename <uid> <name>` - In menu
 - `css_csay uid/@all/@ct/@t time "message"` - Print To Center
 - `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
 - Конвертация из флагов Iks_Admin в CSS +
