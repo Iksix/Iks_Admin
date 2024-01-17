@@ -14,6 +14,7 @@ Admin system with menu <br>
 - `css_unmute uid/sid duration reason <name if needed>` - Unmute a player | Flag: `m`
 - `css_gag uid/sid duration reason <name if needed>` - Give a gag to the player | Flag: `g`
 - `css_ungag uid/sid` - Ungag the player | Flag: `g`
+- `css_kick uid/sid reason` - Kick the player | Flag: `k`
 - 
 - `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id>` - Add admin | Flag: `z`
 - `group_id` = -1 => No group
@@ -82,6 +83,7 @@ Admin system with menu <br>
 - `css_unmute uid/sid duration reason <name if needed>` - Размутить игрока | Флаг: `m`
 - `css_gag uid/sid duration reason <name if needed>` - Дать гаг игроку | Флаг: `g`
 - `css_ungag uid/sid` - Снять гаг с игрока | Флаг: `g`
+- `css_kick uid/sid reason` - Кикнуть игрока | Флаг: `k`
 - 
 - `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id>` - Добавить админа | Флаг: `z`
 - `group_id` = -1 => Нет группы
