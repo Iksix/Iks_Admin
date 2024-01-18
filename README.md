@@ -7,14 +7,14 @@ Admin system with menu <br>
 
 - `css_admin` - Open the admin menu | Flags are not needed
 - 
-- `css_ban uid/sid duration reason <name if needed>` - Ban a player | Flag: `b`
-- `css_banip uid/sid/ip(offline only) duration reason <name if needed>` - Ban the game by IP | Flag: `b`
+- `css_ban #uid/#sid/username duration reason <name if needed>` - Ban a player | Flag: `b`
+- `css_banip #uid/#sid/username/ip(offline only) duration reason <name if needed>` - Ban the game by IP | Flag: `b`
 - `css_unban sid/ip` - Unban the player | Flag: `u`
-- `css_mute uid/sid duration reason <name if needed>` - Mute a player | Flag: `m`
-- `css_unmute uid/sid duration reason <name if needed>` - Unmute a player | Flag: `m`
-- `css_gag uid/sid duration reason <name if needed>` - Give a gag to the player | Flag: `g`
-- `css_ungag uid/sid` - Ungag the player | Flag: `g`
-- `css_kick uid/sid reason` - Kick the player | Flag: `k`
+- `css_mute #uid/#sid/username duration reason <name if needed>` - Mute a player | Flag: `m`
+- `css_unmute #uid/#sid/username duration reason <name if needed>` - Unmute a player | Flag: `m`
+- `css_gag #uid/#sid/username duration reason <name if needed>` - Give a gag to the player | Flag: `g`
+- `css_ungag #uid/#sid/username` - Ungag the player | Flag: `g`
+- `css_kick #uid/#sid/username reason` - Kick the player | Flag: `k`
 - 
 - `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id>` - Add admin | Flag: `z`
 - `group_id` = -1 => No group
@@ -76,14 +76,14 @@ Admin system with menu <br>
 
 - `css_admin` - Открыть админ меню | Флаги не нужны
 - 
-- `css_ban uid/sid duration reason <name if needed>` - Забанить игрока | Флаг: `b`
-- `css_banip uid/sid/ip(offline only) duration reason <name if needed>` - Забанить игрока по айпи | Флаг: `b`
+- `css_ban #uid/#sid/username duration reason <name if needed>` - Забанить игрока | Флаг: `b`
+- `css_banip #uid/#sid/username/ip(offline only) duration reason <name if needed>` - Забанить игрока по айпи | Флаг: `b`
 - `css_unban sid/ip` - Разбанить игрока | Флаг: `u`
-- `css_mute uid/sid duration reason <name if needed>` - Замутить игрока | Флаг: `m`
-- `css_unmute uid/sid duration reason <name if needed>` - Размутить игрока | Флаг: `m`
-- `css_gag uid/sid duration reason <name if needed>` - Дать гаг игроку | Флаг: `g`
-- `css_ungag uid/sid` - Снять гаг с игрока | Флаг: `g`
-- `css_kick uid/sid reason` - Кикнуть игрока | Флаг: `k`
+- `css_mute #uid/#sid/username duration reason <name if needed>` - Замутить игрока | Флаг: `m`
+- `css_unmute #uid/#sid/username duration reason <name if needed>` - Размутить игрока | Флаг: `m`
+- `css_gag #uid/#sid/username duration reason <name if needed>` - Дать гаг игроку | Флаг: `g`
+- `css_ungag #uid/#sid/username` - Снять гаг с игрока | Флаг: `g`
+- `css_kick #uid/#sid/username reason` - Кикнуть игрока | Флаг: `k`
 - 
 - `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id>` - Добавить админа | Флаг: `z`
 - `group_id` = -1 => Нет группы
