@@ -61,6 +61,7 @@ Admin system with menu <br>
 - `css_changeteam` - In menu
 - `css_csay uid/@all/@ct/@t time "message"` - Print To Center
 - `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
+- Commands for open menus
 - Converting from Iks_Admin flags to CSS +
 - WebSite
 
@@ -132,6 +133,7 @@ Admin system with menu <br>
 - `css_csay uid/@all/@ct/@t time "message"` - Print To Center
 - `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
 - Конвертация из флагов Iks_Admin в CSS +
+- Комманды для открытия меню
 - Сайт
 
 
