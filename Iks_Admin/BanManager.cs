@@ -15,11 +15,12 @@ public class BanManager
 
     #region Tasks
 
-    
 
-    
-    public async Task BanPlayer(string name, string sid, string ip, string adminsid, int time, string reason)
+
+
+    public async Task BanPlayer(string name, string sid, string ip, string adminsid, int time, string reason, PluginConfig? Config)
     {
+        sid = sid.Replace("#", "");
         if (ip.Split(":").Length > 0)
             ip = ip.Split(":")[0];
         try
@@ -27,9 +28,19 @@ public class BanManager
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
-                string sql = $"INSERT INTO iks_bans (`name`, `sid`, `ip`, `adminsid`, `created`, `time`, `end`, `reason`) VALUES ('{name}', '{sid}', '{ip}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time*60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time*60}', '{reason}')";
+                string sql = $"INSERT INTO iks_bans (`name`, `sid`, `ip`, `adminsid`, `created`, `time`, `end`, `reason`) VALUES ('{name}', '{sid}', '{ip}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time * 60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time * 60}', '{reason}')";
+
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"INSERT INTO iks_bans (`name`, `sid`, `ip`, `adminsid`, `created`, `time`, `end`, `reason`, `server_id`) VALUES ('{name}', '{sid}', '{ip}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time * 60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time * 60}', '{reason}', '{Config.ServerId}')";
+                    }
+                }
+
+
                 var comm = new MySqlCommand(sql, connection);
-                
+
                 await comm.ExecuteNonQueryAsync();
             }
         }
@@ -39,22 +50,31 @@ public class BanManager
         }
     }
 
-    public async Task BanPlayerIp(string name, string sid, string ip, string adminsid, int time, string reason)
+    public async Task BanPlayerIp(string name, string sid, string ip, string adminsid, int time, string reason, PluginConfig? Config)
     {
         if (ip.Split(":").Length > 0)
         {
-            Console.WriteLine("Ip Checked");
             ip = ip.Split(":")[0];
         }
-            
+
         try
         {
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
-                string sql = $"INSERT INTO iks_bans (`name`, `sid`, `ip`, `adminsid`, `created`, `time`, `end`, `reason`, `BanType`) VALUES ('{name}', '{sid}', '{ip}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time*60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time*60}', '{reason}', 1)";
+                string sql = $"INSERT INTO iks_bans (`name`, `sid`, `ip`, `adminsid`, `created`, `time`, `end`, `reason`, `BanType`) VALUES ('{name}', '{sid}', '{ip}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time * 60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time * 60}', '{reason}', 1)";
+
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"INSERT INTO iks_bans (`name`, `sid`, `ip`, `adminsid`, `created`, `time`, `end`, `reason`, `BanType`, `server_id`) VALUES ('{name}', '{sid}', '{ip}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time * 60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time * 60}', '{reason}', 1, '{Config.ServerId}')";
+                    }
+                }
+
+
                 var comm = new MySqlCommand(sql, connection);
-                
+
                 await comm.ExecuteNonQueryAsync();
             }
         }
@@ -63,8 +83,8 @@ public class BanManager
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
     }
-    
-    public async Task rBanPlayer(string name, string sid, string ip, string adminsid, int time, string reason, int BanType)
+
+    public async Task rBanPlayer(string name, string sid, string ip, string adminsid, int time, string reason, int BanType, PluginConfig? Config)
     {
         if (ip == "-")
         {
@@ -75,9 +95,18 @@ public class BanManager
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
-                string sql = $"INSERT INTO iks_bans (`name`, `sid`, `ip`, `adminsid`, `created`, `time`, `end`, `reason`, `BanType`) VALUES ('{name}', '{sid}', '{ip}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time*60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time*60}', '{reason}', '{BanType}')";
+                string sql = $"INSERT INTO iks_bans (`name`, `sid`, `ip`, `adminsid`, `created`, `time`, `end`, `reason`, `BanType`) VALUES ('{name}', '{sid}', '{ip}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time * 60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time * 60}', '{reason}', '{BanType}')";
+
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"INSERT INTO iks_bans (`name`, `sid`, `ip`, `adminsid`, `created`, `time`, `end`, `reason`, `BanType`, `server_id`) VALUES ('{name}', '{sid}', '{ip}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time * 60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time * 60}', '{reason}', '{BanType}', '{Config.ServerId}')";
+                    }
+                }
+
                 var comm = new MySqlCommand(sql, connection);
-                
+
                 await comm.ExecuteNonQueryAsync();
             }
         }
@@ -86,8 +115,9 @@ public class BanManager
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
     }
-    public async Task UnBanPlayer(string arg, string adminsid)
+    public async Task UnBanPlayer(string arg, string adminsid, PluginConfig? Config)
     {
+        arg = arg.Replace("#", "");
         if (arg == null || arg.ToLower() == "undefined")
         {
             return;
@@ -98,8 +128,15 @@ public class BanManager
             {
                 connection.Open();
                 string sql = $"UPDATE iks_bans SET `Unbanned` = 1, `UnbannedBy` = '{adminsid}' WHERE sid='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND `Unbanned` = 0";
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"UPDATE iks_bans SET `Unbanned` = 1, `UnbannedBy` = '{adminsid}' WHERE sid='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND `Unbanned` = 0 AND `server_id`='{Config.ServerId}'";
+                    }
+                }
                 var comm = new MySqlCommand(sql, connection);
-                
+
                 await comm.ExecuteNonQueryAsync();
             }
         }
@@ -113,45 +150,15 @@ public class BanManager
             {
                 connection.Open();
                 string sql = $"UPDATE iks_bans SET `Unbanned` = 1, `UnbannedBy` = '{adminsid}' WHERE ip='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned = 0 AND BanType=1";
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"UPDATE iks_bans SET `Unbanned` = 1, `UnbannedBy` = '{adminsid}' WHERE ip='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned = 0 AND BanType=1 AND `server_id`='{Config.ServerId}'";
+                    }
+                }
                 var comm = new MySqlCommand(sql, connection);
-                
-                await comm.ExecuteNonQueryAsync();
-            }
-        }
-        catch (MySqlException ex)
-        {
-            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
-        }
-    }
-    
-    public async Task MutePlayer(string name, string sid, string adminsid, int time, string reason)
-    {
-        try
-        {
-            using (var connection = new MySqlConnection(_dbConnectionString))
-            {
-                connection.Open();
-                string sql = $"INSERT INTO iks_mutes (`name`, `sid`, `adminsid`, `created`, `time`, `end`, `reason`) VALUES ('{name}', '{sid}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time*60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time*60}', '{reason}')";
-                var comm = new MySqlCommand(sql, connection);
-                
-                await comm.ExecuteNonQueryAsync();
-            }
-        }
-        catch (MySqlException ex)
-        {
-            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
-        }
-    }
-    public async Task GagPlayer(string name, string sid, string adminsid, int time, string reason)
-    {
-        try
-        {
-            using (var connection = new MySqlConnection(_dbConnectionString))
-            {
-                connection.Open();
-                string sql = $"INSERT INTO iks_gags (`name`, `sid`, `adminsid`, `created`, `time`, `end`, `reason`) VALUES ('{name}', '{sid}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time*60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time*60}', '{reason}')";
-                var comm = new MySqlCommand(sql, connection);
-                
+
                 await comm.ExecuteNonQueryAsync();
             }
         }
@@ -161,16 +168,83 @@ public class BanManager
         }
     }
 
-    public async Task UnMutePlayer(string sid, string adminsid)
+    public async Task MutePlayer(string name, string sid, string adminsid, int time, string reason, PluginConfig Config)
     {
+        sid = sid.Replace("#", "");
+        try
+        {
+            using (var connection = new MySqlConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string sql = $"INSERT INTO iks_mutes (`name`, `sid`, `adminsid`, `created`, `time`, `end`, `reason`) VALUES ('{name}', '{sid}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time * 60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time * 60}', '{reason}')";
+
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"INSERT INTO iks_mutes (`name`, `sid`, `adminsid`, `created`, `time`, `end`, `reason`, `server_id`) VALUES ('{name}', '{sid}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time * 60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time * 60}', '{reason}', '{Config.ServerId}')";
+                    }
+                }
+
+                var comm = new MySqlCommand(sql, connection);
+
+                await comm.ExecuteNonQueryAsync();
+            }
+        }
+        catch (MySqlException ex)
+        {
+            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
+        }
+    }
+    public async Task GagPlayer(string name, string sid, string adminsid, int time, string reason, PluginConfig? Config)
+    {
+        sid = sid.Replace("#", "");
+        try
+        {
+            using (var connection = new MySqlConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string sql = $"INSERT INTO iks_gags (`name`, `sid`, `adminsid`, `created`, `time`, `end`, `reason`) VALUES ('{name}', '{sid}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time * 60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time * 60}', '{reason}')";
+
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"INSERT INTO iks_gags (`name`, `sid`, `adminsid`, `created`, `time`, `end`, `reason`, `server_id`) VALUES ('{name}', '{sid}', '{adminsid}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}', '{time * 60}', '{DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time * 60}', '{reason}', '{Config.ServerId}')";
+                    }
+                }
+
+                var comm = new MySqlCommand(sql, connection);
+
+                await comm.ExecuteNonQueryAsync();
+            }
+        }
+        catch (MySqlException ex)
+        {
+            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
+        }
+    }
+
+    public async Task UnMutePlayer(string sid, string adminsid, PluginConfig Config)
+    {
+        sid = sid.Replace("#", "");
         try
         {
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
                 string sql = $"UPDATE iks_mutes SET Unbanned=1, UnbannedBy='{adminsid}' WHERE sid='{sid}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND `Unbanned` = 0";
+
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"UPDATE iks_mutes SET Unbanned=1, UnbannedBy='{adminsid}' WHERE sid='{sid}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND `Unbanned` = 0 AND `server_id` = '{Config.ServerId}'";
+                    }
+                }
+
                 var comm = new MySqlCommand(sql, connection);
-                
+
                 await comm.ExecuteNonQueryAsync();
             }
         }
@@ -179,17 +253,27 @@ public class BanManager
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
     }
-    
-    public async Task UnGagPlayer(string sid, string adminsid)
+
+    public async Task UnGagPlayer(string sid, string adminsid, PluginConfig Config)
     {
+        sid = sid.Replace("#", "");
         try
         {
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
                 string sql = $"UPDATE iks_gags SET `Unbanned` = 1, `UnbannedBy` = '{adminsid}' WHERE sid='{sid}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND `Unbanned` = 0";
+
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"UPDATE iks_gags SET Unbanned=1, UnbannedBy='{adminsid}' WHERE sid='{sid}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND `Unbanned` = 0 AND `server_id` = '{Config.ServerId}'";
+                    }
+                }
+
                 var comm = new MySqlCommand(sql, connection);
-                
+
                 await comm.ExecuteNonQueryAsync();
             }
         }
@@ -198,36 +282,12 @@ public class BanManager
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
     }
-    
+
     #endregion
 
     #region Checks
-    
-    public bool IsPlayerBanned(string sid)
-    {
-        try
-        {
-            using (var connection = new MySqlConnection(_dbConnectionString))
-            {
-                connection.Open();
-                string sql = $"SELECT * FROM iks_bans WHERE sid='{sid}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
-                var comm = new MySqlCommand(sql, connection);
-                if (comm.ExecuteScalar() != null)
-                {
-                    Console.WriteLine("Player is banned");
-                    return true;
-                }
-            }
-        }
-        catch (MySqlException ex)
-        {
-            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
-        }
-        
-        return false;
-    }
-    
-    public async Task<bool> IsPlayerBannedAsync(string? arg)
+
+    public async Task<bool> IsPlayerBannedAsync(string? arg, PluginConfig? Config)
     {
         if (arg == null || arg.ToLower() == "undefined")
         {
@@ -235,7 +295,6 @@ public class BanManager
         }
         if (arg.Split(":").Length > 0)
         {
-            Console.WriteLine("Ip Checked");
             arg = arg.Split(":")[0];
         }
         try
@@ -244,10 +303,18 @@ public class BanManager
             {
                 connection.Open();
                 string sql = $"SELECT * FROM iks_bans WHERE sid='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
+
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"SELECT * FROM iks_bans WHERE sid='{arg}' AND server_id='{Config.ServerId}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0 AND server_id='{Config.ServerId}'";
+                    }
+                }
+
                 var comm = new MySqlCommand(sql, connection);
                 if (await comm.ExecuteScalarAsync() != null)
                 {
-                    Console.WriteLine("Player is banned");
                     return true;
                 }
             }
@@ -262,10 +329,17 @@ public class BanManager
             {
                 connection.Open();
                 string sql = $"SELECT * FROM iks_bans WHERE ip='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
+
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"SELECT * FROM iks_bans WHERE ip='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0 AND server_id='{Config.ServerId}'";
+                    }
+                }
                 var comm = new MySqlCommand(sql, connection);
                 if (await comm.ExecuteScalarAsync() != null)
                 {
-                    Console.WriteLine("Player is banned");
                     return true;
                 }
             }
@@ -274,11 +348,11 @@ public class BanManager
         {
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
-        
+
         return false;
     }
-    
-    public async Task<bool> IsPlayerMutedAsync(string sid)
+
+    public async Task<bool> IsPlayerMutedAsync(string sid, PluginConfig Config)
     {
         try
         {
@@ -286,12 +360,20 @@ public class BanManager
             {
                 connection.Open();
                 string sql = $"SELECT * FROM iks_mutes WHERE sid='{sid}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
+
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"SELECT * FROM iks_mutes WHERE sid='{sid}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0 AND server_id='{Config.ServerId}'";
+                    }
+                }
+
                 var comm = new MySqlCommand(sql, connection);
                 if (await comm.ExecuteScalarAsync() == null)
                 {
                     return false;
                 }
-                Console.WriteLine("Player is muted");
                 return true;
             }
         }
@@ -299,10 +381,10 @@ public class BanManager
         {
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
-        
+
         return false;
     }
-    public async Task<bool> IsPlayerGaggedAsync(string sid)
+    public async Task<bool> IsPlayerGaggedAsync(string sid, PluginConfig Config)
     {
         try
         {
@@ -310,6 +392,15 @@ public class BanManager
             {
                 connection.Open();
                 string sql = $"SELECT * FROM iks_gags WHERE sid='{sid}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
+
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"SELECT * FROM iks_gags WHERE sid='{sid}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0 AND server_id='{Config.ServerId}'";
+                    }
+                }
+
                 var comm = new MySqlCommand(sql, connection);
                 if (await comm.ExecuteScalarAsync() == null)
                 {
@@ -322,10 +413,10 @@ public class BanManager
         {
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
-        
+
         return false;
     }
-    
+
     #endregion
 
     public async Task<List<BannedPlayer>> GetPlayerBansBySid(string sid)
@@ -342,16 +433,16 @@ public class BanManager
                 MySqlDataReader reader = await comm.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    string Name = reader.GetString("name") ;
-                    string Sid = reader.GetString("sid") ;
-                    string Ip = reader.GetString("ip") ;
-                    string BanReason = reader.GetString("reason") ;
-                    int BanCreated = reader.GetInt32("created") ;
-                    int BanTime = reader.GetInt32("time") ;
-                    int BanTimeEnd = reader.GetInt32("end") ;
-                    string AdminSid = reader.GetString("adminsid") ;
-                    int BanType = reader.GetInt32("BanType") ;
-                    int Unbanned = reader.GetInt32("Unbanned") ;
+                    string Name = reader.GetString("name");
+                    string Sid = reader.GetString("sid");
+                    string Ip = reader.GetString("ip");
+                    string BanReason = reader.GetString("reason");
+                    int BanCreated = reader.GetInt32("created");
+                    int BanTime = reader.GetInt32("time");
+                    int BanTimeEnd = reader.GetInt32("end");
+                    string AdminSid = reader.GetString("adminsid");
+                    int BanType = reader.GetInt32("BanType");
+                    int Unbanned = reader.GetInt32("Unbanned");
                     string UnbannedBy = "";
                     if (Unbanned == 1)
                     {
@@ -370,7 +461,7 @@ public class BanManager
                         UnbannedBy,
                         BanType
                         );
-                    
+
                     playerBans.Add(player);
                 }
             }
@@ -379,14 +470,14 @@ public class BanManager
         {
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
-        
+
         return playerBans;
     }
 
 
     #region Gets
 
-    public async Task<BannedPlayer?> GetPlayerBan(string? arg)
+    public async Task<BannedPlayer?> GetPlayerBan(string? arg, PluginConfig? Config)
     {
         if (arg == null || arg.ToLower() == "undefined")
         {
@@ -398,20 +489,29 @@ public class BanManager
             {
                 connection.Open();
                 string sql = $"SELECT * FROM iks_bans WHERE sid='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
+
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"SELECT * FROM iks_bans WHERE sid='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0 AND server_id='{Config.ServerId}'";
+                    }
+                }
+
                 var comm = new MySqlCommand(sql, connection);
                 MySqlDataReader reader = await comm.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    string Name = reader.GetString("name") ;
-                    string Sid = reader.GetString("sid") ;
-                    string Ip = reader.GetString("ip") ;
-                    string BanReason = reader.GetString("reason") ;
-                    int BanCreated = reader.GetInt32("created") ;
-                    int BanTime = reader.GetInt32("time") ;
-                    int BanTimeEnd = reader.GetInt32("end") ;
-                    string AdminSid = reader.GetString("adminsid") ;
-                    int Unbanned = reader.GetInt32("Unbanned") ;
-                    int BanType = reader.GetInt32("BanType") ;
+                    string Name = reader.GetString("name");
+                    string Sid = reader.GetString("sid");
+                    string Ip = reader.GetString("ip");
+                    string BanReason = reader.GetString("reason");
+                    int BanCreated = reader.GetInt32("created");
+                    int BanTime = reader.GetInt32("time");
+                    int BanTimeEnd = reader.GetInt32("end");
+                    string AdminSid = reader.GetString("adminsid");
+                    int Unbanned = reader.GetInt32("Unbanned");
+                    int BanType = reader.GetInt32("BanType");
                     string UnbannedBy = "";
                     if (Unbanned == 1)
                     {
@@ -431,7 +531,7 @@ public class BanManager
                         BanType
                         );
 
-                    
+
                     return player;
                 }
             }
@@ -450,16 +550,16 @@ public class BanManager
                 MySqlDataReader reader = await comm.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    string Name = reader.GetString("name") ;
-                    string Sid = reader.GetString("sid") ;
-                    string Ip = reader.GetString("ip") ;
-                    string BanReason = reader.GetString("reason") ;
-                    int BanCreated = reader.GetInt32("created") ;
-                    int BanTime = reader.GetInt32("time") ;
-                    int BanTimeEnd = reader.GetInt32("end") ;
-                    string AdminSid = reader.GetString("adminsid") ;
-                    int Unbanned = reader.GetInt32("Unbanned") ;
-                    int BanType = reader.GetInt32("BanType") ;
+                    string Name = reader.GetString("name");
+                    string Sid = reader.GetString("sid");
+                    string Ip = reader.GetString("ip");
+                    string BanReason = reader.GetString("reason");
+                    int BanCreated = reader.GetInt32("created");
+                    int BanTime = reader.GetInt32("time");
+                    int BanTimeEnd = reader.GetInt32("end");
+                    string AdminSid = reader.GetString("adminsid");
+                    int Unbanned = reader.GetInt32("Unbanned");
+                    int BanType = reader.GetInt32("BanType");
                     string UnbannedBy = "";
                     if (Unbanned == 1)
                     {
@@ -478,7 +578,7 @@ public class BanManager
                         UnbannedBy,
                         BanType
                         );
-                    
+
                     return player;
                 }
             }
@@ -487,11 +587,11 @@ public class BanManager
         {
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
-        
+
         return null;
     }
 
-    public async Task<BannedPlayer?> GetPlayerGag(string? arg)
+    public async Task<BannedPlayer?> GetPlayerGag(string? arg, PluginConfig? Config)
     {
         if (arg == null || arg.ToLower() == "undefined")
         {
@@ -503,19 +603,28 @@ public class BanManager
             {
                 connection.Open();
                 string sql = $"SELECT * FROM iks_gags WHERE sid='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
+
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"SELECT * FROM iks_gags WHERE sid='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0 AND server_id='{Config.ServerId}'";
+                    }
+                }
+
                 var comm = new MySqlCommand(sql, connection);
                 MySqlDataReader reader = await comm.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    string Name = reader.GetString("name") ;
-                    string Sid = reader.GetString("sid") ;
+                    string Name = reader.GetString("name");
+                    string Sid = reader.GetString("sid");
                     string Ip = "Undefined";
-                    string BanReason = reader.GetString("reason") ;
-                    int BanCreated = reader.GetInt32("created") ;
-                    int BanTime = reader.GetInt32("time") ;
-                    int BanTimeEnd = reader.GetInt32("end") ;
-                    string AdminSid = reader.GetString("adminsid") ;
-                    int Unbanned = reader.GetInt32("Unbanned") ;
+                    string BanReason = reader.GetString("reason");
+                    int BanCreated = reader.GetInt32("created");
+                    int BanTime = reader.GetInt32("time");
+                    int BanTimeEnd = reader.GetInt32("end");
+                    string AdminSid = reader.GetString("adminsid");
+                    int Unbanned = reader.GetInt32("Unbanned");
                     int BanType = 0;
                     string UnbannedBy = "";
                     if (Unbanned == 1)
@@ -544,11 +653,11 @@ public class BanManager
         {
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
-        
+
         return null;
     }
 
-    public async Task<BannedPlayer?> GetPlayerMute(string? arg)
+    public async Task<BannedPlayer?> GetPlayerMute(string? arg, PluginConfig Config)
     {
         if (arg == null || arg.ToLower() == "undefined")
         {
@@ -560,20 +669,29 @@ public class BanManager
             {
                 connection.Open();
                 string sql = $"SELECT * FROM iks_mutes WHERE sid='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
+
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"SELECT * FROM iks_mutes WHERE sid='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0 AND server_id='{Config.ServerId}'";
+                    }
+                }
+
                 var comm = new MySqlCommand(sql, connection);
                 MySqlDataReader reader = await comm.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    string Name = reader.GetString("name") ;
-                    string Sid = reader.GetString("sid") ;
+                    string Name = reader.GetString("name");
+                    string Sid = reader.GetString("sid");
                     string Ip = "Undefined";
-                    string BanReason = reader.GetString("reason") ;
-                    int BanCreated = reader.GetInt32("created") ;
-                    int BanTime = reader.GetInt32("time") ;
-                    int BanTimeEnd = reader.GetInt32("end") ;
-                    string AdminSid = reader.GetString("adminsid") ;
-                    int Unbanned = reader.GetInt32("Unbanned") ;
-                    int BanType = 0 ;
+                    string BanReason = reader.GetString("reason");
+                    int BanCreated = reader.GetInt32("created");
+                    int BanTime = reader.GetInt32("time");
+                    int BanTimeEnd = reader.GetInt32("end");
+                    string AdminSid = reader.GetString("adminsid");
+                    int Unbanned = reader.GetInt32("Unbanned");
+                    int BanType = 0;
                     string UnbannedBy = "";
                     if (Unbanned == 1)
                     {
@@ -592,7 +710,7 @@ public class BanManager
                         UnbannedBy,
                         BanType
                         );
-                    
+
                     return player;
                 }
             }
@@ -601,7 +719,7 @@ public class BanManager
         {
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
-        
+
         return null;
     }
 

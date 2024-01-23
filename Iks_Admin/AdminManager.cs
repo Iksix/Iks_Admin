@@ -119,17 +119,21 @@ public class AdminManager
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
-                string sql = $"DELETE FROM iks_admins WHERE sid='{sid}' AND end<{ DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+                string sql = $"DELETE FROM iks_admins WHERE sid='{sid}' AND end<{ DateTimeOffset.UtcNow.ToUnixTimeSeconds()} AND end != 0";
                 var comm = new MySqlCommand(sql, connection);
+
                 
-                await comm.ExecuteNonQueryAsync();
+                if (await comm.ExecuteNonQueryAsync() == 1)
+                {
+                    return true;
+                }
             }
         }
         catch (MySqlException ex)
         {
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
-        return true;
+        return false;
     } 
     public async Task<bool> DeleteAdmin(string sid)
     {
