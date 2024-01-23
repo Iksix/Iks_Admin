@@ -7,14 +7,14 @@ Admin system with menu <br>
 
 - `css_admin` - Open the admin menu | Flags are not needed
 - 
-- `css_ban uid/sid duration reason <name if needed>` - Ban a player | Flag: `b`
-- `css_banip uid/sid/ip(offline only) duration reason <name if needed>` - Ban the game by IP | Flag: `b`
+- `css_ban #uid/#sid/username duration reason <name if needed>` - Ban a player | Flag: `b`
+- `css_banip #uid/#sid/username/ip(offline only) duration reason <name if needed>` - Ban the game by IP | Flag: `b`
 - `css_unban sid/ip` - Unban the player | Flag: `u`
-- `css_mute uid/sid duration reason <name if needed>` - Mute a player | Flag: `m`
-- `css_unmute uid/sid duration reason <name if needed>` - Unmute a player | Flag: `m`
-- `css_gag uid/sid duration reason <name if needed>` - Give a gag to the player | Flag: `g`
-- `css_ungag uid/sid` - Ungag the player | Flag: `g`
-- `css_kick uid/sid reason` - Kick the player | Flag: `k`
+- `css_mute #uid/#sid/username duration reason <name if needed>` - Mute a player | Flag: `m`
+- `css_unmute #uid/#sid/username` - Unmute a player | Flag: `m`
+- `css_gag #uid/#sid/username duration reason <name if needed>` - Give a gag to the player | Flag: `g`
+- `css_ungag #uid/#sid/username` - Ungag the player | Flag: `g`
+- `css_kick #uid/#sid/username reason` - Kick the player | Flag: `k`
 - 
 - `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id>` - Add admin | Flag: `z`
 - `group_id` = -1 => No group
@@ -61,6 +61,7 @@ Admin system with menu <br>
 - `css_changeteam` - In menu
 - `css_csay uid/@all/@ct/@t time "message"` - Print To Center
 - `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
+- Commands for open menus
 - Converting from Iks_Admin flags to CSS +
 - WebSite
 
@@ -76,14 +77,14 @@ Admin system with menu <br>
 
 - `css_admin` - Открыть админ меню | Флаги не нужны
 - 
-- `css_ban uid/sid duration reason <name if needed>` - Забанить игрока | Флаг: `b`
-- `css_banip uid/sid/ip(offline only) duration reason <name if needed>` - Забанить игрока по айпи | Флаг: `b`
+- `css_ban #uid/#sid/username duration reason <name if needed>` - Забанить игрока | Флаг: `b`
+- `css_banip #uid/#sid/username/ip(offline only) duration reason <name if needed>` - Забанить игрока по айпи | Флаг: `b`
 - `css_unban sid/ip` - Разбанить игрока | Флаг: `u`
-- `css_mute uid/sid duration reason <name if needed>` - Замутить игрока | Флаг: `m`
-- `css_unmute uid/sid duration reason <name if needed>` - Размутить игрока | Флаг: `m`
-- `css_gag uid/sid duration reason <name if needed>` - Дать гаг игроку | Флаг: `g`
-- `css_ungag uid/sid` - Снять гаг с игрока | Флаг: `g`
-- `css_kick uid/sid reason` - Кикнуть игрока | Флаг: `k`
+- `css_mute #uid/#sid/username duration reason <name if needed>` - Замутить игрока | Флаг: `m`
+- `css_unmute #uid/#sid/username` - Размутить игрока | Флаг: `m`
+- `css_gag #uid/#sid/username duration reason <name if needed>` - Дать гаг игроку | Флаг: `g`
+- `css_ungag #uid/#sid/username` - Снять гаг с игрока | Флаг: `g`
+- `css_kick #uid/#sid/username reason` - Кикнуть игрока | Флаг: `k`
 - 
 - `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id>` - Добавить админа | Флаг: `z`
 - `group_id` = -1 => Нет группы
@@ -132,6 +133,7 @@ Admin system with menu <br>
 - `css_csay uid/@all/@ct/@t time "message"` - Print To Center
 - `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
 - Конвертация из флагов Iks_Admin в CSS +
+- Комманды для открытия меню
 - Сайт
 
 
