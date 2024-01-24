@@ -951,7 +951,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             NativeAPI.IssueServerCommand($"kickid {target.UserId}");
     }
 
-    [ConsoleCommand("css_banip", "css_banip uid/sid/ip(if offline) duration reason <name if needed>")]
+    [ConsoleCommand("css_banip", "css_banip #uid/#sid/name/ip(if offline) duration reason <name if needed>")]
     public void OnBanIpCommand(CCSPlayerController? controller, CommandInfo info)
     {
         BanManager bm = new BanManager(_dbConnectionString);
@@ -1658,7 +1658,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             }
         }
         if (!arg.StartsWith("#"))
-            return Utilities.GetPlayers().FirstOrDefault(u => u.PlayerName == arg);
+            return Utilities.GetPlayers().FirstOrDefault(u => u.PlayerName.Contains(arg));
         return null;
     }
 

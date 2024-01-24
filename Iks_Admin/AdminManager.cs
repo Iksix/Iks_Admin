@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using CounterStrikeSharp.API.Modules.Utils;
 using MySqlConnector;
 
 namespace Iks_Admin;
@@ -11,7 +12,6 @@ public class AdminManager
     {
         _dbConnectionString = dbConnStr;
     } 
-
     public async Task<List<Admin>> GetAllAdmins(string server_id)
     {
         List<Admin> admins = new List<Admin>();
@@ -22,8 +22,7 @@ public class AdminManager
             {
                 connection.Open();
                 string sql = $"SELECT * FROM iks_admins";
-                var comm = new MySqlCommand(sql, connection);
-                
+                var comm = new MySqlCommand(sql, connection);   ChatColors
                 var res = await comm.ExecuteReaderAsync();
                 string name = "";
                 string sid = "";

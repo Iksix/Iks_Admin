@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2e6845fb-320f-415a-8d68-c79bc8f81f35" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Iks_Admin/AdminManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Iks_Admin/AdminManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Iks_Admin/Iks_Admin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Iks_Admin/Iks_Admin.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Iks_Admin/Iks_Admin.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Iks_Admin/Iks_Admin.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Iks_Admin/bin/Debug/net7.0/Iks_Admin.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Iks_Admin/bin/Debug/net7.0/Iks_Admin.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Iks_Admin/bin/Debug/net7.0/Iks_Admin.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Iks_Admin/bin/Debug/net7.0/Iks_Admin.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Iks_Admin/bin/Debug/net7.0/Iks_Admin.rar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Iks_Admin/obj/Debug/net7.0/Iks_Admin.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Iks_Admin/obj/Debug/net7.0/Iks_Admin.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Iks_Admin/obj/Debug/net7.0/Iks_Admin.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Iks_Admin/obj/Debug/net7.0/Iks_Admin.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Iks_Admin/obj/Debug/net7.0/Iks_Admin.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Iks_Admin/obj/Debug/net7.0/Iks_Admin.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Iks_Admin/obj/Debug/net7.0/Iks_Admin.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Iks_Admin/obj/Debug/net7.0/Iks_Admin.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Iks_Admin/obj/Iks_Admin.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/Iks_Admin/obj/Iks_Admin.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Iks_Admin/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/Iks_Admin/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Iks_Admin/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Iks_Admin/obj/project.nuget.cache" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="D:\php-8.1.20-nts-Win32-vs16-x64\php.exe" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 6
+}]]></component>
+  <component name="ProjectId" id="2bMiah66b76S6Yy8dHB6scBc3G6" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "master",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2e6845fb-320f-415a-8d68-c79bc8f81f35" name="Changes" comment="" />
+      <created>1706031416110</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1706031416110</updated>
+      <workItem from="1706031417663" duration="781000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
