@@ -21,7 +21,7 @@ Admin system with menu <br>
 - `immunity` = -1 => Immunity from group
 - `flags` = "" => Flags from group
 - `server_id` = - => All servers
-- `endtime` - Time to end admin | `It is not functioning`
+- `endtime` - Time to end admin 
 - 
 - `css_admindel <sid>` - Delete admin | Flag: `z`
 - `css_reload_admins` - Reload admins | Flag: `z`
@@ -91,7 +91,7 @@ Admin system with menu <br>
 - `immunity` = -1 => Иммунитет из группы
 - `flags` = "" => Флаги из группы
 - `server_id` = - => Все сервера
-- `endtime` - Время до конца админки | `Не функционирует`
+- `endtime` - Время до конца админки
 - 
 - `css_admindel <sid>` - Удалить админа | Флаг: `z`
 - `css_reload_admins` - Перезагрузить админов | Флаг: `z`
