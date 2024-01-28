@@ -16,7 +16,7 @@ Admin system with menu <br>
 - `css_ungag #uid/#sid/username` - Ungag the player | Flag: `g`
 - `css_kick #uid/#sid/username reason` - Kick the player | Flag: `k`
 - 
-- `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id/- (FOR ALL SERVER)>` - Add admin | Flag: `z`
+- `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id/-> (FOR ALL SERVER)>` - Add admin | Flag: `z`
 - `group_id` = -1 => No group
 - `immunity` = -1 => Immunity from group
 - `flags` = - => Flags from group
@@ -86,7 +86,7 @@ Admin system with menu <br>
 - `css_ungag #uid/#sid/username` - Снять гаг с игрока | Флаг: `g`
 - `css_kick #uid/#sid/username reason` - Кикнуть игрока | Флаг: `k`
 - 
-- `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id/- (ДЛЯ ВСЕХ СЕРВЕРОВ)>` - Добавить админа | Флаг: `z`
+- `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id/-> (ДЛЯ ВСЕХ СЕРВЕРОВ)>` - Добавить админа | Флаг: `z`
 - `group_id` = -1 => Нет группы
 - `immunity` = -1 => Иммунитет из группы
 - `flags` = - => Флаги из группы
