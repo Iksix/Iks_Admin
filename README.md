@@ -19,7 +19,7 @@ Admin system with menu <br>
 - `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id/- (FOR ALL SERVER)>` - Add admin | Flag: `z`
 - `group_id` = -1 => No group
 - `immunity` = -1 => Immunity from group
-- `flags` = "" => Flags from group
+- `flags` = - => Flags from group
 - `server_id` = - => All servers
 - `endtime` - Time to end admin 
 - 
@@ -89,7 +89,7 @@ Admin system with menu <br>
 - `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id/- (ДЛЯ ВСЕХ СЕРВЕРОВ)>` - Добавить админа | Флаг: `z`
 - `group_id` = -1 => Нет группы
 - `immunity` = -1 => Иммунитет из группы
-- `flags` = "" => Флаги из группы
+- `flags` = - => Флаги из группы
 - `server_id` = - => Все сервера
 - `endtime` - Время до конца админки
 - 
