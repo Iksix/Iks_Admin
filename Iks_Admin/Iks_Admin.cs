@@ -25,7 +25,7 @@ namespace Iks_Admin;
 public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 {
     public override string ModuleName { get; } = "Iks_Admin";
-    public override string ModuleVersion { get; } = "1.0.0";
+    public override string ModuleVersion { get; } = "1.1.4";
     public override string ModuleAuthor { get; } = "iks";
     private string _dbConnectionString = "";
 
@@ -311,7 +311,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 end = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + (Int32.Parse(args[6]) * 60);
             }
         }
-        if (args.Count > 6)
+        if (args.Count > 7)
         {
             server_id = args[7];
             if (server_id == "-")
@@ -975,11 +975,11 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         }
 
 
-        CCSPlayerController? target = GetPlayerFromSidOrUid(identity); // Проверка есть ли игрок которого банят на сервере
+        CCSPlayerController? target = identity.StartsWith("#") ? null : GetPlayerFromSidOrUid(identity); // Проверка есть ли игрок которого банят на сервере
 
         if (target == null)
         {
-            ip = identity;
+            ip = identity.Replace("#", "");
         }
 
 
@@ -1631,7 +1631,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 int uid;
                 if (Int32.TryParse(arg, out uid))
                 {
-                    foreach (var p in Utilities.GetPlayers())
+                    foreach (var p in Helper.GetOnlinePlayers())
                     {
                         if (!p.IsBot && p.IsValid)
                         {
@@ -1658,7 +1658,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             }
         }
         if (!arg.StartsWith("#"))
-            return Utilities.GetPlayers().FirstOrDefault(u => u.PlayerName.Contains(arg));
+            return Helper.GetOnlinePlayers().FirstOrDefault(u => u.PlayerName.Contains(arg));
         return null;
     }
 
@@ -1788,16 +1788,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         BanManager bm = new BanManager(_dbConnectionString);
 
-        List<string> muted = new List<string>();
-        foreach (var sid in sids)
-        {
-            if (await bm.IsPlayerMutedAsync(sid, Config))
-            {
-                muted.Add(sid);
-            }
-        }
+        MutedSids = await bm.GetMutedPlayers(sids, Config);
 
-        MutedSids = muted;
         Server.NextFrame(() =>
         {
             SetMuteForPlayers();
@@ -1807,7 +1799,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
     public void SetMuteForPlayers()
     {
-        foreach (var p in Utilities.GetPlayers())
+        foreach (var p in Helper.GetOnlinePlayers())
         {
             if (!p.IsBot && p.IsValid)
             {
@@ -1826,7 +1818,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public List<string> GetListSids()
     {
         List<string> sids = new List<string>();
-        foreach (var p in Utilities.GetPlayers())
+        foreach (var p in Helper.GetOnlinePlayers())
         {
             if (!p.IsBot && p.IsValid)
             {
@@ -1840,20 +1832,13 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         BanManager bm = new BanManager(_dbConnectionString);
 
-        List<string> muted = new List<string>();
-        foreach (var sid in sids)
-        {
-            if (await bm.IsPlayerGaggedAsync(sid, Config))
-            {
-                muted.Add(sid);
-            }
-        }
+        GaggedSids = await bm.GetGaggedPlayers(sids, Config);
+
         Server.NextFrame(() =>
         {
             UpdateChatColorsGagged();
         });
 
-        GaggedSids = muted;
     }
     public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
     {
@@ -1988,7 +1973,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 switch (Actions[i])
                 {
                     case "kick":
-                        if (ActionTargets[i].IsValid == false)
+                        if (ActionTargets[i].IsValid == false || ActionTargets[i] == null)
                         {
                             OwnReasonsTyper[i].PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
                             break;
@@ -2015,7 +2000,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         }
                         break;
                     case "banTime":
-                        if (ActionTargets[i].IsValid == false)
+                        if (ActionTargets[i].IsValid == false || ActionTargets[i] == null)
                         {
                             OwnReasonsTyper[i].PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
                             break;
@@ -2031,7 +2016,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         ChatMenus.OpenMenu(OwnReasonsTyper[i], BanMenuReasons);
                         break;
                     case "banTimeDisconnected": // Для вышедших игроков
-                        if (ActionTargets[i].IsValid == false)
+                        if (ActionTargets[i].IsValid == false || ActionTargets[i] == null)
                         {
                             OwnReasonsTyper[i].PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
                             break;
@@ -2048,7 +2033,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         ChatMenus.OpenMenu(OwnReasonsTyper[i], BanMenuReasons);
                         break;
                     case "banReason":
-                        if (ActionTargets[i].IsValid == false)
+                        if (ActionTargets[i].IsValid == false || ActionTargets[i] == null)
                         {
                             OwnReasonsTyper[i].PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
                             break;
@@ -2123,7 +2108,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
                         break;
                     case "muteTime":
-                        if (ActionTargets[i].IsValid == false)
+                        if (ActionTargets[i].IsValid == false || ActionTargets[i] == null)
                         {
                             OwnReasonsTyper[i].PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
                             break;
@@ -2140,7 +2125,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         ChatMenus.OpenMenu(OwnReasonsTyper[i], MuteMenuReasons);
                         break;
                     case "muteReason":
-                        if (ActionTargets[i].IsValid == false)
+                        if (ActionTargets[i].IsValid == false || ActionTargets[i] == null)
                         {
                             OwnReasonsTyper[i].PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
                             break;
@@ -2192,7 +2177,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
                         break;
                     case "gagTime":
-                        if (ActionTargets[i].IsValid == false)
+                        if (ActionTargets[i].IsValid == false || ActionTargets[i] == null)
                         {
                             OwnReasonsTyper[i].PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
                             break;
@@ -2209,7 +2194,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         ChatMenus.OpenMenu(OwnReasonsTyper[i], GagMenuReasons);
                         break;
                     case "gagReason":
-                        if (ActionTargets[i].IsValid == false)
+                        if (ActionTargets[i].IsValid == false || ActionTargets[i] == null)
                         {
                             OwnReasonsTyper[i].PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
                             break;
@@ -2284,7 +2269,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public HookResult OnPlayerConnect(EventPlayerConnectFull @event, GameEventInfo info)
     {
         BanManager bm = new BanManager(_dbConnectionString);
-        if (@event.Userid.IsBot || !@event.Userid.IsValid) return HookResult.Continue;
+        if (@event.Userid.IsBot || !@event.Userid.IsValid || @event.Userid == null) return HookResult.Continue;
         int? uid = @event.Userid.UserId;
         string sid = @event.Userid.SteamID.ToString();
         string ip = @event.Userid.IpAddress;
@@ -2370,14 +2355,14 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [GameEventHandler]
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
-        List<string> gagCheckSids = GetListSids();
+        List<string> sids = GetListSids();
+
         Task.Run(async () =>
         {
-            await SetGaggedPlayers(gagCheckSids);
+            await SetGaggedPlayers(sids);
         });
         Task.Run(async () =>
         {
-            List<string> sids = GetListSids();
             await SetMutedPlayers(sids);
         });
         return HookResult.Continue;
@@ -2467,10 +2452,10 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
         });
 
-        foreach (var player in Utilities.GetPlayers())
+        foreach (var player in Helper.GetOnlinePlayers())
         {
             if (player.IsBot) continue;
-            if (!player.IsValid) continue;
+            if (!player.IsValid || player == null) continue;
             if (player == activator) continue;
             if (GetAdminBySid(player.SteamID.ToString()) != null)
             {
@@ -2548,10 +2533,10 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
         });
 
-        foreach (var player in Utilities.GetPlayers())
+        foreach (var player in Helper.GetOnlinePlayers())
         {
             if (player.IsBot) continue;
-            if (!player.IsValid) continue;
+            if (!player.IsValid || player == null) continue;
             if (player == activator) continue;
             if (GetAdminBySid(player.SteamID.ToString()) != null)
             {
@@ -2731,7 +2716,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             BanMenuReasons.AddMenuOption($"{reason}", (playerController, menuOption) =>
             {
                 BanManager bm = new BanManager(_dbConnectionString);
-                if (player.IsValid == false)
+                if (player.IsValid == false || player == null || player == null)
                 {
                     playerController.PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
                     return;
@@ -2797,10 +2782,10 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
         });
 
-        foreach (var player in Utilities.GetPlayers())
+        foreach (var player in Helper.GetOnlinePlayers())
         {
             if (player.IsBot) continue;
-            if (!player.IsValid) continue;
+            if (!player.IsValid || player == null) continue;
             if (player == activator) continue;
             if (MutedSids.Contains(player.SteamID.ToString()))
             {
@@ -2884,7 +2869,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             MuteMenuReasons.AddMenuOption($"{reason}", (playerController, menuOption) =>
             {
                 BanManager bm = new BanManager(_dbConnectionString);
-                if (player.IsValid == false)
+                if (player.IsValid == false || player == null)
                 {
                     playerController.PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
                     return;
@@ -2959,10 +2944,10 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         });
 
 
-        foreach (var player in Utilities.GetPlayers())
+        foreach (var player in Helper.GetOnlinePlayers())
         {
             if (player.IsBot) continue;
-            if (!player.IsValid) continue;
+            if (!player.IsValid || player == null) continue;
             if (player == activator) continue;
             if (GaggedSids.Contains(player.SteamID.ToString()))
             {
@@ -3046,7 +3031,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             MuteMenuReasons.AddMenuOption($"{reason}", (playerController, menuOption) =>
             {
                 BanManager bm = new BanManager(_dbConnectionString);
-                if (player.IsValid == false)
+                if (player.IsValid == false || player == null)
                 {
                     playerController.PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
                     return;
@@ -3123,10 +3108,10 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             activator.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
         });
 
-        foreach (var player in Utilities.GetPlayers())
+        foreach (var player in Helper.GetOnlinePlayers())
         {
             if (player.IsBot) continue;
-            if (!player.IsValid) continue;
+            if (!player.IsValid || player == null) continue;
             BanManager bm = new BanManager(_dbConnectionString);
             bool playerGagged = false;
             bool playerMuted = false;
@@ -3170,7 +3155,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 {
                     playerMenu.AddMenuOption($" {Localizer["Options.UnGag"]}", (playerController, menuOption) =>
                     {
-                        if (player.IsValid == false)
+                        if (player.IsValid == false || player == null)
                         {
                             playerController.PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
                             return;
@@ -3207,16 +3192,18 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 {
                     playerMenu.AddMenuOption($" {Localizer["Options.UnMute"]}", (playerController, menuOption) =>
                     {
-                        if (player.IsValid == false)
+                        if (player.IsValid == false || player == null)
                         {
                             playerController.PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
                             return;
                         }
                         BanManager bm = new BanManager(_dbConnectionString);
                         string adminName = playerController.PlayerName;
+                        string sid = playerController.SteamID.ToString();
+                        string adminSid = player.SteamID.ToString();
                         Task.Run(async () =>
                         {
-                            await bm.UnMutePlayer(player.SteamID.ToString(), playerController.SteamID.ToString(), Config);
+                            await bm.UnMutePlayer(adminSid, sid, Config);
                             if (Config.LogToVk)
                             {
                                 await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnMuteMessage"], player.PlayerName, player.SteamID.ToString(), adminName, player.IpAddress, false);
@@ -3292,9 +3279,9 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
 
 
-        foreach (var p in Utilities.GetPlayers())
+        foreach (var p in Helper.GetOnlinePlayers())
         {
-            if (p.IsBot || !p.IsValid) continue;
+            if (p.IsBot || !p.IsValid || p == null) continue;
             if (p != activator)
             {
                 if (Helper.AdminHaveBiggerImmunity(activator.SteamID.ToString(), p.SteamID.ToString(), admins))

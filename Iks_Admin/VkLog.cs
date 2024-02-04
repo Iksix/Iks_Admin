@@ -26,6 +26,7 @@ public class VkLog
             AccessToken = Token,
             Settings = Settings.Messages
         };
+        sid = sid.Replace("#", "");
         var api = new VkApi();
         await api.AuthorizeAsync(apiAuthParams);
         string status = offline ? Config.LogToVkMessages["OfflineOption"] : Config.LogToVkMessages["OnlineOption"];
@@ -40,7 +41,7 @@ public class VkLog
                 .Replace("{profile}", $"https://steamcommunity.com/profiles/{sid}")
                 .Replace("{status}", status)
                 .Replace("{server}", Config.ServerName);
-        
+
 
         try
         {
@@ -55,7 +56,7 @@ public class VkLog
         {
             Console.WriteLine($"[Iks_Admin] Vk Message error: {ex.Message}");
         }
-        
+
     }
     public async Task sendUnPunMessage(string message, string name, string sid, string adminName, string ip, bool offline)
     {
@@ -76,8 +77,8 @@ public class VkLog
                 .Replace("{server}", Config.ServerName)
                 .Replace("{status}", status)
                 .Replace("{ip}", ip);
-                
-                
+
+
 
 
         try
@@ -93,6 +94,6 @@ public class VkLog
         {
             Console.WriteLine($"[Iks_Admin] Vk Message error: {ex.Message}");
         }
-        
+
     }
 }

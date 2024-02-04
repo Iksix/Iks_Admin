@@ -9,7 +9,7 @@
       "Iks_Admin/1.0.0": {
         "dependencies": {
           "CounterStrikeSharp.API": "1.0.142",
-          "MySqlConnector": "2.3.3",
+          "MySqlConnector": "2.3.5",
           "VkNet": "1.78.0-alpha-99"
         },
         "runtime": {
@@ -423,14 +423,14 @@
           }
         }
       },
-      "MySqlConnector/2.3.3": {
+      "MySqlConnector/2.3.5": {
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "7.0.1"
         },
         "runtime": {
           "lib/net7.0/MySqlConnector.dll": {
             "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.3.3.0"
+            "fileVersion": "2.3.5.0"
           }
         }
       },
@@ -783,12 +783,12 @@
       "path": "microsoft.extensions.primitives/7.0.0",
       "hashPath": "microsoft.extensions.primitives.7.0.0.nupkg.sha512"
     },
-    "MySqlConnector/2.3.3": {
+    "MySqlConnector/2.3.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-RmzpYUKmvf/hJcAOcymU+cUg6OopL+99q7P27hniyw2Nu907DBLsEZVejpqhBLI2qAYgEk9fKC9yn46vkQEUfQ==",
-      "path": "mysqlconnector/2.3.3",
-      "hashPath": "mysqlconnector.2.3.3.nupkg.sha512"
+      "sha512": "sha512-AmEfUPkFl+Ev6jJ8Dhns3CYHBfD12RHzGYWuLt6DfG6/af6YvOMyPz74ZPPjBYQGRJkumD2Z48Kqm8s5DJuhLA==",
+      "path": "mysqlconnector/2.3.5",
+      "hashPath": "mysqlconnector.2.3.5.nupkg.sha512"
     },
     "Newtonsoft.Json/13.0.3": {
       "type": "package",

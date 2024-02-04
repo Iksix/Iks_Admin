@@ -11,18 +11,18 @@ public class AdminManager
     public AdminManager(string dbConnStr)
     {
         _dbConnectionString = dbConnStr;
-    } 
+    }
     public async Task<List<Admin>> GetAllAdmins(string server_id)
     {
         List<Admin> admins = new List<Admin>();
-        
+
         try
         {
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
                 string sql = $"SELECT * FROM iks_admins";
-                var comm = new MySqlCommand(sql, connection);   ChatColors
+                var comm = new MySqlCommand(sql, connection);
                 var res = await comm.ExecuteReaderAsync();
                 string name = "";
                 string sid = "";
@@ -31,7 +31,7 @@ public class AdminManager
                 int end = 0;
                 int? group_id = null;
                 string group_name = "";
-                string server ="A";
+                string server = "A";
 
                 while (await res.ReadAsync())
                 {
@@ -67,7 +67,7 @@ public class AdminManager
                                     }
                                 }
 
-                                
+
                             }
                         }
                         catch (MySqlException ex)
@@ -82,7 +82,7 @@ public class AdminManager
                     }
                 }
             }
-            
+
         }
         catch (MySqlException ex)
         {
@@ -101,7 +101,7 @@ public class AdminManager
                 connection.Open();
                 string sql = $"INSERT INTO iks_admins (`sid`, `name`, `flags`, `immunity`, `group_id`, `end`, `server_id`) VALUES ('{sid}', '{name}', '{flags}', '{immunity}', '{group_id}', '{end}', '{server_id}')";
                 var comm = new MySqlCommand(sql, connection);
-                
+
                 await comm.ExecuteNonQueryAsync();
             }
         }
@@ -118,10 +118,10 @@ public class AdminManager
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
-                string sql = $"DELETE FROM iks_admins WHERE sid='{sid}' AND end<{ DateTimeOffset.UtcNow.ToUnixTimeSeconds()} AND end != 0";
+                string sql = $"DELETE FROM iks_admins WHERE sid='{sid}' AND end<{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} AND end != 0";
                 var comm = new MySqlCommand(sql, connection);
 
-                
+
                 if (await comm.ExecuteNonQueryAsync() == 1)
                 {
                     return true;
@@ -133,7 +133,7 @@ public class AdminManager
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
         return false;
-    } 
+    }
     public async Task<bool> DeleteAdmin(string sid)
     {
         try
@@ -143,7 +143,7 @@ public class AdminManager
                 connection.Open();
                 string sql = $"DELETE FROM iks_admins WHERE sid='{sid}'";
                 var comm = new MySqlCommand(sql, connection);
-                
+
                 await comm.ExecuteNonQueryAsync();
             }
         }
@@ -152,6 +152,6 @@ public class AdminManager
             Console.WriteLine($" [Iks_Admins] Db error: {ex}");
         }
         return true;
-    } 
+    }
 
 }

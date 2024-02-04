@@ -44,7 +44,7 @@
             },
             "MySqlConnector": {
               "target": "Package",
-              "version": "[2.3.3, )"
+              "version": "[2.3.5, )"
             },
             "VkNet": {
               "target": "Package",

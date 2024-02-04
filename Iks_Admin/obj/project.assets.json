@@ -656,7 +656,7 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
-      "MySqlConnector/2.3.3": {
+      "MySqlConnector/2.3.5": {
         "type": "package",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "7.0.1"
@@ -1992,10 +1992,10 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "MySqlConnector/2.3.3": {
-      "sha512": "RmzpYUKmvf/hJcAOcymU+cUg6OopL+99q7P27hniyw2Nu907DBLsEZVejpqhBLI2qAYgEk9fKC9yn46vkQEUfQ==",
+    "MySqlConnector/2.3.5": {
+      "sha512": "AmEfUPkFl+Ev6jJ8Dhns3CYHBfD12RHzGYWuLt6DfG6/af6YvOMyPz74ZPPjBYQGRJkumD2Z48Kqm8s5DJuhLA==",
       "type": "package",
-      "path": "mysqlconnector/2.3.3",
+      "path": "mysqlconnector/2.3.5",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2017,7 +2017,7 @@
         "lib/netstandard2.1/MySqlConnector.dll",
         "lib/netstandard2.1/MySqlConnector.xml",
         "logo.png",
-        "mysqlconnector.2.3.3.nupkg.sha512",
+        "mysqlconnector.2.3.5.nupkg.sha512",
         "mysqlconnector.nuspec"
       ]
     },
@@ -2472,7 +2472,7 @@
   "projectFileDependencyGroups": {
     "net7.0": [
       "CounterStrikeSharp.API >= 1.0.142",
-      "MySqlConnector >= 2.3.3",
+      "MySqlConnector >= 2.3.5",
       "VkNet >= 1.78.0-alpha-99"
     ]
   },
@@ -2519,7 +2519,7 @@
           },
           "MySqlConnector": {
             "target": "Package",
-            "version": "[2.3.3, )"
+            "version": "[2.3.5, )"
           },
           "VkNet": {
             "target": "Package",

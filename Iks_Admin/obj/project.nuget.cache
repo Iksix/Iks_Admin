@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "Z5YUa355+XtMa/xZJRyjXWWK0yFf591w/G8+S+i8XKFzyVfs6O4z1v0j9IhpwdW9VwERP7haygIUGri0qeTrJg==",
+  "dgSpecHash": "Xkc/Cz92vCxbprHG1OvXB/mTeLPM0dwi5KiFn6cch1DwTAw9ykT6o28meq4ddbMLR8Es4o9BH5LyiA6a6TckSw==",
   "success": true,
   "projectFilePath": "D:\\__plgns\\Iks_Admin\\Iks_Admin\\Iks_Admin.csproj",
   "expectedPackageFiles": [
@@ -37,7 +37,7 @@
     "C:\\Users\\iks\\.nuget\\packages\\microsoft.extensions.options\\7.0.0\\microsoft.extensions.options.7.0.0.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\microsoft.extensions.options.configurationextensions\\7.0.0\\microsoft.extensions.options.configurationextensions.7.0.0.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\microsoft.extensions.primitives\\7.0.0\\microsoft.extensions.primitives.7.0.0.nupkg.sha512",
-    "C:\\Users\\iks\\.nuget\\packages\\mysqlconnector\\2.3.3\\mysqlconnector.2.3.3.nupkg.sha512",
+    "C:\\Users\\iks\\.nuget\\packages\\mysqlconnector\\2.3.5\\mysqlconnector.2.3.5.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\scrutor\\4.2.2\\scrutor.4.2.2.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\serilog\\3.1.0\\serilog.3.1.0.nupkg.sha512",

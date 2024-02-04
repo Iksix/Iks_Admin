@@ -328,13 +328,13 @@ public class BanManager
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
-                string sql = $"SELECT * FROM iks_bans WHERE ip='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
+                string sql = $"SELECT * FROM iks_bans WHERE ip='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0 AND BanType=1";
 
                 if (Config != null)
                 {
                     if (!Config.BanOnAllServers)
                     {
-                        sql = $"SELECT * FROM iks_bans WHERE ip='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0 AND server_id='{Config.ServerId}'";
+                        sql = $"SELECT * FROM iks_bans WHERE ip='{arg}' AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0 AND BanType=1 AND server_id='{Config.ServerId}'";
                     }
                 }
                 var comm = new MySqlCommand(sql, connection);
@@ -383,6 +383,88 @@ public class BanManager
         }
 
         return false;
+    }
+    public async Task<List<string>> GetMutedPlayers(List<string> sids, PluginConfig Config)
+    {
+        List<string> muted = new List<string>();
+        try
+        {
+            using (var connection = new MySqlConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string combinedString = "";
+                combinedString = "'";
+
+                combinedString += string.Join("','", sids);
+
+                combinedString += "'";
+
+                string sql = $"SELECT * FROM iks_mutes WHERE sid IN ({combinedString}) AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
+
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"SELECT * FROM iks_mutes WHERE sid IN ({combinedString}) AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0 AND server_id='{Config.ServerId}'";
+                    }
+                }
+
+                var comm = new MySqlCommand(sql, connection);
+                var reader = await comm.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    muted.Add(reader.GetString("sid"));
+                }
+            }
+        }
+        catch (MySqlException ex)
+        {
+            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
+        }
+
+        return muted;
+    }
+    public async Task<List<string>> GetGaggedPlayers(List<string> sids, PluginConfig Config)
+    {
+        List<string> muted = new List<string>();
+        try
+        {
+            using (var connection = new MySqlConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string combinedString = "";
+                combinedString = "'";
+
+                combinedString += string.Join("','", sids);
+
+                combinedString += "'";
+
+                string sql = $"SELECT * FROM iks_gags WHERE sid IN ({combinedString}) AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0";
+
+                if (Config != null)
+                {
+                    if (!Config.BanOnAllServers)
+                    {
+                        sql = $"SELECT * FROM iks_gags WHERE sid IN ({combinedString}) AND (end>{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} OR time=0) AND Unbanned=0 AND server_id='{Config.ServerId}'";
+                    }
+                }
+
+                var comm = new MySqlCommand(sql, connection);
+                var reader = await comm.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    muted.Add(reader.GetString("sid"));
+                }
+            }
+        }
+        catch (MySqlException ex)
+        {
+            Console.WriteLine($" [Iks_Admins] Db error: {ex}");
+        }
+
+        return muted;
     }
     public async Task<bool> IsPlayerGaggedAsync(string sid, PluginConfig Config)
     {

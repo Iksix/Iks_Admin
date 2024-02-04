@@ -17,20 +17,21 @@ using Serilog.Sinks.File;
 using cssAdminManager = CounterStrikeSharp.API.Modules.Admin;
 
 namespace Iks_Admin;
-class Helper{
+class Helper
+{
     public static bool CanExecute(string? sid, string targetSid, string flag, List<Admin> admins)
     {
-        if(sid == null) return true;
+        if (sid == null) return true;
         if (sid != null) // Проверка на админа и флаги и иммунитет
         {
             Admin? admin = GetAdminBySid(sid, admins);
             Admin? targetAdmin = null;
             targetAdmin = GetAdminBySid(targetSid, admins); // Попытка получить админа по стим айди игрока
-            
+
             if (admin != null)
             {
                 if (!admin.Flags.Contains(flag) && !admin.Flags.Contains("z")) // Проверка админ флага
-                { 
+                {
                     return false;
                 }
                 if (targetAdmin != null) // Если цель админ
@@ -40,7 +41,8 @@ class Helper{
                         return false;
                     }
                 }
-            } else // Если игрок не админ: HaveNotAccess
+            }
+            else // Если игрок не админ: HaveNotAccess
             {
                 return false;
             }
@@ -70,7 +72,7 @@ class Helper{
         }
         return true;
     }
-    public static Admin? GetAdminBySid(string sid,  List<Admin> admins)
+    public static Admin? GetAdminBySid(string sid, List<Admin> admins)
     {
         foreach (var admin in admins)
         {
@@ -80,6 +82,24 @@ class Helper{
             }
         }
         return null;
+    }
+
+    public static List<CCSPlayerController> GetOnlinePlayers()
+    {
+        var players = Utilities.GetPlayers();
+
+        List<CCSPlayerController> validPlayers = new List<CCSPlayerController>();
+
+        foreach (var p in players)
+        {
+            if (p == null) continue;
+            if (!p.IsValid) continue;
+            if (p.IsBot) continue;
+            if (p.Connected != PlayerConnectedState.PlayerConnected) continue;
+            validPlayers.Add(p);
+        }
+
+        return validPlayers;
     }
 
 }
