@@ -1907,10 +1907,13 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         // Устанавливаем CSS
         foreach (var admin in admins)
         {
-            SteamID asid = new SteamID(UInt64.Parse(admin.SteamId));
+            ulong cSid = 0;
+            UInt64.TryParse(admin.SteamId, out cSid);
+            if (cSid == 0) continue;
+            SteamID asid = new SteamID(cSid);
             // Устанавливаем иммунитет CSS и группы
-            cssAdminManager.AdminManager.SetPlayerImmunity(asid, (uint)admin.Immunity);
             cssAdminManager.AdminManager.AddPlayerToGroup(asid, $"#css/{admin.GroupName}");
+            cssAdminManager.AdminManager.SetPlayerImmunity(asid, admin.Immunity < 0 ? 0 : (uint)admin.Immunity);
 
 
             foreach (var Flag in Config.ConvertedFlags)
@@ -1918,7 +1921,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 if (admin.Flags.Contains(Flag.Key))
                 {
                     Console.WriteLine(Flag.Key);
-                    SteamID steamID = new SteamID(UInt64.Parse(admin.SteamId));
+                    SteamID steamID = new SteamID(cSid);
                     cssAdminManager.AdminManager.AddPlayerPermissions(steamID, Flag.Value.ToArray());
                 }
             }
