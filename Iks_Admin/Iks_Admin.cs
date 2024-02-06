@@ -2745,6 +2745,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
         });
 
+        DisconnectedPlayers.Reverse();
+
         foreach (var player in DisconnectedPlayers)
         {
             if (GetAdminBySid(player.Sid) != null)
@@ -2795,7 +2797,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 ChatMenus.OpenMenu(controller, BanMenuTimes);
             });
         }
-
+        DisconnectedPlayers.Reverse();
         return menu;
     }
 
