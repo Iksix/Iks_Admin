@@ -292,6 +292,13 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         var args = GetArgsFromCommandLine(info.GetCommandString);
 
+        if (args.Count < 8)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <time> <server_id/ - (ALL SERVERS)>");
+            return;
+        }
+
         string sid = args[1];
         string name = args[2];
         string flags = args[3];
@@ -368,13 +375,31 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public void OnRBanCommand(CCSPlayerController? controller, CommandInfo info)
     {
         var args = GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count < 8)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_rban <sid> <ip/-(Auto)> <adminsid/CONSOLE> <duration> <reason> <BanType (0 - default / 1 - ip> <name if needed>");
+            return;
+        }
+
+        string name = "";
+
+        for (int i = 7; i < args.Count; i++)
+        {
+            name += args[i];
+        }
+        if (name.Trim() == "") name = "Undefined";
+
+
         string sid = args[1];
         string ip = args[2];
         string adminSid = args[3];
         int duration = Int32.Parse(args[4]);
         string reason = args[5];
         int BanType = Int32.Parse(args[6]);
-        string name = "Undefined";
+
+
         string adminName = GetAdminBySid(adminSid) != null ? GetAdminBySid(adminSid).Name : adminSid;
 
         CCSPlayerController? target = Utilities.GetPlayerFromSteamId(UInt64.Parse(sid));
@@ -448,6 +473,14 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public void OnRUnBanCommand(CCSPlayerController? controller, CommandInfo info)
     {
         var args = GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count < 3)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_runban <sid> <adminsid/CONSOLE>");
+            return;
+        }
+
         string sid = args[1];
         string adminSid = args[2];
         Admin? admin = GetAdminBySid(adminSid);
@@ -480,15 +513,30 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     }
 
     [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
-    [ConsoleCommand("css_rgag", "css_rgag <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed")]
+    [ConsoleCommand("css_rgag", "css_rgag <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed>")]
     public void OnRGagCommand(CCSPlayerController? controller, CommandInfo info)
     {
         var args = GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count < 5)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_rgag <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed>");
+            return;
+        }
+
+        string name = "";
+
+        for (int i = 5; i < args.Count; i++)
+        {
+            name += args[i];
+        }
+        if (name.Trim() == "") name = "Undefined";
+
         string sid = args[1];
         string adminSid = args[2];
         int duration = Int32.Parse(args[3]);
         string reason = args[4];
-        string name = "Undefined";
         string adminName = GetAdminBySid(adminSid) != null ? GetAdminBySid(adminSid).Name : adminSid;
 
         CCSPlayerController? target = Utilities.GetPlayerFromSteamId(UInt64.Parse(sid));
@@ -538,6 +586,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public void OnRUnGagCommand(CCSPlayerController? controller, CommandInfo info)
     {
         var args = GetArgsFromCommandLine(info.GetCommandString);
+        if (args.Count < 3)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_rungag <sid> <adminsid/CONSOLE>");
+            return;
+        }
         string sid = args[1];
         string adminSid = args[2];
         Admin? admin = GetAdminBySid(adminSid);
@@ -580,11 +634,25 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public void OnRMuteCommand(CCSPlayerController? controller, CommandInfo info)
     {
         var args = GetArgsFromCommandLine(info.GetCommandString);
+        if (args.Count < 5)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_rgag <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed>");
+            return;
+        }
+
+        string name = "";
+
+        for (int i = 5; i < args.Count; i++)
+        {
+            name += args[i];
+        }
+        if (name.Trim() == "") name = "Undefined";
+
         string sid = args[1];
         string adminSid = args[2];
         int duration = Int32.Parse(args[3]);
         string reason = args[4];
-        string name = "Undefined";
         string adminName = GetAdminBySid(adminSid) != null ? GetAdminBySid(adminSid).Name : adminSid;
 
         CCSPlayerController? target = Utilities.GetPlayerFromSteamId(UInt64.Parse(sid));
@@ -633,6 +701,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public void OnRUnMuteCommand(CCSPlayerController? controller, CommandInfo info)
     {
         var args = GetArgsFromCommandLine(info.GetCommandString);
+        if (args.Count < 3)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_runmute <sid> <adminsid/CONSOLE>");
+            return;
+        }
         string sid = args[1];
         string adminSid = args[2];
         Admin? admin = GetAdminBySid(adminSid);
@@ -672,6 +746,13 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public void OnAdminDelCommand(CCSPlayerController? controller, CommandInfo info)
     {
         var args = GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count < 2)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_admindel <sid>");
+            return;
+        }
 
         string sid = args[1];
         if (controller != null)
@@ -762,7 +843,23 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public void OnKickCommand(CCSPlayerController? controller, CommandInfo info)
     {
         List<string> args = GetArgsFromCommandLine(info.GetCommandString);
-        string reason = args[2];
+
+        if (args.Count < 3)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_kick <#uid/#sid/name> <reason>");
+            return;
+        }
+
+
+        string reason = "";
+
+        for (int i = 2; i < args.Count; i++)
+        {
+            reason += args[i];
+        }
+        if (reason.Trim() == "") reason = "Undefined";
+
         string AdminName = "Console";
         Admin? admin = null;
         CCSPlayerController? target = GetPlayerFromSidOrUid(info.GetArg(1));
@@ -831,6 +928,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         List<string> args = GetArgsFromCommandLine(info.GetCommandString);
 
+        if (args.Count < 4)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.Darkred}css_ban <#uid/#sid/name> <duration> <reason> <name if needed>");
+            return;
+        }
 
         string identity = info.GetArg(1);
         if (identity.Trim() == "")
@@ -840,7 +943,14 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         int time = Int32.Parse(info.GetArg(2));
         string reason = args[3];
-        string name = "Undefined";
+        string name = "";
+
+        for (int i = 4; i < args.Count; i++)
+        {
+            name += args[i];
+        }
+        if (name.Trim() == "") name = "Undefined";
+
         string ip = "Undefined";
         string sid = identity.Length >= 17 ? identity : "Undefined";
 
@@ -956,23 +1066,29 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         BanManager bm = new BanManager(_dbConnectionString);
 
-        string[] args = info.GetCommandString.Split(" ");
+        var args = GetArgsFromCommandLine(info.GetCommandString);
 
-        string identity = info.GetArg(1);
-        int time = Int32.Parse(info.GetArg(2));
+        if (args.Count < 4)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.Darkred}css_banip <#uid/#sid/name/ip(if offline)> <duration> <reason> <name if needed>");
+            return;
+        }
+
+        string identity = args[1];
+        int time = Int32.Parse(args[2]);
         string reason = args[3];
-        string name = "Undefined";
+        string name = "";
+
+        for (int i = 4; i < args.Count; i++)
+        {
+            name += args[i];
+        }
+        if (name.Trim() == "") name = "Undefined";
+
         string ip = "Undefined";
         string sid = identity.Length >= 17 ? identity : "Undefined";
 
-        // Установка Name
-        if (args.Length > 4)
-        {
-            if (args[4].Trim() != "")
-            {
-                name = args[4];
-            }
-        }
 
 
         CCSPlayerController? target = identity.StartsWith("#") ? null : GetPlayerFromSidOrUid(identity); // Проверка есть ли игрок которого банят на сервере
@@ -1086,11 +1202,16 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public void OnUnBanCommand(CCSPlayerController? controller, CommandInfo info)
     {
         BanManager bm = new BanManager(_dbConnectionString);
-        string arg = info.GetArg(1);
+        var args = XHelper.GetArgsFromCommandLine(info.GetCommandString);
+        string arg = args[0];
         string adminSid = "Console";
         string adminName = "Console";
-        if (arg.Trim() == "")
+
+
+        if (args.Count < 1)
         {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.Darkred}css_unban <sid/ip>");
             return;
         }
 
@@ -1170,24 +1291,28 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         List<string> args = GetArgsFromCommandLine(info.GetCommandString);
 
-        string identity = info.GetArg(1);
+        if (args.Count < 4)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.Darkred}css_gag <#uid/#sid/name> <duration> <reason> <name if needed>");
+            return;
+        }
+
+        string identity = args[1];
         if (identity.Trim() == "")
         {
             return;
         }
-        int time = Int32.Parse(info.GetArg(2));
+        int time = Int32.Parse(args[2]);
         string reason = args[3];
-        string name = "Undefined";
+        string name = "";
         string sid = identity.Length >= 17 ? identity : "Undefined";
 
-        // Установка Name
-        if (args.Count > 4)
+        for (int i = 4; i < args.Count; i++)
         {
-            if (args[4].Trim() != "")
-            {
-                name = args[4];
-            }
+            name += args[i];
         }
+        if (name.Trim() == "") name = "Undefined";
 
 
         CCSPlayerController? target = GetPlayerFromSidOrUid(identity); // Проверка есть ли игрок которого банят на сервере
@@ -1285,11 +1410,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         BanManager bm = new BanManager(_dbConnectionString);
         var args = GetArgsFromCommandLine(info.GetCommandString);
-        string identity = args[1];
-        if (identity.Trim() == "")
+
+        if (args.Count < 2)
         {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.Darkred}css_ungag <#uid/#sid/name>");
             return;
         }
+
+        string identity = args[1];
 
         string sid = identity;
 
@@ -1391,24 +1520,28 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         //Fix args Need to do in other commands
         List<string> args = GetArgsFromCommandLine(info.GetCommandString);
 
-        string identity = info.GetArg(1);
+        if (args.Count < 4)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.Darkred}css_mute <#uid/#sid/name> <duration> <reason> <name if needed>");
+            return;
+        }
+
+        string identity = args[1];
         if (identity.Trim() == "")
         {
             return;
         }
-        int time = Int32.Parse(info.GetArg(2));
+        int time = Int32.Parse(args[2]);
         string reason = args[3];
-        string name = "Undefined";
+        string name = "";
         string sid = identity.Length >= 17 ? identity : "Undefined";
 
-        // Установка Name        
-        if (args.Count > 4)
+        for (int i = 4; i < args.Count; i++)
         {
-            if (args[4].Trim() != "")
-            {
-                name = args[4];
-            }
+            name += args[i];
         }
+        if (name.Trim() == "") name = "Undefined";
 
 
         CCSPlayerController? target = GetPlayerFromSidOrUid(identity); // Проверка есть ли игрок которого банят на сервере
@@ -1499,16 +1632,20 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
     }
 
-    [ConsoleCommand("css_unmute", "css_unmute sid/uid")]
+    [ConsoleCommand("css_unmute", "css_unmute <#uid/#sid/name>")]
     public void OnUnMuteCommand(CCSPlayerController? controller, CommandInfo info)
     {
         BanManager bm = new BanManager(_dbConnectionString);
         var args = GetArgsFromCommandLine(info.GetCommandString);
-        string identity = args[1];
-        if (identity.Trim() == "")
+
+        if (args.Count < 2)
         {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_unmute <#uid/#sid/name>");
             return;
         }
+
+        string identity = args[1];
 
         string sid = identity;
 
@@ -3282,17 +3419,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
 
 
-        foreach (var p in Helper.GetOnlinePlayers())
+        foreach (var p in XHelper.GetOnlinePlayers())
         {
-            if (p.IsBot || !p.IsValid || p == null) continue;
             if (p != activator)
             {
-                if (Helper.AdminHaveBiggerImmunity(activator.SteamID.ToString(), p.SteamID.ToString(), admins))
+                if (!Helper.AdminHaveBiggerImmunity(activator.SteamID.ToString(), p.SteamID.ToString(), admins))
                 {
                     continue;
                 }
             }
-
 
             SlayMenu.AddMenuOption(p.PlayerName, (controller, info) =>
             {
@@ -3306,6 +3441,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     }
     public void SlayFunc(CCSPlayerController target, CCSPlayerController? admin)
     {
+        if (!XHelper.IsControllerValid(target)) return;
         string adminName = "CONSOLE";
         if (admin != null)
         {
