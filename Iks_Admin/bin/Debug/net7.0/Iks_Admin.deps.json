@@ -8,7 +8,7 @@
     ".NETCoreApp,Version=v7.0": {
       "Iks_Admin/1.0.0": {
         "dependencies": {
-          "CounterStrikeSharp.API": "1.0.142",
+          "CounterStrikeSharp.API": "1.0.160",
           "MySqlConnector": "2.3.5",
           "VkNet": "1.78.0-alpha-99"
         },
@@ -16,7 +16,7 @@
           "Iks_Admin.dll": {}
         }
       },
-      "CounterStrikeSharp.API/1.0.142": {
+      "CounterStrikeSharp.API/1.0.160": {
         "dependencies": {
           "McMaster.NETCore.Plugins": "1.4.0",
           "Microsoft.CSharp": "4.7.0",
@@ -33,8 +33,8 @@
         },
         "runtime": {
           "lib/net7.0/CounterStrikeSharp.API.dll": {
-            "assemblyVersion": "1.0.142.0",
-            "fileVersion": "1.0.142.0"
+            "assemblyVersion": "1.0.160.0",
+            "fileVersion": "1.0.160.0"
           }
         }
       },
@@ -552,12 +552,12 @@
       "serviceable": false,
       "sha512": ""
     },
-    "CounterStrikeSharp.API/1.0.142": {
+    "CounterStrikeSharp.API/1.0.160": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-d1MdKKeVSUc1WAidjkK9B5FdSLnX/SOS9zFD/IMjaMpMiezIzznOUWluGkjx3FOyyZs4imZzZfS1BLC8ChR9bA==",
-      "path": "counterstrikesharp.api/1.0.142",
-      "hashPath": "counterstrikesharp.api.1.0.142.nupkg.sha512"
+      "sha512": "sha512-VPhITAQhzPW/Ld5OStaZe71qf9fwi5xWr9FrakD+QrwSUl3LhuQ9kalikzij0a6XNv6wQWtghNzgulz7WjYr+Q==",
+      "path": "counterstrikesharp.api/1.0.160",
+      "hashPath": "counterstrikesharp.api.1.0.160.nupkg.sha512"
     },
     "HtmlAgilityPack/1.11.53": {
       "type": "package",

@@ -56,7 +56,10 @@ public class PluginConfig : BasePluginConfig
         {"GagMessage", "Админ {admin} гагнул игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"UnGagMessage", "Админ {admin} снял гаг игрока {name}!"},
         {"KickMessage", "Админ {admin} кикнул игрока {name}! \n Причина: {reason}"},
-        {"SlayMessage", "Admin {admin} slay player {name}!"},
+        {"SlayMessage", "Админ {admin} убил игрок {name}!"},
+        {"HsayMessage", "Админ {admin} написал сообщение в худ! \n Текст: {text}"},
+        {"SwitchTeamMessage", "Админ: {admin} \n Перемещение игрока {name} \n Прошлая команда: {oldteam} \n Новая команда: {newteam}!"},
+        {"ChangeTeamMessage", "Админ: {admin} \n Смена команды игрока: {name} \n Прошлая команда: {oldteam} \n Новая команда: {newteam}"},
 
         {"OfflineOption", "Offline"},
         {"OnlineOption", "Online"}
@@ -68,13 +71,20 @@ public class PluginConfig : BasePluginConfig
     [JsonPropertyName("LogToDiscordMessages")]
     public Dictionary<string, string> LogToDiscordMessages { get; set; } = new Dictionary<string, string>()
     {
-        {"BanMessage" , "Админ {admin} забанил игрока {name} на {duration}! \n Причина: {reason}"},
+        {"BanMessage" , "Админ {admin} забанил игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"UnBanMessage", "Админ {admin} разбанил игрока {name}!"},
-        {"MuteMessage", "Админ {admin} замутил игрока {name} на {duration}! \n Причина: {reason}"},
+        {"MuteMessage", "Админ {admin} замутил игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"UnMuteMessage", "Админ {admin} размутил игрока {name}!"},
-        {"GagMessage", "Админ {admin} гагнул игрока {name} на {duration}! \n Причина: {reason}"},
+        {"GagMessage", "Админ {admin} гагнул игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"UnGagMessage", "Админ {admin} снял гаг игрока {name}!"},
-        {"KickMessage", "Админ {admin} кикнул игрока {name}! \n Причина: {reason}"}
+        {"KickMessage", "Админ {admin} кикнул игрока {name}! \n Причина: {reason}"},
+        {"SlayMessage", "Админ {admin} убил игрок {name}!"},
+        {"HsayMessage", "Админ {admin} написал сообщение в худ! \n Текст: {text}"},
+        {"SwitchTeamMessage", "Админ: {admin} \n Перемещение игрока: {name} \n Прошлая команда: {oldteam} \n Новая команда: {newteam}"},
+        {"ChangeTeamMessage", "Админ: {admin} \n Смена команды игрока: {name} \n Прошлая команда: {oldteam} \n Новая команда: {newteam}"},
+
+        {"OfflineOption", "Offline"},
+        {"OnlineOption", "Online"}
     };
 
 

@@ -21,14 +21,12 @@ namespace Iks_Admin;
 // Создание БД админов
 // CREATE TABLE `u2194959_FallowCS2`.`iks_admins` ( `id` INT NOT NULL AUTO_INCREMENT , `sid` VARCHAR(32) NOT NULL , `name` VARCHAR(32) NOT NULL , `flags` VARCHAR(32) NOT NULL , `immunity` INT NOT NULL , PRIMARY KEY (`id`), UNIQUE (`sid`), UNIQUE (`name`)) ENGINE = InnoDB;
 
-
 public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 {
     public override string ModuleName { get; } = "Iks_Admin";
-    public override string ModuleVersion { get; } = "1.1.4";
+    public override string ModuleVersion { get; } = "1.1.5";
     public override string ModuleAuthor { get; } = "iks";
     private string _dbConnectionString = "";
-
 
     public CCSPlayerController?[] OwnReasonsTyper = new CCSPlayerController[64];
     public CCSPlayerController?[] SkipActionPlayer = new CCSPlayerController[64];
@@ -49,6 +47,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     private VkLog? vkLog = null;
 
     public PluginConfig Config { get; set; }
+
+
+    // # Danger Menu
+
+    public Vector savePositions = new Vector();
+
+    // # MESSAGES
+    public string? HSayMessage = null;
+    public string? HSayColor = null;
 
     public void OnConfigParsed(PluginConfig config)
     {
@@ -146,6 +153,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_reload_admins_cfg")]
     public void OnReloadCfgCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         OnConfigParsed(Config);
     }
     public override void Load(bool hotReload)
@@ -172,6 +188,17 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 }
             });
         }, TimerFlags.REPEAT);
+
+        RegisterListener<Listeners.OnTick>(() =>
+        {
+            // Вывод сообщеия !hsay
+            foreach (var p in Helper.GetOnlinePlayers())
+            {
+                if (HSayMessage == null) continue;
+                if (!XHelper.IsControllerValid(p)) continue;
+                p.PrintToCenterHtml($@"<font color='{HSayColor}'>{HSayMessage}</font>", 5);
+            }
+        });
     }
 
 
@@ -180,6 +207,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_reload_admins")]
     public void OnReloadAdminsCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         if (controller == null)
         {
             ReloadAdmins(null);
@@ -207,6 +243,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_reload_infractions", "css_reload_infractions {sid}")]
     public void OnReloadInfractionsCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         BanManager bm = new BanManager(_dbConnectionString);
         string identity = info.GetArg(1);
         if (identity.Length < 17) return;
@@ -273,6 +318,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_admin")]
     public void OnAdminCommand(CCSPlayerController controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         Admin? admin = GetAdminBySid(controller.SteamID.ToString());
         if (admin == null)
         {
@@ -290,6 +344,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_adminadd", "css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <time> <server_id/ - (ALL SERVERS)>")]
     public void OnAdminAddCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         var args = GetArgsFromCommandLine(info.GetCommandString);
 
         if (args.Count < 8)
@@ -374,6 +437,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_rban", "css_rban <sid> <ip/-(Auto)> <adminsid/CONSOLE> <duration> <reason> <BanType (0 - default / 1 - ip> <name if needed")]
     public void OnRBanCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         var args = GetArgsFromCommandLine(info.GetCommandString);
 
         if (args.Count < 8)
@@ -387,7 +459,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         for (int i = 7; i < args.Count; i++)
         {
-            name += args[i];
+            name += args[i] + " ";
         }
         if (name.Trim() == "") name = "Undefined";
 
@@ -472,6 +544,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_runban", "css_runban <sid> <adminsid/CONSOLE>")]
     public void OnRUnBanCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         var args = GetArgsFromCommandLine(info.GetCommandString);
 
         if (args.Count < 3)
@@ -516,6 +597,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_rgag", "css_rgag <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed>")]
     public void OnRGagCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         var args = GetArgsFromCommandLine(info.GetCommandString);
 
         if (args.Count < 5)
@@ -529,7 +619,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         for (int i = 5; i < args.Count; i++)
         {
-            name += args[i];
+            name += args[i] + " ";
         }
         if (name.Trim() == "") name = "Undefined";
 
@@ -585,6 +675,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_rungag", "css_rungag <sid> <adminsid/CONSOLE>")]
     public void OnRUnGagCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         var args = GetArgsFromCommandLine(info.GetCommandString);
         if (args.Count < 3)
         {
@@ -633,6 +732,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_rmute", "css_rmute <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed")]
     public void OnRMuteCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         var args = GetArgsFromCommandLine(info.GetCommandString);
         if (args.Count < 5)
         {
@@ -645,7 +753,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         for (int i = 5; i < args.Count; i++)
         {
-            name += args[i];
+            name += args[i] + " ";
         }
         if (name.Trim() == "") name = "Undefined";
 
@@ -700,6 +808,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_runmute", "css_runmute <sid> <adminsid/CONSOLE>")]
     public void OnRUnMuteCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         var args = GetArgsFromCommandLine(info.GetCommandString);
         if (args.Count < 3)
         {
@@ -745,6 +862,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_admindel", "css_admindel <sid>")]
     public void OnAdminDelCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         var args = GetArgsFromCommandLine(info.GetCommandString);
 
         if (args.Count < 2)
@@ -801,9 +927,238 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         Console.WriteLine("[Iks_Admin] Admin deleted!");
     }
 
+
+    // #OTHERS
+
+    [ConsoleCommand("css_hsay", "css_hsay <color> <text>")]
+    public void OnHsayCommand(CCSPlayerController? controller, CommandInfo info)
+    {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "s", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
+
+        var args = XHelper.GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count < 2)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_hsay <color> <text>");
+            return;
+        }
+
+        string color = args[0];
+        string text = string.Join(" ", args.Skip(1));
+        string adminName = controller == null ? "CONSOLE" : controller.PlayerName;
+        Task.Run(async () =>
+        {
+            if (!Config.LogToVk) return;
+            string message = Config.LogToVkMessages["HsayMessage"]
+            .Replace("{admin}", adminName)
+            .Replace("{text}", text);
+            await vkLog.sendMessage(message);
+        });
+        HSayMessage = text;
+        HSayColor = color;
+        AddTimer(5, () =>
+        {
+            HSayMessage = null;
+        });
+    }
+
+    [ConsoleCommand("css_switchteam", "css_switchteam <#uid/#sid/name> <ct/t>")]
+    public void OnSwitchTeamCommand(CCSPlayerController? controller, CommandInfo info)
+    {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "s", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
+
+        var args = XHelper.GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count < 2)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_switchteam <#uid/#sid/name> <ct/t>");
+            return;
+        }
+
+        var target = XHelper.GetPlayerFromArg(args[0]);
+
+        if (target == null)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
+            return;
+        }
+
+        string team = args[1];
+        if (team != "ct" && team != "t")
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_switchteam <#uid/#sid/name> <ct/t>");
+            return;
+        }
+
+        SwitchTeam(target, target.TeamNum, team, controller);
+    }
+    [ConsoleCommand("css_changeteam", "css_changeteam <#uid/#sid/name> <ct/t/spec>")]
+    public void OnChangeTeamCommand(CCSPlayerController? controller, CommandInfo info)
+    {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "s", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
+
+        var args = XHelper.GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count < 2)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_changeteam <#uid/#sid/name> <ct/t/spec>");
+            return;
+        }
+
+        var target = XHelper.GetPlayerFromArg(args[0]);
+
+        if (target == null)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
+            return;
+        }
+
+        string team = args[1];
+        if (team != "ct" && team != "t" && team != "spec")
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_switchteam <#uid/#sid/name> <ct/t/spec>");
+            return;
+        }
+        ChangeTeam(target, target.TeamNum, team, controller);
+    }
+    public void SwitchTeam(CCSPlayerController target, int oldteam, string team, CCSPlayerController? admin)
+    {
+        if (!XHelper.IsControllerValid(target)) return;
+        var targetParams = XHelper.GetControllerParams(target);
+        ControllerParams? adminParams = admin == null ? null : XHelper.GetControllerParams(admin);
+        string adminName = adminParams == null ? "CONSOLE" : adminParams.PlayerName;
+        string adminSid = adminParams == null ? "CONSOLE" : adminParams.SteamID;
+        string oldTeamString = oldteam switch
+        {
+            1 => "SPEC",
+            2 => "T",
+            3 => "CT",
+            _ => "SPEC",
+        };
+
+        switch (team)
+        {
+            case "ct":
+                target.SwitchTeam(CsTeam.CounterTerrorist);
+                break;
+            case "t":
+                target.SwitchTeam(CsTeam.Terrorist);
+                break;
+        }
+
+        foreach (var str in XHelper.SeparateString(Localizer["SwitchTeamMessage"]))
+        {
+            Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+            .Replace("{name}", target.PlayerName)
+            .Replace("{admin}", adminName)
+            .Replace("{oldteam}", oldTeamString)
+            .Replace("{newteam}", team.ToUpper())}");
+        }
+
+        Task.Run(async () =>
+        {
+            if (!Config.LogToVk) return;
+            string message = Config.LogToVkMessages["SwitchTeamMessage"]
+            .Replace("{admin}", adminName)
+            .Replace("{adminsid}", adminSid)
+            .Replace("{name}", targetParams.PlayerName)
+            .Replace("{sid}", targetParams.SteamID)
+            .Replace("{oldteam}", oldTeamString)
+            .Replace("{newteam}", team.ToUpper());
+            await vkLog.sendMessage(message);
+        });
+    }
+    public void ChangeTeam(CCSPlayerController target, int oldteam, string team, CCSPlayerController? admin)
+    {
+        if (!XHelper.IsControllerValid(target)) return;
+        var targetParams = XHelper.GetControllerParams(target);
+        ControllerParams? adminParams = admin == null ? null : XHelper.GetControllerParams(admin);
+        string adminName = adminParams == null ? "CONSOLE" : adminParams.PlayerName;
+        string adminSid = adminParams == null ? "CONSOLE" : adminParams.SteamID;
+        string oldTeamString = oldteam switch
+        {
+            1 => "SPEC",
+            2 => "T",
+            3 => "CT",
+            _ => "SPEC",
+        };
+        switch (team)
+        {
+            case "ct":
+                target.ChangeTeam(CsTeam.CounterTerrorist);
+                break;
+            case "t":
+                target.ChangeTeam(CsTeam.Terrorist);
+                break;
+            case "spec":
+                target.ChangeTeam(CsTeam.Spectator);
+                break;
+        }
+
+        foreach (var str in XHelper.SeparateString(Localizer["ChangeTeamMessage"]))
+        {
+            Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+            .Replace("{name}", target.PlayerName)
+            .Replace("{admin}", adminName)
+            .Replace("{oldteam}", oldTeamString)
+            .Replace("{newteam}", team.ToUpper())}");
+        }
+
+        Task.Run(async () =>
+        {
+            if (!Config.LogToVk) return;
+            string message = Config.LogToVkMessages["ChangeTeamMessage"]
+            .Replace("{admin}", adminName)
+            .Replace("{adminsid}", adminSid)
+            .Replace("{name}", targetParams.PlayerName)
+            .Replace("{sid}", targetParams.SteamID)
+            .Replace("{oldteam}", oldTeamString)
+            .Replace("{newteam}", team.ToUpper());
+            await vkLog.sendMessage(message);
+        });
+    }
+
     [ConsoleCommand("css_slay", "css_slay uid/sid")]
     public void OnSlayCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         Admin? admin = null;
         if (controller != null)
         {
@@ -842,6 +1197,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_kick", "css_kick uid/sid reason")]
     public void OnKickCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         List<string> args = GetArgsFromCommandLine(info.GetCommandString);
 
         if (args.Count < 3)
@@ -924,6 +1288,22 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_ban", "css_ban uid/sid duration reason <name if needed>")]
     public void OnBanCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
+        // Проверка на флаг у админа
+        if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+        {
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+            return;
+        }
+
         BanManager bm = new BanManager(_dbConnectionString);
 
         List<string> args = GetArgsFromCommandLine(info.GetCommandString);
@@ -947,7 +1327,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         for (int i = 4; i < args.Count; i++)
         {
-            name += args[i];
+            name += args[i] + " ";
         }
         if (name.Trim() == "") name = "Undefined";
 
@@ -1064,6 +1444,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_banip", "css_banip #uid/#sid/name/ip(if offline) duration reason <name if needed>")]
     public void OnBanIpCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         BanManager bm = new BanManager(_dbConnectionString);
 
         var args = GetArgsFromCommandLine(info.GetCommandString);
@@ -1082,7 +1471,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         for (int i = 4; i < args.Count; i++)
         {
-            name += args[i];
+            name += args[i] + " ";
         }
         if (name.Trim() == "") name = "Undefined";
 
@@ -1201,6 +1590,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_unban", "css_unban sid/ip")]
     public void OnUnBanCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         BanManager bm = new BanManager(_dbConnectionString);
         var args = XHelper.GetArgsFromCommandLine(info.GetCommandString);
         string arg = args[0];
@@ -1287,6 +1685,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_gag", "css_gag uid/sid duration reason <name if needed>")]
     public void OnGagCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         BanManager bm = new BanManager(_dbConnectionString);
 
         List<string> args = GetArgsFromCommandLine(info.GetCommandString);
@@ -1310,7 +1717,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         for (int i = 4; i < args.Count; i++)
         {
-            name += args[i];
+            name += args[i] + " ";
         }
         if (name.Trim() == "") name = "Undefined";
 
@@ -1408,6 +1815,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_ungag", "css_ungag sid/uid")]
     public void OnUnGagCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         BanManager bm = new BanManager(_dbConnectionString);
         var args = GetArgsFromCommandLine(info.GetCommandString);
 
@@ -1515,6 +1931,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_mute", "css_mute uid/sid duration reason <name if needed>")]
     public void OnMuteCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         BanManager bm = new BanManager(_dbConnectionString);
 
         //Fix args Need to do in other commands
@@ -1539,7 +1964,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         for (int i = 4; i < args.Count; i++)
         {
-            name += args[i];
+            name += args[i] + " ";
         }
         if (name.Trim() == "") name = "Undefined";
 
@@ -1635,6 +2060,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_unmute", "css_unmute <#uid/#sid/name>")]
     public void OnUnMuteCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         BanManager bm = new BanManager(_dbConnectionString);
         var args = GetArgsFromCommandLine(info.GetCommandString);
 
@@ -1815,6 +2249,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_searchbans", "!searchbans sid")]
     public void OnSearchBansCommand(CCSPlayerController? controller, CommandInfo info)
     {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
         BanManager bm = new BanManager(_dbConnectionString);
         string? cSid = controller == null ? null : controller.SteamID.ToString();
         string sid = info.GetArg(1);
@@ -2517,10 +2960,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["AdminMenuTitle"]}");
 
+
         // Закрыть меню
         menu.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
         {
             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(controller);
         });
 
         // Кик
@@ -2567,6 +3012,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 ChatMenus.OpenMenu(controller, UnMuteGagMenuConstructor(controller));
             });
         }
+
+        // Others menu const
         if (admin.Flags.Contains("z") || admin.Flags.Contains("s") || admin.Flags.Contains("t"))
         {
             menu.AddMenuOption($" {Localizer["Options.Others"]}", (controller, option) =>
@@ -2574,12 +3021,20 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 ChatMenus.OpenMenu(controller, OthersMenuConstructor(controller));
             });
         }
+        // if (admin.Flags.Contains("z") || admin.Flags.Contains("d"))
+        // {
+        //     menu.AddMenuOption($" {Localizer["Danger.Title"]}", (controller, option) =>
+        //     {
+        //         OpenDangerMenu(controller);
+        //     });
+        // }
 
         return menu;
     }
     public ChatMenu KickMenuConstructor(CCSPlayerController activator)
     {
         ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["KickMenuTitle"]}");
+
 
         // Назад
         menu.AddMenuOption($" {Localizer["Options.Back"]}", (controller, option) =>
@@ -2590,6 +3045,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         menu.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
         {
             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(activator);
         });
 
         foreach (var player in Helper.GetOnlinePlayers())
@@ -2609,8 +3065,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             menu.AddMenuOption($" {player.PlayerName}", (controller, option) =>
             {
                 //KickReasons
-                ChatMenu KickReasonsMenu =
-                    new ChatMenu($" {Localizer["PluginTag"]} {Localizer["KickMenuReasonsTitle"]}");
+                ChatMenu KickReasonsMenu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["KickMenuReasonsTitle"]}");
 
                 foreach (var reason in Config.KickReasons)
                 {
@@ -2662,6 +3117,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["BanMenuTitle"]}");
 
+
         // Закрыть меню
         menu.AddMenuOption($" {Localizer["Options.Back"]}", (controller, option) =>
         {
@@ -2671,6 +3127,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         menu.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
         {
             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(activator);
         });
 
         foreach (var player in Helper.GetOnlinePlayers())
@@ -2689,6 +3146,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             menu.AddMenuOption($" {player.PlayerName}", (controller, option) =>
             {
                 ChatMenu BanMenuTimes = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["TimesTitle"]}");
+
 
                 foreach (var time in Config.Times)
                 {
@@ -2734,6 +3192,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["BanMenuTitle"]}");
 
+
         // Закрыть меню
         menu.AddMenuOption($" {Localizer["Options.Back"]}", (controller, option) =>
         {
@@ -2743,6 +3202,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         menu.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
         {
             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(activator);
         });
 
         DisconnectedPlayers.Reverse();
@@ -2760,6 +3220,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             menu.AddMenuOption($" {player.Name}", (controller, option) =>
             {
                 ChatMenu BanMenuTimes = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["TimesTitle"]}");
+
 
                 foreach (var time in Config.Times)
                 {
@@ -2803,8 +3264,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
     public ChatMenu BanMenuDisconnectedPlayersReasonsConstructor(CCSPlayerController ccsPlayerController, DisconnectedPlayer player, int time, string title)
     {
-        ChatMenu BanMenuReasons =
-            new ChatMenu($" {Localizer["PluginTag"]} {Localizer["BanMenuReasonsTitle"]}");
+        ChatMenu BanMenuReasons = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["BanMenuReasonsTitle"]}");
+
         foreach (var reason in Config.BanReasons)
         {
             BanMenuReasons.AddMenuOption($"{reason}", (playerController, menuOption) =>
@@ -2851,8 +3312,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     }
     public ChatMenu BanMenuReasonsConstructor(CCSPlayerController ccsPlayerController, CCSPlayerController player, int time, string title)
     {
-        ChatMenu BanMenuReasons =
-            new ChatMenu($" {Localizer["PluginTag"]} {Localizer["BanMenuReasonsTitle"]}");
+        ChatMenu BanMenuReasons = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["BanMenuReasonsTitle"]}");
+
         foreach (var reason in Config.BanReasons)
         {
             BanMenuReasons.AddMenuOption($"{reason}", (playerController, menuOption) =>
@@ -2913,6 +3374,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["MuteMenuTitle"]}");
 
+
         // Закрыть меню
         menu.AddMenuOption($" {Localizer["Options.Back"]}", (controller, option) =>
         {
@@ -2922,6 +3384,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         menu.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
         {
             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(activator);
         });
 
         foreach (var player in Helper.GetOnlinePlayers())
@@ -2943,6 +3406,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             menu.AddMenuOption($" {player.PlayerName}", (controller, option) =>
             {
                 ChatMenu MuteMenuTimes = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["TimesTitle"]}");
+
                 MuteMenuTimes.AddMenuOption($" {Localizer["Options.Back"]}", (controller, option) =>
                 {
                     ChatMenus.OpenMenu(controller, AdminMenuConstructor(GetAdminBySid(controller.SteamID.ToString())));
@@ -2951,6 +3415,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 MuteMenuTimes.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
                 {
                     controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+                    MenuManager.CloseActiveMenu(activator);
                 });
                 foreach (var time in Config.Times)
                 {
@@ -2994,8 +3459,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
     public ChatMenu MuteMenuReasonsConstructor(CCSPlayerController ccsPlayerController, CCSPlayerController player, int time, string title)
     {
-        ChatMenu MuteMenuReasons =
-            new ChatMenu($" {Localizer["PluginTag"]} {Localizer["MuteMenuReasonsTitle"]}");
+        ChatMenu MuteMenuReasons = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["MuteMenuReasonsTitle"]}");
+
         // Назад
         MuteMenuReasons.AddMenuOption($" {Localizer["Options.Back"]}", (controller, option) =>
         {
@@ -3005,6 +3470,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         MuteMenuReasons.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
         {
             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(controller);
         });
         foreach (var reason in Config.MuteReason)
         {
@@ -3074,6 +3540,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["GagMenuTitle"]}");
 
+
         // Закрыть меню
         menu.AddMenuOption($" {Localizer["Options.Back"]}", (controller, option) =>
         {
@@ -3083,6 +3550,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         menu.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
         {
             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(activator);
         });
 
 
@@ -3106,6 +3574,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             menu.AddMenuOption($" {player.PlayerName}", (controller, option) =>
             {
                 ChatMenu MuteMenuTimes = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["TimesTitle"]}");
+
                 MuteMenuTimes.AddMenuOption($" {Localizer["Options.Back"]}", (controller, option) =>
                 {
                     ChatMenus.OpenMenu(controller, AdminMenuConstructor(GetAdminBySid(controller.SteamID.ToString())));
@@ -3114,6 +3583,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 MuteMenuTimes.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
                 {
                     controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+                    MenuManager.CloseActiveMenu(activator);
                 });
                 foreach (var time in Config.Times)
                 {
@@ -3157,8 +3627,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
     public ChatMenu GagMenuReasonsConstructor(CCSPlayerController ccsPlayerController, CCSPlayerController player, int time, string title)
     {
-        ChatMenu MuteMenuReasons =
-            new ChatMenu($" {Localizer["PluginTag"]} {Localizer["GagMenuReasonsTitle"]}");
+        ChatMenu MuteMenuReasons = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["GagMenuReasonsTitle"]}");
+
         MuteMenuReasons.AddMenuOption($" {Localizer["Options.Back"]}", (ccsPlayerController, option) =>
         {
             ChatMenus.OpenMenu(ccsPlayerController, AdminMenuConstructor(GetAdminBySid(ccsPlayerController.SteamID.ToString())));
@@ -3167,6 +3637,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         MuteMenuReasons.AddMenuOption($" {Localizer["Options.Exit"]}", (ccsPlayerController, option) =>
         {
             ccsPlayerController.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(ccsPlayerController);
         });
         foreach (var reason in Config.GagReason)
         {
@@ -3240,6 +3711,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     public ChatMenu UnMuteGagMenuConstructor(CCSPlayerController activator) //UnMute UnGag
     {
         ChatMenu UnMenu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["UnGagMuteMenuTitle"]}");
+
         UnMenu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
         {
             ChatMenus.OpenMenu(activator, AdminMenuConstructor(GetAdminBySid(activator.SteamID.ToString())));
@@ -3248,6 +3720,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         UnMenu.AddMenuOption($" {Localizer["Options.Exit"]}", (activator, option) =>
         {
             activator.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(activator);
         });
 
         foreach (var player in Helper.GetOnlinePlayers())
@@ -3284,6 +3757,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             UnMenu.AddMenuOption(title, (controller, option) =>
             {
                 ChatMenu playerMenu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["UnGagMuteMenuTitleWhenPlayerSelected"].ToString().Replace("{name}", player.PlayerName)}");
+
                 playerMenu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
                 {
                     ChatMenus.OpenMenu(activator, AdminMenuConstructor(GetAdminBySid(activator.SteamID.ToString())));
@@ -3292,6 +3766,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 playerMenu.AddMenuOption($" {Localizer["Options.Exit"]}", (activator, option) =>
                 {
                     controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+                    MenuManager.CloseActiveMenu(activator);
                 });
                 if (playerGagged)
                 {
@@ -3380,6 +3855,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     {
         ChatMenu OthersMenu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.Others"]}");
 
+
         OthersMenu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
         {
             ChatMenus.OpenMenu(activator, AdminMenuConstructor(GetAdminBySid(activator.SteamID.ToString())));
@@ -3388,6 +3864,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         OthersMenu.AddMenuOption($" {Localizer["Options.Exit"]}", (activator, option) =>
         {
             activator.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(activator);
         });
 
 
@@ -3398,16 +3875,150 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 ChatMenus.OpenMenu(activator, SlayMenu(activator));
                 return;
             });
+            OthersMenu.AddMenuOption(Localizer["Options.SwitchTeam"], (controller, info) =>
+            {
+                OpenSwitchTeamMenu(controller);
+                return;
+            });
+            OthersMenu.AddMenuOption(Localizer["Options.ChangeTeam"], (controller, info) =>
+            {
+                OpenChangeTeamMenu(controller);
+                return;
+            });
         }
 
 
         return OthersMenu;
     }
 
+    public void OpenSwitchTeamMenu(CCSPlayerController controller)
+    {
+        ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.SwitchTeam"]}");
+
+
+        // Назад
+        menu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
+        {
+            ChatMenus.OpenMenu(activator, OthersMenuConstructor(activator));
+        });
+        // Закрыть меню
+        menu.AddMenuOption($" {Localizer["Options.Exit"]}", (activator, option) =>
+        {
+            activator.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(activator);
+        });
+
+        foreach (var p in XHelper.GetOnlinePlayers())
+        {
+            // Если иммунитет цели больше чем у игрока, скип
+            if (cssAdminManager.AdminManager.GetPlayerImmunity(p.AuthorizedSteamID) >= cssAdminManager.AdminManager.GetPlayerImmunity(controller.AuthorizedSteamID) && p != controller)
+            {
+                continue;
+            }
+            menu.AddMenuOption(p.PlayerName, (activator, option) =>
+            {
+                OpenSwitchTeamMenu2(activator, p);
+            });
+        }
+        ChatMenus.OpenMenu(controller, menu);
+    }
+    public void OpenSwitchTeamMenu2(CCSPlayerController controller, CCSPlayerController target)
+    {
+        ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.SwitchTeam"]}");
+
+
+        // Назад
+        menu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
+        {
+            OpenSwitchTeamMenu(activator);
+        });
+        // Закрыть меню
+        menu.AddMenuOption($" {Localizer["Options.Exit"]}", (activator, option) =>
+        {
+            activator.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(activator);
+        });
+
+        menu.AddMenuOption("To T", (activator, option) =>
+        {
+            SwitchTeam(target, target.TeamNum, "t", activator);
+        });
+        menu.AddMenuOption("To CT", (activator, option) =>
+        {
+            SwitchTeam(target, target.TeamNum, "ct", activator);
+        });
+
+        ChatMenus.OpenMenu(controller, menu);
+    }
+    public void OpenChangeTeamMenu(CCSPlayerController controller)
+    {
+        ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.SwitchTeam"]}");
+
+
+        // Назад
+        menu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
+        {
+            ChatMenus.OpenMenu(activator, OthersMenuConstructor(activator));
+        });
+        // Закрыть меню
+        menu.AddMenuOption($" {Localizer["Options.Exit"]}", (activator, option) =>
+        {
+            activator.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(activator);
+        });
+
+        foreach (var p in XHelper.GetOnlinePlayers())
+        {
+            // Если иммунитет цели больше чем у игрока, скип
+            if (cssAdminManager.AdminManager.GetPlayerImmunity(p.AuthorizedSteamID) >= cssAdminManager.AdminManager.GetPlayerImmunity(controller.AuthorizedSteamID) && p != controller)
+            {
+                continue;
+            }
+            menu.AddMenuOption(p.PlayerName, (activator, option) =>
+            {
+                OpenChangeTeamMenu2(activator, p);
+            });
+        }
+        ChatMenus.OpenMenu(controller, menu);
+    }
+    public void OpenChangeTeamMenu2(CCSPlayerController controller, CCSPlayerController target)
+    {
+        ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.SwitchTeam"]}");
+
+
+        // Назад
+        menu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
+        {
+            OpenChangeTeamMenu(activator);
+        });
+        // Закрыть меню
+        menu.AddMenuOption($" {Localizer["Options.Exit"]}", (activator, option) =>
+        {
+            activator.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(activator);
+        });
+
+        menu.AddMenuOption("To T", (activator, option) =>
+        {
+            ChangeTeam(target, target.TeamNum, "t", activator);
+        });
+        menu.AddMenuOption("To CT", (activator, option) =>
+        {
+            ChangeTeam(target, target.TeamNum, "ct", activator);
+        });
+        menu.AddMenuOption("To SPEC", (activator, option) =>
+        {
+            ChangeTeam(target, target.TeamNum, "spec", activator);
+        });
+
+        ChatMenus.OpenMenu(controller, menu);
+    }
+
 
     public ChatMenu SlayMenu(CCSPlayerController activator)
     {
         ChatMenu SlayMenu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.Others"]}");
+
 
         SlayMenu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
         {
@@ -3417,6 +4028,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         SlayMenu.AddMenuOption($" {Localizer["Options.Exit"]}", (activator, option) =>
         {
             activator.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(activator);
         });
 
 
@@ -3470,7 +4082,43 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         Console.Write($"[Iks_Admin] {target.PlayerName} was killed by the admin {adminName}");
     }
 
+    public void OpenDangerMenu(CCSPlayerController controller)
+    {
+        ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Danger.Title"]}");
 
+
+        menu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
+        {
+            ChatMenus.OpenMenu(activator, AdminMenuConstructor(GetAdminBySid(activator.SteamID.ToString())));
+        });
+        // Закрыть меню
+        menu.AddMenuOption($" {Localizer["Options.Exit"]}", (activator, option) =>
+        {
+            activator.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(activator);
+        });
+
+        menu.AddMenuOption(Localizer["Danger.Option.SavePos"], (p, _) =>
+        {
+            Vector? vector = new Vector(p.Pawn!.Value!.AbsOrigin!.X, p.Pawn.Value.AbsOrigin.Y, p.Pawn.Value.AbsOrigin.Z);
+            savePositions = vector;
+            p.PrintToChat($" {Localizer["PluginTag"]} Position saved! {vector.ToString()}");
+        });
+        menu.AddMenuOption(Localizer["Danger.Option.Teleport"], (p, _) =>
+        {
+
+            p.PrintToChat($"Teleport to: {savePositions.ToString()}");
+            p.PrintToChat($"From: {p.Pawn!.Value!.AbsOrigin!.ToString()}");
+            p.Pawn!.Value!.AbsOrigin!.X = savePositions.X;
+            p.Pawn!.Value!.AbsOrigin!.Y = savePositions.Y;
+            p.Pawn!.Value!.AbsOrigin!.Z = savePositions.Z;
+            p.Teleport(savePositions, p!.AbsRotation!, p.AbsVelocity);
+        });
+
+        ChatMenus.OpenMenu(controller, menu);
+
+
+    }
 
 
 

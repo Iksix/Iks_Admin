@@ -56,7 +56,6 @@ public class VkLog
         {
             Console.WriteLine($"[Iks_Admin] Vk Message error: {ex.Message}");
         }
-
     }
     public async Task sendUnPunMessage(string message, string name, string sid, string adminName, string ip, bool offline)
     {
@@ -77,10 +76,6 @@ public class VkLog
                 .Replace("{server}", Config.ServerName)
                 .Replace("{status}", status)
                 .Replace("{ip}", ip);
-
-
-
-
         try
         {
             await api.Messages.SendAsync(new MessagesSendParams
@@ -95,5 +90,30 @@ public class VkLog
             Console.WriteLine($"[Iks_Admin] Vk Message error: {ex.Message}");
         }
 
+    }
+
+    public async Task sendMessage(string message)
+    {
+        var apiAuthParams = new ApiAuthParams
+        {
+            AccessToken = Token,
+            Settings = Settings.Messages
+        };
+        var api = new VkApi();
+        await api.AuthorizeAsync(apiAuthParams);
+
+        try
+        {
+            await api.Messages.SendAsync(new MessagesSendParams
+            {
+                RandomId = new Random().Next(),
+                PeerId = ChatId,
+                Message = message
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Iks_Admin] Vk Message error: {ex.Message}");
+        }
     }
 }
