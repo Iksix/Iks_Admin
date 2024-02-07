@@ -64,6 +64,8 @@ Admin system with menu <br>
 - Commands for open menus
 - Converting from Iks_Admin flags to CSS +
 - WebSite
+## Required
+- [CSSharp v161](https://github.com/roflmuffin/CounterStrikeSharp/releases/tag/v161)
 
 
 
@@ -135,7 +137,8 @@ Admin system with menu <br>
 - Конвертация из флагов Iks_Admin в CSS +
 - Комманды для открытия меню
 - Сайт
-
+## Зависимости
+- [CSSharp v161](https://github.com/roflmuffin/CounterStrikeSharp/releases/tag/v161)
 
 
 
