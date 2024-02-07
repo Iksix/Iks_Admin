@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     "net7.0": {
-      "CounterStrikeSharp.API/1.0.160": {
+      "CounterStrikeSharp.API/1.0.161": {
         "type": "package",
         "dependencies": {
           "McMaster.NETCore.Plugins": "1.4.0",
@@ -919,14 +919,14 @@
     }
   },
   "libraries": {
-    "CounterStrikeSharp.API/1.0.160": {
-      "sha512": "VPhITAQhzPW/Ld5OStaZe71qf9fwi5xWr9FrakD+QrwSUl3LhuQ9kalikzij0a6XNv6wQWtghNzgulz7WjYr+Q==",
+    "CounterStrikeSharp.API/1.0.161": {
+      "sha512": "QR4HjeHv0ri4TayeRAUPhmd676aWd1v04lcEin++2k+bOYqI4/gOF4VvlMqvppaS+p3neYG0a+/f+UDWGtbe7w==",
       "type": "package",
-      "path": "counterstrikesharp.api/1.0.160",
+      "path": "counterstrikesharp.api/1.0.161",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "counterstrikesharp.api.1.0.160.nupkg.sha512",
+        "counterstrikesharp.api.1.0.161.nupkg.sha512",
         "counterstrikesharp.api.nuspec",
         "lib/net7.0/CounterStrikeSharp.API.dll",
         "lib/net7.0/CounterStrikeSharp.API.runtimeconfig.json",
@@ -2471,7 +2471,7 @@
   },
   "projectFileDependencyGroups": {
     "net7.0": [
-      "CounterStrikeSharp.API >= 1.0.160",
+      "CounterStrikeSharp.API >= 1.0.161",
       "MySqlConnector >= 2.3.5",
       "VkNet >= 1.78.0-alpha-99"
     ]
@@ -2515,7 +2515,7 @@
         "dependencies": {
           "CounterStrikeSharp.API": {
             "target": "Package",
-            "version": "[1.0.160, )"
+            "version": "[1.0.161, )"
           },
           "MySqlConnector": {
             "target": "Package",
