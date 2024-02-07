@@ -25,6 +25,16 @@ public class XHelper
         return args;
     }
 
+    public static string RemoveDangerSimbols(string str)
+    {
+        str = str.Replace("'", "");
+        str = str.Replace("\"", "");
+        str = str.Replace(";", "");
+        str = str.Replace("`", "");
+
+        return str;
+    }
+
     public static List<CCSPlayerController> GetOnlinePlayers()
     {
         var players = Utilities.GetPlayers();

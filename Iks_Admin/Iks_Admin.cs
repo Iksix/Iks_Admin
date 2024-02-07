@@ -361,7 +361,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <time> <server_id/ - (ALL SERVERS)>");
             return;
         }
-
+        
         string sid = args[1];
         string name = args[2];
         string flags = args[3];

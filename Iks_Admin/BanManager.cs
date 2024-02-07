@@ -20,6 +20,8 @@ public class BanManager
 
     public async Task BanPlayer(string name, string sid, string ip, string adminsid, int time, string reason, PluginConfig? Config)
     {
+        reason = XHelper.RemoveDangerSimbols(reason);
+        name = XHelper.RemoveDangerSimbols(name);
         sid = sid.Replace("#", "");
         if (ip.Split(":").Length > 0)
             ip = ip.Split(":")[0];
@@ -52,6 +54,8 @@ public class BanManager
 
     public async Task BanPlayerIp(string name, string sid, string ip, string adminsid, int time, string reason, PluginConfig? Config)
     {
+        reason = XHelper.RemoveDangerSimbols(reason);
+        name = XHelper.RemoveDangerSimbols(name);
         if (ip.Split(":").Length > 0)
         {
             ip = ip.Split(":")[0];
@@ -86,6 +90,8 @@ public class BanManager
 
     public async Task rBanPlayer(string name, string sid, string ip, string adminsid, int time, string reason, int BanType, PluginConfig? Config)
     {
+        reason = XHelper.RemoveDangerSimbols(reason);
+        name = XHelper.RemoveDangerSimbols(name);
         if (ip == "-")
         {
             ip = "UNDEFINED";
@@ -170,6 +176,8 @@ public class BanManager
 
     public async Task MutePlayer(string name, string sid, string adminsid, int time, string reason, PluginConfig Config)
     {
+        reason = XHelper.RemoveDangerSimbols(reason);
+        name = XHelper.RemoveDangerSimbols(name);
         sid = sid.Replace("#", "");
         try
         {
@@ -198,6 +206,8 @@ public class BanManager
     }
     public async Task GagPlayer(string name, string sid, string adminsid, int time, string reason, PluginConfig? Config)
     {
+        reason = XHelper.RemoveDangerSimbols(reason);
+        name = XHelper.RemoveDangerSimbols(name);
         sid = sid.Replace("#", "");
         try
         {

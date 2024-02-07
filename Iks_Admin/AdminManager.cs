@@ -21,7 +21,7 @@ public class AdminManager
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
-                string sql = $"SELECT * FROM iks_admins";
+                string sql = @"SELECT * FROM iks_admins";
                 var comm = new MySqlCommand(sql, connection);
                 var res = await comm.ExecuteReaderAsync();
                 string name = "";
@@ -94,12 +94,13 @@ public class AdminManager
 
     public async Task AddAdmin(string sid, string name, string flags, int immunity, int group_id, long end, string server_id)
     {
+        name = XHelper.RemoveDangerSimbols(name);
         try
         {
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
-                string sql = $"INSERT INTO iks_admins (`sid`, `name`, `flags`, `immunity`, `group_id`, `end`, `server_id`) VALUES ('{sid}', '{name}', '{flags}', '{immunity}', '{group_id}', '{end}', '{server_id}')";
+                string sql = $@"INSERT INTO iks_admins (`sid`, `name`, `flags`, `immunity`, `group_id`, `end`, `server_id`) VALUES ('{sid}', '{name}', '{flags}', '{immunity}', '{group_id}', '{end}', '{server_id}')";
                 var comm = new MySqlCommand(sql, connection);
 
                 await comm.ExecuteNonQueryAsync();
@@ -118,7 +119,7 @@ public class AdminManager
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
-                string sql = $"DELETE FROM iks_admins WHERE sid='{sid}' AND end<{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} AND end != 0";
+                string sql = $@"DELETE FROM iks_admins WHERE sid='{sid}' AND end<{DateTimeOffset.UtcNow.ToUnixTimeSeconds()} AND end != 0";
                 var comm = new MySqlCommand(sql, connection);
 
 
@@ -141,7 +142,7 @@ public class AdminManager
             using (var connection = new MySqlConnection(_dbConnectionString))
             {
                 connection.Open();
-                string sql = $"DELETE FROM iks_admins WHERE sid='{sid}'";
+                string sql = $@"DELETE FROM iks_admins WHERE sid='{sid}'";
                 var comm = new MySqlCommand(sql, connection);
 
                 await comm.ExecuteNonQueryAsync();
