@@ -24,7 +24,7 @@ namespace Iks_Admin;
 public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 {
     public override string ModuleName { get; } = "Iks_Admin";
-    public override string ModuleVersion { get; } = "1.1.6";
+    public override string ModuleVersion { get; } = "1.1.5.2";
     public override string ModuleAuthor { get; } = "iks";
     private string _dbConnectionString = "";
 
@@ -1185,9 +1185,10 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             }
 
         }
-        if (target == null && controller != null)
+        if (target == null)
         {
-            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFinded"]}");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {Localizer["PlayerNotFinded"]}");
+            return;
         }
 
         SlayFunc(target, controller);
@@ -1298,95 +1299,43 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             }
         }
         
+        List<string> args = XHelper.GetArgsFromCommandLine(info.GetCommandString);
 
-        BanManager bm = new BanManager(_dbConnectionString);
-
-        List<string> args = GetArgsFromCommandLine(info.GetCommandString);
-
-        if (args.Count < 4)
+        if (args.Count < 3)
         {
             info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
             info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.Darkred}css_ban <#uid/#sid/name> <duration> <reason> <name if needed>");
             return;
         }
+        BanManager bm = new BanManager(_dbConnectionString);
 
-        string identity = info.GetArg(1);
-        if (identity.Trim() == "")
+        CCSPlayerController? target = XHelper.GetPlayerFromArg(args[0]);
+
+        if (target == null && XHelper.GetIdentityType(args[0]) != "sid")
         {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {Localizer["PlayerNotFinded"]}");
             return;
         }
 
-        int time = Int32.Parse(info.GetArg(2));
-        string reason = args[3];
         string name = "";
-
-        for (int i = 4; i < args.Count; i++)
+        string identity = target == null ? args[0].Replace("#", "") : target.SteamID.ToString();
+        if (args.Count > 3)
         {
-            name += args[i] + " ";
+            name = string.Join(" ", args.Skip(3));
         }
-        if (name.Trim() == "") name = "Undefined";
-
-        string ip = "Undefined";
-        string sid = identity.Length >= 17 ? identity : "Undefined";
-
-        CCSPlayerController? target = GetPlayerFromSidOrUid(identity); // Проверка есть ли игрок которого банят на сервере
-        // Установки если игрок на сервере
-        if (target != null)
+        if (name == "" && target != null)
         {
-            if (name == "Undefined")
-            {
-                name = target.PlayerName;
-            }
-            ip = target.IpAddress ?? "Undefined";
-            sid = target.SteamID.ToString();
+            name = target.PlayerName;
         }
-
-        if (!isSteamId(sid))
+        if (name == "" && target == null)
         {
-            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["IncorrectSid"]}");
-            return;
+            name = "Undefined";
         }
-
-        string AdminSid = "CONSOLE";
-        string AdminName = "CONSOLE";
-
-        if (controller != null)
-        {
-            AdminSid = controller.SteamID.ToString();
-            AdminName = controller.PlayerName;
-        }
-
-        if (controller != null) // Проверка на админа и флаги и иммунитет
-        {
-            Admin? admin = GetAdminBySid(controller.SteamID.ToString());
-            Admin? targetAdmin = null;
-            targetAdmin = GetAdminBySid(sid); // Попытка получить админа по стим айди игрока
-
-            if (admin != null)
-            {
-                if (!admin.Flags.Contains("b") && !admin.Flags.Contains("z")) // Проверка админ флага
-                {
-                    controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
-                    return;
-                }
-                if (targetAdmin != null) // Если цель админ
-                {
-                    if (targetAdmin.Immunity >= admin.Immunity) //Проверка иммунитета цели
-                    {
-                        controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["IfTargetImmunity"].ToString().Replace("{name}", name)}");
-                        return;
-                    }
-                }
-            }
-            else // Если игрок не админ: HaveNotAccess
-            {
-                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
-                return;
-            }
-
-        }
-
-        bool offline = target == null;
+        string AdminSid = controller == null ? "CONSOLE" : controller.SteamID.ToString();
+        string AdminName = controller == null ? "CONSOLE" : controller.PlayerName;
+        int time = int.Parse(args[1]);
+        string reason = args[2];
+        string ip = target == null ? "Undefined" : target.IpAddress;
 
         Task.Run(async () =>
         {
@@ -1394,7 +1343,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 Server.NextFrame(() =>
                 {
-                    NotifyIfPlayerAlredyBanned(name, AdminSid);
+                    NotifyIfPlayerAlredyBanned(name, info);
                 });
                 return;
             }
@@ -1402,24 +1351,22 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 Server.NextFrame(() =>
                 {
-                    NotifyIfPlayerAlredyBanned(name, AdminSid);
+                    NotifyIfPlayerAlredyBanned(name, info);
                 });
                 return;
             }
 
             //Если всё нормально то баним
-            await bm.BanPlayer(name, sid, ip, AdminSid, time, reason, Config);
+            await bm.BanPlayer(name, identity, ip, AdminSid, time, reason, Config);
             if (Config.LogToVk)
             {
-                await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, time, offline);
+                await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, identity, ip, AdminName, reason, time, target == null);
             }
             Server.NextFrame(() =>
             {
                 PrintBanMessage(name, AdminName, time, reason);
             });
         });
-
-
 
         // Кикаем игрока после бана
         if (target != null)
@@ -1540,7 +1487,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 Server.NextFrame(() =>
                 {
-                    NotifyIfPlayerAlredyBanned(name, AdminSid);
+                    NotifyIfPlayerAlredyBanned(name, info);
                 });
                 return;
             }
@@ -1548,7 +1495,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 Server.NextFrame(() =>
                 {
-                    NotifyIfPlayerAlredyBanned(name, AdminSid);
+                    NotifyIfPlayerAlredyBanned(name, info);
                 });
                 return;
             }
@@ -1778,7 +1725,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 Server.NextFrame(() =>
                 {
-                    NotifyIfPlayerAlredyBanned(name, AdminSid);
+                    NotifyIfPlayerAlredyBanned(name, info);
                 });
                 return;
             }
@@ -2025,7 +1972,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 Server.NextFrame(() =>
                 {
-                    NotifyIfPlayerAlredyBanned(name, AdminSid);
+                    NotifyIfPlayerAlredyBanned(name, info);
                 });
                 return;
             }
@@ -2164,18 +2111,11 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
 
 
-    public void NotifyIfPlayerAlredyBanned(string name, string aSid)
+    public void NotifyIfPlayerAlredyBanned(string name, CommandInfo info)
     {
-        if (aSid == "CONSOLE")
-        {
-            Console.WriteLine($"[Iks_Admin] Player: {name} Alredy banned!");
-            return;
-        }
-        CCSPlayerController? controller = GetPlayerFromSidOrUid(aSid);
-        if (controller != null)
-        {
-            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerAlredyBanned"]}");
-        }
+        
+        info.ReplyToCommand($" {Localizer["PluginTag"]} {Localizer["PlayerAlredyBanned"]}");
+        
     }
 
 

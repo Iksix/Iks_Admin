@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using CounterStrikeSharp.API;
@@ -64,40 +65,17 @@ public class XHelper
     /// </summary>
     public static CCSPlayerController? GetPlayerFromArg(string identity)
     {
+        var players = XHelper.GetOnlinePlayers();
         CCSPlayerController? player = null;
         if (identity.StartsWith("#"))
         {
-            identity = identity.Replace("#", "");
-            if (identity.Length < 17)
-            {
-                int uid;
-                if (Int32.TryParse(identity, out uid))
-                {
-                    foreach (var p in GetOnlinePlayers())
-                    {
-                        if (!p.IsBot && p.IsValid)
-                        {
-                            if (p.UserId == uid)
-                            {
-                                return p;
-                            }
-                        }
-                    }
-                }
-            }
+            player = players.FirstOrDefault(u => u.SteamID.ToString() == identity.Replace("#", ""));
 
-            if (identity.Length == 17)
-            {
-                ulong sid;
-                if (UInt64.TryParse(identity, out sid))
-                {
-                    if (Utilities.GetPlayerFromSteamId(sid) != null)
-                    {
-                        player = Utilities.GetPlayerFromSteamId(sid);
-                        return player;
-                    }
-                }
-            }
+            if (player != null) return player;
+
+            player = players.FirstOrDefault(u => u.UserId.ToString() == identity.Replace("#", ""));
+
+            if (player != null) return player;
         }
         if (!identity.StartsWith("#"))
             return GetOnlinePlayers().FirstOrDefault(u => u.PlayerName.Contains(identity));
@@ -113,6 +91,24 @@ public class XHelper
         if (identity.StartsWith("#") && identity.Length < 17) return "uid";
         if (identity.StartsWith("#") && identity.Replace("#", "").Length == 17) return "sid";
         return null;
+    }
+
+
+    /// <summary>
+    /// Checks if the string is an IP address
+    /// </summary>
+    private static bool IsIPAddress(string ipAddress)
+    {
+      bool isIPAddres = false;
+ 
+      try
+      {
+        IPAddress address;
+        // Определяем является ли строка ip-адресом
+        isIPAddres = IPAddress.TryParse(ipAddress, out address);
+      }
+      catch (Exception e) { }
+      return isIPAddres;
     }
 
     /// <summary>
