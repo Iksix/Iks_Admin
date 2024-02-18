@@ -318,15 +318,6 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     [ConsoleCommand("css_admin")]
     public void OnAdminCommand(CCSPlayerController controller, CommandInfo info)
     {
-        if (controller != null)
-        {
-            // Проверка на флаг у админа
-            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
-            {
-                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
-                return;
-            }
-        }
         Admin? admin = GetAdminBySid(controller.SteamID.ToString());
         if (admin == null)
         {
@@ -1298,6 +1289,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 return;
             }
         }
+
+        
         
         List<string> args = XHelper.GetArgsFromCommandLine(info.GetCommandString);
 
@@ -1311,11 +1304,25 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         CCSPlayerController? target = XHelper.GetPlayerFromArg(args[0]);
 
+        Admin? targetAdmin = target == null ? null : GetAdminBySid(target.SteamID.ToString());
+
+        if (controller != null)
+        {
+            if (targetAdmin != null && targetAdmin.Immunity >= GetAdminBySid(controller.SteamID.ToString())!.Immunity!)
+            {
+                info.ReplyToCommand($" {Localizer["PluginTag"]} {Localizer["IfTargetImmunity"]}");
+                return;
+            }
+        }
+        
+
         if (target == null && XHelper.GetIdentityType(args[0]) != "sid")
         {
             info.ReplyToCommand($" {Localizer["PluginTag"]} {Localizer["PlayerNotFinded"]}");
             return;
         }
+
+        
 
         string name = "";
         string identity = target == null ? args[0].Replace("#", "") : target.SteamID.ToString();
@@ -2950,13 +2957,13 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 ChatMenus.OpenMenu(controller, OthersMenuConstructor(controller));
             });
         }
-        // if (admin.Flags.Contains("z") || admin.Flags.Contains("d"))
-        // {
-        //     menu.AddMenuOption($" {Localizer["Danger.Title"]}", (controller, option) =>
-        //     {
-        //         OpenDangerMenu(controller);
-        //     });
-        // }
+        if (admin.Flags.Contains("z") || admin.Flags.Contains("d"))
+        {
+            menu.AddMenuOption($" {Localizer["Danger.Title"]}", (controller, option) =>
+            {
+                OpenDangerMenu(controller);
+            });
+        }
 
         return menu;
     }
@@ -4040,7 +4047,6 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         {
             activator.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
             MenuManager.CloseActiveMenu(controller);
-
         });
 
         menu.AddMenuOption(Localizer["Danger.Option.SavePos"], (p, _) =>
@@ -4064,7 +4070,6 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
 
     }
-
 
 
 
