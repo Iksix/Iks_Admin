@@ -55,6 +55,7 @@ public class PluginConfig : BasePluginConfig
         {"UnMuteMessage", "Админ {admin} размутил игрока {name}!"},
         {"GagMessage", "Админ {admin} гагнул игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"UnGagMessage", "Админ {admin} снял гаг игрока {name}!"},
+        {"SilenceMessage", "Админ {admin} заглушил игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"KickMessage", "Админ {admin} кикнул игрока {name}! \n Причина: {reason}"},
         {"SlayMessage", "Админ {admin} убил игрок {name}!"},
         {"HsayMessage", "Админ {admin} написал сообщение в худ! \n Текст: {text}"},

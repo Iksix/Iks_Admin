@@ -1999,6 +1999,145 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
     }
 
+    // MUTE
+    [ConsoleCommand("css_silence", "css_silence uid/sid duration reason <name if needed>")]
+    public void OnSilenceCmd(CCSPlayerController? controller, CommandInfo info)
+    {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "m", admins) || !Helper.AdminHaveFlag(controller.SteamID.ToString(), "g", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
+        BanManager bm = new BanManager(_dbConnectionString);
+
+        //Fix args Need to do in other commands
+        List<string> args = GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count < 4)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.Darkred}css_silence <#uid/#sid/name> <duration> <reason> <name if needed>");
+            return;
+        }
+
+        string identity = args[1];
+        if (identity.Trim() == "")
+        {
+            return;
+        }
+        int time = Int32.Parse(args[2]);
+        string reason = args[3];
+        string name = "";
+        string sid = identity.Length >= 17 ? identity : "Undefined";
+
+        for (int i = 4; i < args.Count; i++)
+        {
+            name += args[i] + " ";
+        }
+        if (name.Trim() == "") name = "Undefined";
+
+
+        CCSPlayerController? target = GetPlayerFromSidOrUid(identity); // Проверка есть ли игрок которого банят на сервере
+        // Установки если игрок на сервере
+        if (target != null)
+        {
+            if (name == "Undefined")
+            {
+                name = target.PlayerName;
+            }
+            sid = target.SteamID.ToString();
+        }
+
+        if (!isSteamId(sid))
+        {
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["IncorrectSid"]}");
+            return;
+        }
+
+        string AdminSid = "CONSOLE";
+        string AdminName = "CONSOLE";
+
+        if (controller != null)
+        {
+            AdminSid = controller.SteamID.ToString();
+            AdminName = controller.PlayerName;
+        }
+
+        if (controller != null) // Проверка на админа и флаги и иммунитет
+        {
+            Admin? admin = GetAdminBySid(controller.SteamID.ToString());
+            Admin? targetAdmin = null;
+            targetAdmin = GetAdminBySid(sid); // Попытка получить админа по стим айди игрока
+
+            if (admin != null)
+            {
+                if (!admin.Flags.Contains("m") && !admin.Flags.Contains("z")) // Проверка админ флага
+                {
+                    controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                    return;
+                }
+                if (targetAdmin != null) // Если цель админ
+                {
+                    if (targetAdmin.Immunity >= admin.Immunity) //Проверка иммунитета цели
+                    {
+                        controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["IfTargetImmunity"].ToString().Replace("{name}", name)}");
+                        return;
+                    }
+                }
+            }
+            else // Если игрок не админ: HaveNotAccess
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+
+        }
+        List<string> sids = GetListSids();
+        bool offline = target == null;
+        string ip = "Undefined";
+        if (target != null)
+        {
+            ip = target.IpAddress;
+        }
+        Task.Run(async () =>
+        {
+            if (await bm.IsPlayerMutedAsync(sid, Config))
+            {
+                Server.NextFrame(() =>
+                {
+                    NotifyIfPlayerAlredyBanned(name, info);
+                });
+                return;
+            }
+            if (await bm.IsPlayerGaggedAsync(sid, Config))
+            {
+                Server.NextFrame(() =>
+                {
+                    NotifyIfPlayerAlredyBanned(name, info);
+                });
+                return;
+            }
+
+            //Если всё нормально то баним
+            await bm.MutePlayer(name, sid, AdminSid, time, reason, Config);
+            await bm.GagPlayer(name, sid, AdminSid, time, reason, Config);
+            if (Config.LogToVk)
+            {
+                await vkLog.sendPunMessage(Config.LogToVkMessages["SilenceMessage"], name, sid, ip, AdminName, reason, time, offline);
+            }
+            await SetMutedPlayers(sids);
+            Server.NextFrame(() =>
+            {
+                PrintMuteMessage(name, AdminName, time, reason);
+            });
+        });
+
+    }
+
     [ConsoleCommand("css_unmute", "css_unmute <#uid/#sid/name>")]
     public void OnUnMuteCommand(CCSPlayerController? controller, CommandInfo info)
     {
@@ -2098,6 +2237,22 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         }
     }
     public void PrintMuteMessage(string name, string aName, int duration, string reason)
+    {
+        string title = $" {duration}{Localizer["min"]}";
+        if (duration == 0)
+        {
+            title = $" {Localizer["Options.Infinity"]}";
+        }
+        foreach (var str in Localizer["MuteMessage"].ToString().Split("\n"))
+        {
+            Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+                .Replace("{name}", name)
+                .Replace("{admin}", aName)
+                .Replace("{reason}", reason)
+                .Replace("{duration}", title)}");
+        }
+    }
+    public void PrintSilenceMessage(string name, string aName, int duration, string reason)
     {
         string title = $" {duration}{Localizer["min"]}";
         if (duration == 0)

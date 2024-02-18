@@ -1,63 +1,87 @@
 {
-	"PluginTag": "{white}[{darkblue}ADMIN{white}]",
-	"HaveNotAccess": "{red}You do not have access to this command!",
-	"reload_admins": "{darkblue} The list of administrators has been successfully reloaded! \n {darkblue} List {white}ALL {darkblue}admins:",
-	"Options.Back": "{gold}Back",
-	"Options.Exit": "{red}Go out",
-	"Options.ExitMessage": "Menu is closed!",
-	"Options.Kick": "{darkblue}Kick",
-	"Options.Ban": "{darkblue}Ban",
-	"Options.BanDisconnected": "{darkblue}Ban an exited player",
-	"Options.Mute": "{darkblue}Mute",
-	"Options.Gag": "{darkblue}Gag",
-	"Options.UnGagMute": "{darkblue}UnGagMute",
-	"Options.UnGag": "{darkblue}UnGag",
-	"Options.UnMute": "{darkblue}UnMute",
-	"Options.OwnReason": "Your reason",
-	"Options.OwnTime": "Its time",
-	"Options.Infinity": "{purple}Forever",
-	"Options.Others": "{darkblue}Other",
-	"Options.Slay": "{darkblue}Slay",
-	"Options.SwitchTeam": "{darkblue}SwitchTeam",
-	"Options.ChangeTeam": "{darkblue}ChangeTeam",
-	"OwnReasonMessage": "Enter the reason in {darkblue}chat!",
-	"OwnTimeMessage": "Enter time in {darkblue}chat {white} in minutes!",
-	"AdminMenuTitle": "Admin menu:",
-	"TimesTitle": "Select term:",
-	"UnGagMuteMenuTitle": "Remove the punishment | Menu:",
-	"UnGagMuteMenuTitleWhenPlayerSelected": "Remove the punishment from {name}:",
-	"UnGagMessage": "Player {red}{name}{white} was solved by the admin{darkblue}{admin}",
-	"UnMuteMessage": "Player {red}{name}{white} was tortured by the admin {darkblue}{admin}",
-	"KickMenuTitle": "Kick | Menu:",
-	"KickMenuReasonsTitle": "Reason for the kick:",
-	"KickMessage": "Player {red}{name}{white} was kicked by the admin {darkblue}{admin} \n Cause: {darkblue}{reason}",
-	"BanMenuTitle": "Ban | Menu:",
-	"BanMenuReasonsTitle": "Reason for ban:",
-	"BanMessage": "Player {red}{name}{white} was banned by admin{darkblue}{admin} \n Cause: {darkblue}{reason} \n Term: {darkblue}{duration}",
-	"UnBanMessage": "Player {red}{name}{white} was unbanned by the admin {darkblue}{admin}",
-	"MuteMenuTitle": "Mute | Menu:",
-	"MuteMenuReasonsTitle": "Cause mute:",
-	"MuteMessage": "Player {red}{name}{white} was tortured by the admin {darkblue}{admin} \n Cause: {darkblue}{reason} \n Term: {darkblue}{duration}",
-	"GagMenuTitle": "Gag | Menu:",
-	"GagMenuReasonsTitle": "Cause eider:",
-	"GagMessage": "Player {red}{name}{white} was kicked down by the admin{darkblue}{admin} \n Cause: {darkblue}{reason} \n Term: {darkblue}{duration}",
-	"PlayerAlredyBanned": "{red}Player {name} already punished!",
-	"min": "{white}min.",
-	"MUTED": "{darkblue}[M]",
-	"GAGGED": "{darkblue}[G]",
-	"searchbansTitle": "{darkblue}Player bans:",
-	"css_searchbans": "======================= \n Nick: {darkblue}{name} \n IP: {darkblue}{ip} \n Admin: {darkblue}{admin} \n Cause: {darkblue}{reason} \n Time: {darkblue}{time} \n Ban issued: {darkblue}{created} \nThe ban will end: {darkblue}{end} \nUnbanned: {darkblue}{unbanned} \nUnbanned by admin: {darkblue}{unbannedBy} \n=======================",
-	"IfTargetImmunity": "{red}The player has {darkblue}{name}{red} immunity >= yours!",
-	"IncorrectSid": "{red}Incorrect SteamId64!",
-	"PlayerNotFinded": "{red}Player not found!",
-	"AdminAlredyExist": "{red}Admin with this SteamId64 has already!",
-	"AdminNotExist": "{red}Admin with this SteamId64 dosent exist!",
-	"AdminCreated": "{darkblue}Admin created!",
-	"AdminDeleted": "{red}Admin deleted!",
-	"SlayMessage": "{red}{name} {white}was killed by the admin {darkblue}{admin}",
-	"SwitchTeamMessage": "Admin {darkblue}{admin}{white} switched {name} team \n Old team: {darkblue}{oldteam} \n New team: {darkblue}{newteam}",
-	"ChangeTeamMessage": "Admin {darkblue}{admin}{white} changed {name} team \n Old team: {darkblue}{oldteam} \n New team: {darkblue}{newteam}",
-	"Danger.Title": "{darkred}Danger {white}menu!",
-	"Danger.Option.SavePos": "Save Position",
-	"Danger.Option.Teleport": "Teleport"
+    // Main
+    "PluginTag": "{white}[{darkblue}ADMIN{white}]",
+    "HaveNotAccess": "{red}You do not have access to this command!",
+    "reload_admins": "{darkblue} List of administrators successfully reloaded! \n {darkblue} List {white}OF ALL {darkblue}admins:",
+
+    // Options
+
+    "Options.Back": "{gold}Back",
+    "Options.Exit": "{red}Exit",
+    "Options.ExitMessage": "Menu closed!",
+    "Options.Kick": "{darkblue}Kick",
+    "Options.Ban": "{darkblue}Ban",
+    "Options.BanDisconnected": "{darkblue}Ban disconnected player",
+    "Options.Mute": "{darkblue}Mute",
+    "Options.Gag": "{darkblue}Gag",
+    "Options.UnGagMute": "{darkblue}Remove punishment",
+    "Options.UnGag": "{darkblue}Un-gag",
+    "Options.UnMute": "{darkblue}Un-mute",
+    "Options.OwnReason": "Own reason",
+    "Options.OwnTime": "Own time",
+    "Options.Infinity": "{purple}Forever",
+    "Options.Others": "{darkblue}Other",
+    "Options.Slay": "{darkblue}Slay",
+    "Options.SwitchTeam": "{darkblue}Switch to team",
+    "Options.ChangeTeam": "{darkblue}Change team",
+    "Danger.Option.SavePos": "Save position",
+    "Danger.Option.Teleport": "Teleport",
+
+    "MUTED": "{darkblue}[M]",
+    "GAGGED": "{darkblue}[G]",
+    // /Options
+
+    // Messages
+
+    "OwnReasonMessage": "Enter the reason in {darkblue}chat!",
+    "OwnTimeMessage": "Enter time in {darkblue}chat {white} in minutes!",
+    "UnGagMessage": "Player {red}{name}{white} has been ungagged by admin {darkblue}{admin}",
+    "UnMuteMessage": "Player {red}{name}{white} has been unmuted by admin {darkblue}{admin}",
+    "KickMessage": "Player {red}{name}{white} has been kicked by admin {darkblue}{admin} \n Reason: {darkblue}{reason}",
+    "BanMessage": "Player {red}{name}{white} has been banned by admin {darkblue}{admin} \n Reason: {darkblue}{reason} \n Duration: {darkblue}{duration}",
+    "UnBanMessage": "Player {red}{name}{white} has been unbanned by admin {darkblue}{admin}",
+    "MuteMessage": "Player {red}{name}{white} has been muted by admin {darkblue}{admin} \n Reason: {darkblue}{reason} \n Duration: {darkblue}{duration}",
+    "GagMessage": "Player {red}{name}{white} has been gagged by admin {darkblue}{admin} \n Reason: {darkblue}{reason} \n Duration: {darkblue}{duration}",
+    "SlayMessage": "{red}{name} {white}has been slain by admin {darkblue}{admin}",
+    "SwitchTeamMessage": "Admin {darkblue}{admin}{white} moved player {name} \n Old team: {darkblue}{oldteam} \n New team: {darkblue}{newteam}",
+    "ChangeTeamMessage": "Admin {darkblue}{admin}{white} changed team for player {name} \n Old team: {darkblue}{oldteam} \n New team: {darkblue}{newteam}",
+
+    // /Messages
+
+    // Titles
+
+    "AdminMenuTitle": "Admin menu:",
+    "TimesTitle": "Choose duration:",
+    "UnGagMuteMenuTitle": "Remove punishment | Menu:",
+    "UnGagMuteMenuTitleWhenPlayerSelected": "Remove punishment from {name}:",
+    "KickMenuTitle": "Kick | Menu:",
+    "KickMenuReasonsTitle": "Kick reasons:",
+    "BanMenuTitle": "Ban | Menu:",
+    "BanMenuReasonsTitle": "Ban reasons:",
+    "MuteMenuTitle": "Mute | Menu:",
+    "MuteMenuReasonsTitle": "Mute reasons:",
+    "GagMenuTitle": "Gag | Menu:",
+    "GagMenuReasonsTitle": "Gag reasons:",
+    "searchbansTitle": "{darkblue}Player Bans:",
+    "Danger.Title": "{darkred}Danger!",
+
+    // /Titles
+
+    // Notify
+
+    "IfTargetImmunity": "{red}Player {darkblue}{name}{red} has immunity >= yours!",
+    "IncorrectSid": "{red}Incorrect SteamId64!",
+    "PlayerNotFinded": "{red}Player not found!",
+    "AdminAlredyExist": "{red}Admin with this SteamId64 already exists!",
+    "AdminNotExist": "{red}Admin with this SteamId64 not found!",
+    "AdminCreated": "{darkblue}Admin created!",
+    "AdminDeleted": "{red}Admin deleted!",
+    "PlayerAlredyBanned": "{red}Player {name} is already punished!",
+
+    // /Notify
+
+    // Other
+    "min": "{white}min.",
+    "css_searchbans": "======================= \n Name: {darkblue}{name} \n IP: {darkblue}{ip} \n Admin: {darkblue}{admin} \n Reason: {darkblue}{reason} \n Time: {darkblue}{time} \n Ban Issued: {darkblue}{created} \nBan Ends: {darkblue}{end} \nUnbanned: {darkblue}{unbanned} \nUnbanned by admin: {darkblue}{unbannedBy} \n======================="
+
 }
