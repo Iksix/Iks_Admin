@@ -54,16 +54,15 @@ Admin system with menu <br>
 - `t` - switch/change team `In the future..`
 
 ## To Do
-- Log to discord
-- `css_slay` - In menu
-- `css_switchteam` - In menu
-- `css_rename <uid> <name>` - In menu
-- `css_changeteam` - In menu
-- `css_csay uid/@all/@ct/@t time "message"` - Print To Center
-- `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
-- Commands for open menus
-- Converting from Iks_Admin flags to CSS +
-- WebSite
+- [ ] Log to discord
+- [x] `css_slay` - In menu
+- [x] `css_switchteam` - In menu
+- [ ] `css_rename <uid> <name>` - In menu
+- [x] `css_changeteam` - In menu
+- [x] `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
+- [x] Commands for open menus
+- [x] Converting from Iks_Admin flags to CS#
+- [ ] WebSite
 ## Required
 - [CSSharp v161](https://github.com/roflmuffin/CounterStrikeSharp/releases/tag/v161)
 
