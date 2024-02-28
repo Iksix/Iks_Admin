@@ -928,12 +928,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         Task.Run(async () =>
         {
             string message = Config.LogToVkMessages["HsayMessage"]
-            .Replace("{admin}", adminName)
-            .Replace("{text}", text);
+                .Replace("{admin}", adminName)
+                .Replace("{text}", text);
             if (vkLog != null)
             {
                 await vkLog.sendMessage(message);
             }
+            message = Config.LogToDiscordMessages["HsayMessage"]
+            .Replace("{admin}", adminName)
+            .Replace("{text}", text);
             await dLog.sendMessage(message, new DColor(255, 255, 255));
         });
         HSayMessage = text;
@@ -973,12 +976,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         Task.Run(async () =>
         {
             string message = Config.LogToVkMessages["HsayMessage"]
-            .Replace("{admin}", adminName)
-            .Replace("{text}", text);
+                .Replace("{admin}", adminName)
+                .Replace("{text}", text);
             if (vkLog != null)
             {
                 await vkLog.sendMessage(message);
             }
+            message = Config.LogToDiscordMessages["HsayMessage"]
+            .Replace("{admin}", adminName)
+            .Replace("{text}", text);
             await dLog.sendMessage(message, new DColor(255, 255, 255));
             
             
@@ -1129,6 +1135,13 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             if (vkLog != null){
                 await vkLog.sendMessage(message);
             }
+            message = Config.LogToDiscordMessages["SwitchTeamMessage"]
+            .Replace("{admin}", adminName)
+            .Replace("{adminsid}", adminSid)
+            .Replace("{name}", targetParams.PlayerName)
+            .Replace("{sid}", targetParams.SteamID)
+            .Replace("{oldteam}", oldTeamString)
+            .Replace("{newteam}", team.ToUpper());
             await dLog.sendMessage(message, new DColor(255, 255, 255));
             
             
@@ -1182,6 +1195,13 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             if (vkLog != null){
                 await vkLog.sendMessage(message);
             }
+            message = Config.LogToDiscordMessages["SwitchTeamMessage"]
+            .Replace("{admin}", adminName)
+            .Replace("{adminsid}", adminSid)
+            .Replace("{name}", targetParams.PlayerName)
+            .Replace("{sid}", targetParams.SteamID)
+            .Replace("{oldteam}", oldTeamString)
+            .Replace("{newteam}", team.ToUpper());
             await dLog.sendMessage(message, new DColor(255, 255, 255));
         });
     }
@@ -3338,6 +3358,25 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 OpenBlocksManagementMenu(controller);
             });
         }
+        if (admin.Flags.Contains("z") || admin.Flags.Contains("c"))
+        {
+            // Управление Сервером
+            menu.AddMenuOption($" {Localizer["Options.Server"]}", (controller, option) =>
+            {
+                OpenServerManagementMenu(controller);
+            });
+        }
+
+        if (Config.CustomMenu)
+        {
+            // Кастомные пункты
+            menu.AddMenuOption($" {Localizer["Options.Custom"]}", (controller, option) =>
+            {
+                OpenCustomMenu(controller);
+            });
+        }
+        
+        
         
 
         
@@ -3352,6 +3391,56 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         }
 
         return menu;
+    }
+
+    public void OpenCustomMenu(CCSPlayerController controller)
+    {
+        Admin? admin = GetAdminBySid(controller.SteamID.ToString());
+        if (admin == null)
+        {
+            return;
+        }
+
+        ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.Players"]}");
+
+        // Назад
+        menu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
+        {
+            MenuManager.OpenChatMenu(activator, AdminMenuConstructor(admin));
+        });
+        
+        // Закрыть меню
+        menu.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
+        {
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(controller);
+        });
+
+        // Кастомные пункты
+        foreach (var p in Config.Custom)
+        {
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), p.Flag, admins))
+            {
+                continue;
+            }
+            menu.AddMenuOption(p.Name, (controller, option) =>
+            {
+                MenuManager.CloseActiveMenu(controller);
+                string cmd = p.Command
+                .Replace("{name}", controller.PlayerName)
+                .Replace("{steamid}", controller.SteamID.ToString())
+                .Replace("{uid}", controller.UserId.ToString());
+                if (p.ExecuteFromConsole)
+                {
+                    Server.ExecuteCommand(cmd);
+                } else
+                {
+                    controller.ExecuteClientCommandFromServer(cmd);
+                }
+            });
+        }
+
+        MenuManager.OpenChatMenu(controller, menu);
     }
 
     public void OpenPlayersManagementMenu(CCSPlayerController controller)
@@ -3420,7 +3509,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         // Назад
         menu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
         {
-            OpenPlayersManagementMenu(activator);
+            MenuManager.OpenChatMenu(activator, AdminMenuConstructor(admin));
         });
         // Закрыть меню
         menu.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
@@ -3447,6 +3536,92 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             });
         }
  
+
+        MenuManager.OpenChatMenu(controller, menu);
+    }
+
+    public void OpenServerManagementMenu(CCSPlayerController controller)
+    {
+        Admin? admin = GetAdminBySid(controller.SteamID.ToString());
+        if (admin == null)
+        {
+            return;
+        }
+
+        ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.Blocks"]}");
+        // Назад
+        menu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
+        {
+            MenuManager.OpenChatMenu(activator, AdminMenuConstructor(admin));
+        });
+        // Закрыть меню
+        menu.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
+        {
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(controller);
+        });
+
+        // Сменить карту
+        menu.AddMenuOption($" {Localizer["Options.ChangeMap"]}", (controller, option) =>
+        {
+            OpenMapChangeMenu(controller);
+        });
+
+        MenuManager.OpenChatMenu(controller, menu);
+    }
+
+    public void OpenMapChangeMenu(CCSPlayerController controller)
+    {
+        Admin? admin = GetAdminBySid(controller.SteamID.ToString());
+        if (admin == null)
+        {
+            return;
+        }
+
+        ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.Blocks"]}");
+        // Назад
+        menu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
+        {
+            OpenServerManagementMenu(activator);
+        });
+        // Закрыть меню
+        menu.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
+        {
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(controller);
+        });
+
+
+        foreach (var map in Config.Maps)
+        {
+            menu.AddMenuOption(map, (controller, option) =>
+            {
+                Server.PrintToChatAll($" {Localizer["PluginTag"]} {Localizer["ChangeMapMessage"].ToString()
+                .Replace("{admin}", controller.PlayerName)
+                .Replace("{adminsid}", controller.SteamID.ToString())
+                .Replace("{map}", map)}");
+                Server.PrintToChatAll($" {Localizer["PluginTag"]} ...");
+                string vmessage = Config.LogToVkMessages["ChangeMapMessage"]
+                        .Replace("{admin}", controller.PlayerName)
+                        .Replace("{adminsid}", controller.SteamID.ToString())
+                        .Replace("{map}", map);
+                string dmessage = Config.LogToDiscordMessages["ChangeMapMessage"]
+                        .Replace("{admin}", controller.PlayerName)
+                        .Replace("{adminsid}", controller.SteamID.ToString())
+                        .Replace("{map}", map);
+                Task.Run(() => {
+                    if (Config.LogToVk)
+                    {
+                        vkLog.sendMessage(vmessage);
+                    }
+                    dLog.sendMessage(dmessage, new DColor(255, 255, 255));
+                });
+                MenuManager.CloseActiveMenu(controller);
+                AddTimer(5, () => {
+                    Server.ExecuteCommand($"map {map}");
+                });
+            });
+        }
 
         MenuManager.OpenChatMenu(controller, menu);
     }

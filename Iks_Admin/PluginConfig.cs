@@ -23,13 +23,26 @@ public class PluginConfig : BasePluginConfig
     [JsonPropertyName("Maps")] public string[] Maps { get; set; } = new[] { "de_mirage", "de_dust2", "de_inferno" }; // [1.1.6]
 
     // [JsonPropertyName("Times")] public int[] Times { get; set; } = new[] { 120, 60, 30, 15, 0 };
-    [JsonPropertyName("Times")] public Dictionary<string, int> Times { get; set; } = new() { 
+    [JsonPropertyName("Times")] public Dictionary<string, int> Times { get; set; } = new() { // [1.1.6]
         {"1 year", 525600},
         {"1 month", 43200},
         {"1 week", 10080},
         {"1 day", 1440},
         {"1 hour", 60},
         {"30 minutes", 30},
+    };
+    
+    // [1.1.6] Кастомные пункты меню, используются по принципу команды от имени админа/сервера
+    // В будущем планируется глобальная переработка, ну пока так
+    // {uid}, {steamid}, {name}
+    [JsonPropertyName("CustomMenu")] public bool CustomMenu { get; set; } = true;
+    [JsonPropertyName("Custom")] public List<CustomItem> Custom { get; set; } = new() { 
+        {new CustomItem(
+            "Открыть меню варнов",
+            "b",
+            "css_warn",
+            false
+        )}
     };
 
 
@@ -59,13 +72,15 @@ public class PluginConfig : BasePluginConfig
     [JsonPropertyName("LogToVkMessages")]
     public Dictionary<string, string> LogToVkMessages { get; set; } = new Dictionary<string, string>()
     {
+        {"SilenceMessage", "Админ {admin} заглушил игрока {name} на {duration}! \n Причина: {reason} \n {status}"}, // [1.1.6]
+        {"ChangeMapMessage", "Админ {admin} сменил карту на {map}"}, // [1.1.6]
+
         {"BanMessage" , "Админ {admin} забанил игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"UnBanMessage", "Админ {admin} разбанил игрока {name}!"},
         {"MuteMessage", "Админ {admin} замутил игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"UnMuteMessage", "Админ {admin} размутил игрока {name}!"},
         {"GagMessage", "Админ {admin} гагнул игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"UnGagMessage", "Админ {admin} снял гаг игрока {name}!"},
-        {"SilenceMessage", "Админ {admin} заглушил игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"KickMessage", "Админ {admin} кикнул игрока {name}! \n Причина: {reason}"},
         {"SlayMessage", "Админ {admin} убил игрок {name}!"},
         {"HsayMessage", "Админ {admin} написал сообщение в худ! \n Текст: {text}"},
@@ -82,13 +97,15 @@ public class PluginConfig : BasePluginConfig
     [JsonPropertyName("LogToDiscordMessages")]
     public Dictionary<string, string> LogToDiscordMessages { get; set; } = new Dictionary<string, string>()
     {
+        {"SilenceMessage", "Админ {admin} заглушил игрока {name} на {duration}! \n Причина: {reason} \n {status}"}, // [1.1.6]
+        {"ChangeMapMessage", "Админ {admin} сменил карту на {map}"}, // [1.1.6]
+
         {"BanMessage" , "Админ {admin} забанил игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"UnBanMessage", "Админ {admin} разбанил игрока {name}!"},
         {"MuteMessage", "Админ {admin} замутил игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"UnMuteMessage", "Админ {admin} размутил игрока {name}!"},
         {"GagMessage", "Админ {admin} гагнул игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"UnGagMessage", "Админ {admin} снял гаг игрока {name}!"},
-        {"SilenceMessage", "Админ {admin} заглушил игрока {name} на {duration}! \n Причина: {reason} \n {status}"},
         {"KickMessage", "Админ {admin} кикнул игрока {name}! \n Причина: {reason}"},
         {"SlayMessage", "Админ {admin} убил игрок {name}!"},
         {"HsayMessage", "Админ {admin} написал сообщение в худ! \n Текст: {text}"},

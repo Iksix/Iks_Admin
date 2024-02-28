@@ -9,6 +9,7 @@
       "Iks_Admin/1.0.0": {
         "dependencies": {
           "CounterStrikeSharp.API": "1.0.172",
+          "Discord.Webhook": "1.0.9",
           "MySqlConnector": "2.3.5",
           "VkNet": "1.78.0-alpha-99"
         },
@@ -35,6 +36,14 @@
           "lib/net7.0/CounterStrikeSharp.API.dll": {
             "assemblyVersion": "1.0.172.0",
             "fileVersion": "1.0.172.0"
+          }
+        }
+      },
+      "Discord.Webhook/1.0.9": {
+        "runtime": {
+          "lib/netstandard2.0/Discord Webhook.dll": {
+            "assemblyVersion": "1.0.9.0",
+            "fileVersion": "1.0.9.0"
           }
         }
       },
@@ -558,6 +567,13 @@
       "sha512": "sha512-613QfAcUIy964NnmmjQ/xoDQuTTAcE2/z0djdIaRWeQqWGexR4w7qhzfBeElUZMqz5voNB9U5f72GKwaZ7cg2w==",
       "path": "counterstrikesharp.api/1.0.172",
       "hashPath": "counterstrikesharp.api.1.0.172.nupkg.sha512"
+    },
+    "Discord.Webhook/1.0.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-dlFm7+Ozjb2vq9tlNlWzwxeRh1QXWDd2ABwQjBj0xJfPeb0o54R6ryMvv0OcaYUw+yAWXnytzCWsbdbOO9Q7YQ==",
+      "path": "discord.webhook/1.0.9",
+      "hashPath": "discord.webhook.1.0.9.nupkg.sha512"
     },
     "HtmlAgilityPack/1.11.53": {
       "type": "package",

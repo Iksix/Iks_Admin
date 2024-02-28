@@ -31,6 +31,8 @@ public class DiscordLog
                 .Replace("{server}", Config.ServerName);
 
         await sendMessage(message, new DColor(255, 0, 0));
+        Console.WriteLine("Log to discord?2?");
+
 
     }
 
@@ -52,6 +54,8 @@ public class DiscordLog
                 .Replace("{ip}", ip);
         
         await sendMessage(message, new DColor(0, 255, 0));
+        Console.WriteLine("Log to discord?1");
+
 
     }
 
@@ -70,5 +74,6 @@ public class DiscordLog
                 .WithDescription(message);
         });
         await new Webhook(Config.WebHookUrl).SendAsync(webhookObject);
+        Console.WriteLine("Log to discord??");
     }
 }

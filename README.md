@@ -51,9 +51,10 @@ Admin system with menu <br>
 - `g` - Gag
 - `u` - Unban
 - `s` - `css_slay` `css_switchteam` `css_changeteam`
+- `c` - Управление сервером
 
 ## To Do
-- [ ] Log to discord
+- [x] Log to discord
 - [x] `css_slay` - In menu
 - [x] `css_switchteam` - In menu
 - [ ] `css_rename <uid> <name>` - In menu
@@ -63,7 +64,7 @@ Admin system with menu <br>
 - [x] Converting from Iks_Admin flags to CS#
 - [ ] WebSite
 ## Required
-- [CSSharp v161](https://github.com/roflmuffin/CounterStrikeSharp/releases/tag/v161)
+- [CSSharp v172](https://github.com/roflmuffin/CounterStrikeSharp/releases/tag/v172)
 
 
 
@@ -122,9 +123,10 @@ Admin system with menu <br>
 - `g` - Гаг
 - `u` - Разбан
 - `s` - `css_slay` `css_switchteam` `css_changeteam`
+- `c` - Управление сервером
 
 ## Планы
-- [ ] Лог в дискорд
+- [x] Лог в дискорд
 - [x] `css_slay` - будет в меню
 - [x] `css_switchteam` - будет в меню
 - [x] `css_changeteam` - будет в меню
@@ -134,7 +136,7 @@ Admin system with menu <br>
 - [x] Комманды для открытия меню
 - [ ] Сайт
 ## Зависимости
-- [CSSharp v161](https://github.com/roflmuffin/CounterStrikeSharp/releases/tag/v161)
+- [CSSharp v172](https://github.com/roflmuffin/CounterStrikeSharp/releases/tag/v172)
 
 
 

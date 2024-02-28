@@ -35,6 +35,7 @@
     "Options.Server": "{darkblue}Управление сервером", // [1.1.6]
     "Options.Custom": "{darkblue}Кастомные пункты", // [1.1.6]
     "Options.Silence": "{darkblue}Заглушить", // [1.1.6]
+    "Options.ChangeMap": "{darkblue}Сменить карту", // [1.1.6]
 
 	"MUTED": "{darkblue}[M]",
 	"GAGGED": "{darkblue}[G]",
@@ -51,10 +52,12 @@
 	"UnBanMessage": "Игрок {red}{name}{white} был разбанен админом {darkblue}{admin}",
 	"MuteMessage": "Игрок {red}{name}{white} был замучен админом {darkblue}{admin} \n Причина: {darkblue}{reason} \n Срок: {darkblue}{duration}",
 	"GagMessage": "Игрок {red}{name}{white} был гагнут админом {darkblue}{admin} \n Причина: {darkblue}{reason} \n Срок: {darkblue}{duration}",
-	"SilenceMessage": "Игрок {red}{name}{white} был заглушен админом {darkblue}{admin} \n Причина: {darkblue}{reason} \n Срок: {darkblue}{duration}", // [1.1.6]
 	"SlayMessage": "{red}{name} {white}был убит админом {darkblue}{admin}",
 	"SwitchTeamMessage": "Админ {darkblue}{admin}{white} переместил игрока {name} \n Прошлая команда: {darkblue}{oldteam} \n Новая команда: {darkblue}{newteam}",
 	"ChangeTeamMessage": "Админ {darkblue}{admin}{white} сменил команду игрока {name} \n Прошлая команда: {darkblue}{oldteam} \n Новая команда: {darkblue}{newteam}",
+	
+	"SilenceMessage": "Игрок {red}{name}{white} был заглушен админом {darkblue}{admin} \n Причина: {darkblue}{reason} \n Срок: {darkblue}{duration}", // [1.1.6]
+	"ChangeMapMessage": "Админ {darkblue}{admin}{white} сменил карту на {map}", // [1.1.6]
 
 	"ToAdmins": "{green}[Админам] {name}: {message}", // От игрока [1.1.6]
 	"AdminChat": "{green}[Админ чат] {admin}: {message}", // От админа [1.1.6]
