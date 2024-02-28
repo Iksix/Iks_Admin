@@ -128,7 +128,7 @@ Admin system with menu <br>
 - [x] `css_slay` - будет в меню
 - [x] `css_switchteam` - будет в меню
 - [x] `css_changeteam` - будет в меню
-- [x] `css_rename <uid> <name>` - In menu
+- [ ] `css_rename <uid> <name>` - In menu
 - [x] `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
 - [x] Конвертация из флагов Iks_Admin в CSS +
 - [x] Комманды для открытия меню
