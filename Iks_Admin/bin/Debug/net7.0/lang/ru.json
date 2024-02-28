@@ -43,10 +43,13 @@
 	"UnBanMessage": "Игрок {red}{name}{white} был разбанен админом {darkblue}{admin}",
 	"MuteMessage": "Игрок {red}{name}{white} был замучен админом {darkblue}{admin} \n Причина: {darkblue}{reason} \n Срок: {darkblue}{duration}",
 	"GagMessage": "Игрок {red}{name}{white} был гагнут админом {darkblue}{admin} \n Причина: {darkblue}{reason} \n Срок: {darkblue}{duration}",
+	"SilenceMessage": "Игрок {red}{name}{white} был заглушен админом {darkblue}{admin} \n Причина: {darkblue}{reason} \n Срок: {darkblue}{duration}",
 	"SlayMessage": "{red}{name} {white}был убит админом {darkblue}{admin}",
 	"SwitchTeamMessage": "Админ {darkblue}{admin}{white} переместил игрока {name} \n Прошлая команда: {darkblue}{oldteam} \n Новая команда: {darkblue}{newteam}",
 	"ChangeTeamMessage": "Админ {darkblue}{admin}{white} сменил команду игрока {name} \n Прошлая команда: {darkblue}{oldteam} \n Новая команда: {darkblue}{newteam}",
 
+	"ToAdmins": "{green}[Админам] {name}: {message}", // От игрока [1.1.6]
+	"AdminChat": "{green}[Админ чат] {admin}: {message}", // От админа [1.1.6]
 	// /Messages
 
 	// Titles

@@ -42,7 +42,7 @@
           "dependencies": {
             "CounterStrikeSharp.API": {
               "target": "Package",
-              "version": "[1.0.163, )"
+              "version": "[1.0.172, )"
             },
             "MySqlConnector": {
               "target": "Package",

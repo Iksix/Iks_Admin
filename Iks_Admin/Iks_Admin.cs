@@ -24,7 +24,7 @@ namespace Iks_Admin;
 public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 {
     public override string ModuleName { get; } = "Iks_Admin";
-    public override string ModuleVersion { get; } = "1.1.5.2";
+    public override string ModuleVersion { get; } = "1.1.6";
     public override string ModuleAuthor { get; } = "iks";
     private string _dbConnectionString = "";
 
@@ -961,6 +961,49 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             HSayMessage = null;
         });
     }
+
+    [ConsoleCommand("css_isay", "css_isay \"<img link>\"")]
+    public void OnIsayCommand(CCSPlayerController? controller, CommandInfo info)
+    {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "s", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
+
+        var args = XHelper.GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count < 1)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_isay \"<img link>\"");
+            return;
+        }
+
+        string link = args[0].Replace("\"", "");
+        string adminName = controller == null ? "CONSOLE" : controller.PlayerName;
+        string text = @"<img src='" + link + "'>";
+
+        Task.Run(async () =>
+        {
+            if (!Config.LogToVk) return;
+            string message = Config.LogToVkMessages["HsayMessage"]
+            .Replace("{admin}", adminName)
+            .Replace("{text}", text);
+            await vkLog.sendMessage(message);
+        });
+        HSayMessage = text;
+        HSayColor = "white";
+        AddTimer(5, () =>
+        {
+            HSayMessage = null;
+        });
+    }
+
 
     [ConsoleCommand("css_switchteam", "css_switchteam <#uid/#sid/name> <ct/t>")]
     public void OnSwitchTeamCommand(CCSPlayerController? controller, CommandInfo info)
@@ -2132,7 +2175,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             await SetMutedPlayers(sids);
             Server.NextFrame(() =>
             {
-                PrintMuteMessage(name, AdminName, time, reason);
+                PrintSilenceMessage(name, AdminName, time, reason);
             });
         });
 
@@ -2259,7 +2302,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         {
             title = $" {Localizer["Options.Infinity"]}";
         }
-        foreach (var str in Localizer["MuteMessage"].ToString().Split("\n"))
+        foreach (var str in Localizer["SilenceMessage"].ToString().Split("\n"))
         {
             Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
                 .Replace("{name}", name)
@@ -2449,10 +2492,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     }
     public void UpdateChatColorsGagged()
     {
-        if (Config.HaveIksChatColors)
-        {
-            NativeAPI.IssueServerCommand("css_chatcolors_setgaggedplayers");
-        }
+        Server.NextFrame(() => {
+            if (Config.HaveIksChatColors)
+            {
+                NativeAPI.IssueServerCommand("css_chatcolors_setgaggedplayers");
+            }
+        });
     }
     public async Task SetMutedPlayers(List<string> sids) // IN FUTURE
     {
@@ -2613,9 +2658,54 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
     public HookResult OnSay(CCSPlayerController? controller, CommandInfo info)
     {
+        string message = info.GetArg(1);
+        
+
         if (controller == null)
         {
             return HookResult.Continue;
+        }
+
+        Console.WriteLine($"message: {message}");
+        if (message.StartsWith("@"))
+        {
+            Admin? admin = GetAdminBySid(controller.SteamID.ToString());
+
+            var oplayers = XHelper.GetOnlinePlayers();
+            // Если сообщение от игрока:
+            if (admin == null)
+            {
+
+                foreach (var p in oplayers)
+                {
+                    if (GetAdminBySid(p.SteamID.ToString()) == null) continue;
+                    p.PrintToChat($" {Localizer["ToAdmins"].ToString()
+                    .Replace("{name}", controller.PlayerName)
+                    .Replace("{message}", message.Replace("@", ""))
+                    }");
+                }
+
+                controller.PrintToChat($" {Localizer["ToAdmins"].ToString()
+                .Replace("{name}", controller.PlayerName)
+                .Replace("{message}", message.Replace("@", ""))
+                }");
+
+                return HookResult.Stop;
+            }
+
+            // Если от админа:
+
+            foreach (var p in oplayers)
+            {
+                if (GetAdminBySid(p.SteamID.ToString()) == null) continue;
+                p.PrintToChat($" {Localizer["AdminChat"].ToString()
+                .Replace("{admin}", controller.PlayerName)
+                .Replace("{message}", message.Replace("@", ""))
+                }");
+            }
+
+            return HookResult.Stop;
+
         }
 
         if (GaggedSids.Contains(controller.SteamID.ToString()))

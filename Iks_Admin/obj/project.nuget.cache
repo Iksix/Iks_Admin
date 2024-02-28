@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "n83Q1jisEFOYXz6rsLLJP4a3qNLIhL8qgSaaKz+UGuaT4TPLMVM92argwfVuck0p9urhrR0nqnzvKeUFgTPntw==",
+  "dgSpecHash": "ZkmZ+Rpq8cLLEIx/ynwmGpvACjSQLH2SNTnpJ1kDwSEm2qWR1j13aSZrxW6misetoumVuNTGbsGcb6E9AKV0aw==",
   "success": true,
   "projectFilePath": "D:\\__plgns\\Iks_Admin\\Iks_Admin\\Iks_Admin.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Iks\\.nuget\\packages\\counterstrikesharp.api\\1.0.163\\counterstrikesharp.api.1.0.163.nupkg.sha512",
+    "C:\\Users\\Iks\\.nuget\\packages\\counterstrikesharp.api\\1.0.172\\counterstrikesharp.api.1.0.172.nupkg.sha512",
     "C:\\Users\\Iks\\.nuget\\packages\\htmlagilitypack\\1.11.53\\htmlagilitypack.1.11.53.nupkg.sha512",
     "C:\\Users\\Iks\\.nuget\\packages\\mcmaster.netcore.plugins\\1.4.0\\mcmaster.netcore.plugins.1.4.0.nupkg.sha512",
     "C:\\Users\\Iks\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",

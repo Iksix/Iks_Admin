@@ -45,7 +45,9 @@
     "SlayMessage": "{red}{name} {white}has been slain by admin {darkblue}{admin}",
     "SwitchTeamMessage": "Admin {darkblue}{admin}{white} moved player {name} \n Old team: {darkblue}{oldteam} \n New team: {darkblue}{newteam}",
     "ChangeTeamMessage": "Admin {darkblue}{admin}{white} changed team for player {name} \n Old team: {darkblue}{oldteam} \n New team: {darkblue}{newteam}",
-
+ 
+	"ToAdmins": "{green}[To admins] {name}: {message}", // From player [1.1.6]
+	"AdminChat": "{green}[Admin chat] {admin}: {message}", // From admin [1.1.6]
     // /Messages
 
     // Titles
@@ -65,6 +67,7 @@
     "searchbansTitle": "{darkblue}Player Bans:",
     "Danger.Title": "{darkred}Danger!",
 
+	
     // /Titles
 
     // Notify
