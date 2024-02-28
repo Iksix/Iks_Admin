@@ -29,6 +29,19 @@
           }
         }
       },
+      "Discord.Webhook/1.0.9": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Discord Webhook.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Discord Webhook.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "HtmlAgilityPack/1.11.53": {
         "type": "package",
         "compile": {
@@ -931,6 +944,21 @@
         "lib/net7.0/CounterStrikeSharp.API.dll",
         "lib/net7.0/CounterStrikeSharp.API.runtimeconfig.json",
         "lib/net7.0/CounterStrikeSharp.API.xml"
+      ]
+    },
+    "Discord.Webhook/1.0.9": {
+      "sha512": "dlFm7+Ozjb2vq9tlNlWzwxeRh1QXWDd2ABwQjBj0xJfPeb0o54R6ryMvv0OcaYUw+yAWXnytzCWsbdbOO9Q7YQ==",
+      "type": "package",
+      "path": "discord.webhook/1.0.9",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "discord.webhook.1.0.9.nupkg.sha512",
+        "discord.webhook.nuspec",
+        "lib/netstandard2.0/Discord Webhook.dll",
+        "lib/netstandard2.0/Discord Webhook.xml",
+        "logo.png"
       ]
     },
     "HtmlAgilityPack/1.11.53": {
@@ -2472,6 +2500,7 @@
   "projectFileDependencyGroups": {
     "net7.0": [
       "CounterStrikeSharp.API >= 1.0.172",
+      "Discord.WebHook >= 1.0.9",
       "MySqlConnector >= 2.3.5",
       "VkNet >= 1.78.0-alpha-99"
     ]
@@ -2518,6 +2547,10 @@
           "CounterStrikeSharp.API": {
             "target": "Package",
             "version": "[1.0.172, )"
+          },
+          "Discord.WebHook": {
+            "target": "Package",
+            "version": "[1.0.9, )"
           },
           "MySqlConnector": {
             "target": "Package",

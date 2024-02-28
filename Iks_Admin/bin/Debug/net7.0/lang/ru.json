@@ -28,6 +28,14 @@
 	"Danger.Option.SavePos": "Сохранить позицию",
 	"Danger.Option.Teleport": "Телепорт",
 
+	"Options.Players": "{darkblue}Управление игроками", // [1.1.6]
+	"Options.Blocks": "{darkblue}Управление блокировками", // [1.1.6]
+	"Options.Blocks.Comms": "{darkblue}Управление мутами", // [1.1.6]
+	"Options.Blocks.Bans": "{darkblue}Управление банами", // [1.1.6]
+    "Options.Server": "{darkblue}Управление сервером", // [1.1.6]
+    "Options.Custom": "{darkblue}Кастомные пункты", // [1.1.6]
+    "Options.Silence": "{darkblue}Заглушить", // [1.1.6]
+
 	"MUTED": "{darkblue}[M]",
 	"GAGGED": "{darkblue}[G]",
 	// /Options
@@ -43,7 +51,7 @@
 	"UnBanMessage": "Игрок {red}{name}{white} был разбанен админом {darkblue}{admin}",
 	"MuteMessage": "Игрок {red}{name}{white} был замучен админом {darkblue}{admin} \n Причина: {darkblue}{reason} \n Срок: {darkblue}{duration}",
 	"GagMessage": "Игрок {red}{name}{white} был гагнут админом {darkblue}{admin} \n Причина: {darkblue}{reason} \n Срок: {darkblue}{duration}",
-	"SilenceMessage": "Игрок {red}{name}{white} был заглушен админом {darkblue}{admin} \n Причина: {darkblue}{reason} \n Срок: {darkblue}{duration}",
+	"SilenceMessage": "Игрок {red}{name}{white} был заглушен админом {darkblue}{admin} \n Причина: {darkblue}{reason} \n Срок: {darkblue}{duration}", // [1.1.6]
 	"SlayMessage": "{red}{name} {white}был убит админом {darkblue}{admin}",
 	"SwitchTeamMessage": "Админ {darkblue}{admin}{white} переместил игрока {name} \n Прошлая команда: {darkblue}{oldteam} \n Новая команда: {darkblue}{newteam}",
 	"ChangeTeamMessage": "Админ {darkblue}{admin}{white} сменил команду игрока {name} \n Прошлая команда: {darkblue}{oldteam} \n Новая команда: {darkblue}{newteam}",
@@ -68,6 +76,9 @@
 	"GagMenuReasonsTitle": "Причина гага:",
 	"searchbansTitle": "{darkblue}Баны игрока:",
 	"Danger.Title": "{darkred}Опасно!",
+    "SilenceReason": "{darkblue}Причина:", // [1.1.6]
+
+
 
 	// /Titles
 

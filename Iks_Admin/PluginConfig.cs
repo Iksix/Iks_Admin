@@ -19,8 +19,18 @@ public class PluginConfig : BasePluginConfig
     [JsonPropertyName("BanReasons")] public string[] BanReasons { get; set; } = new[] { "Reason1", "Reason2", "Reason3" };
     [JsonPropertyName("MuteReason")] public string[] MuteReason { get; set; } = new[] { "Reason1", "Reason2", "Reason3" };
     [JsonPropertyName("GagReason")] public string[] GagReason { get; set; } = new[] { "Reason2", "Reason2", "Reason3" };
+    [JsonPropertyName("SilenceReason")] public string[] SilenceReason { get; set; } = new[] { "Reason2", "Reason2", "Reason3" }; // [1.1.6]
+    [JsonPropertyName("Maps")] public string[] Maps { get; set; } = new[] { "de_mirage", "de_dust2", "de_inferno" }; // [1.1.6]
 
-    [JsonPropertyName("Times")] public int[] Times { get; set; } = new[] { 120, 60, 30, 15, 0 };
+    // [JsonPropertyName("Times")] public int[] Times { get; set; } = new[] { 120, 60, 30, 15, 0 };
+    [JsonPropertyName("Times")] public Dictionary<string, int> Times { get; set; } = new() { 
+        {"1 year", 525600},
+        {"1 month", 43200},
+        {"1 week", 10080},
+        {"1 day", 1440},
+        {"1 hour", 60},
+        {"30 minutes", 30},
+    };
 
 
     [JsonPropertyName("ConvertedFlags")]

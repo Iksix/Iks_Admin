@@ -27,6 +27,16 @@
     "Danger.Option.SavePos": "Save position",
     "Danger.Option.Teleport": "Teleport",
 
+    "Options.Players": "{darkblue}Player Management", // [1.1.6]
+	"Options.Blocks": "{darkblue}Blocks Management", // [1.1.6]
+    "Options.Blocks.Comms": "{darkblue}Comms Management", // [1.1.6]
+	"Options.Blocks.Bans": "{darkblue}Bans Management", // [1.1.6]
+    "Options.Server": "{darkblue}Server Management", // [1.1.6]
+    "Options.Custom": "{darkblue}Custom item", // [1.1.6]
+    "Options.Silence": "{darkblue}Silence", // [1.1.6]
+
+
+
     "MUTED": "{darkblue}[M]",
     "GAGGED": "{darkblue}[G]",
     // /Options
@@ -45,6 +55,7 @@
     "SlayMessage": "{red}{name} {white}has been slain by admin {darkblue}{admin}",
     "SwitchTeamMessage": "Admin {darkblue}{admin}{white} moved player {name} \n Old team: {darkblue}{oldteam} \n New team: {darkblue}{newteam}",
     "ChangeTeamMessage": "Admin {darkblue}{admin}{white} changed team for player {name} \n Old team: {darkblue}{oldteam} \n New team: {darkblue}{newteam}",
+    "SilenceMessage": "The player {red}{name}{white} was silenced by the admin {darkblue}{admin} \n Reason: {darkblue}{reason} \n Duration: {darkblue}{duration}", // [1.1.6]
  
 	"ToAdmins": "{green}[To admins] {name}: {message}", // From player [1.1.6]
 	"AdminChat": "{green}[Admin chat] {admin}: {message}", // From admin [1.1.6]
@@ -66,6 +77,7 @@
     "GagMenuReasonsTitle": "Gag reasons:",
     "searchbansTitle": "{darkblue}Player Bans:",
     "Danger.Title": "{darkred}Danger!",
+    "SilenceReason": "{darkblue}Reasons:", // [1.1.6]
 
 	
     // /Titles

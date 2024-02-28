@@ -210,7 +210,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         if (controller != null)
         {
             // Проверка на флаг у админа
-            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "z", admins))
             {
                 controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
                 return;
@@ -218,7 +218,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         }
         if (controller == null)
         {
-            ReloadAdmins(null);
+            ReloadAdmins(null, info);
             return;
         }
 
@@ -260,10 +260,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         {
             if (await bm.IsPlayerBannedAsync(identity, Config))
             {
-                Server.NextFrame(() =>
-                {
-                    KickBySid(identity);
-                });
+                KickBySid(identity);
             }
             if (await bm.IsPlayerGaggedAsync(identity, Config))
             {
@@ -294,24 +291,20 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                     MutedSids.Remove(identity);
                 }
             }
-            Server.NextFrame(() =>
-            {
-                SetMuteForPlayers();
-                UpdateChatColorsGagged();
-            });
+            UpdateChatColorsGagged();
+            SetMuteForPlayers();
         });
-        Server.NextFrame(() =>
-        {
-            ReloadAdmins(null);
-        });
+        ReloadAdmins(null);
     }
 
     public void KickBySid(string sid)
     {
-        if (Utilities.GetPlayerFromSteamId(UInt64.Parse(sid)) != null)
-        {
-            NativeAPI.IssueServerCommand($"kickid {Utilities.GetPlayerFromSteamId(UInt64.Parse(sid)).UserId}");
-        }
+        Server.NextFrame(() => {
+            if (Utilities.GetPlayerFromSteamId(UInt64.Parse(sid)) != null)
+            {
+                NativeAPI.IssueServerCommand($"kickid {Utilities.GetPlayerFromSteamId(UInt64.Parse(sid)).UserId}");
+            }
+        });
     }
 
     [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
@@ -411,10 +404,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         Task.Run(async () =>
         {
             await am.AddAdmin(sid, name, flags, immunity, group_id, end, server_id);
-            Server.NextFrame(() =>
-            {
-                ReloadAdmins(null);
-            });
+            ReloadAdmins(null);
         });
 
         if (controller != null)
@@ -514,10 +504,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             }
             Console.WriteLine("[Iks_Admin] Player banned!");
 
-            Server.NextFrame(() =>
-            {
-                PrintBanMessage(name, adminName, duration, reason);
-            });
+            PrintBanMessage(name, adminName, duration, reason);
             if (Config.LogToVk)
             {
                 await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, adminName, reason, duration, offline);
@@ -570,10 +557,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             bannedPlayer = await bm.GetPlayerBan(sid, Config);
             if (bannedPlayer != null)
             {
-                Server.NextFrame(() =>
-                {
-                    PrintUnbanMessage(bannedPlayer.Name, admin != null ? admin.Name : adminSid);
-                });
+                PrintUnbanMessage(bannedPlayer.Name, admin != null ? admin.Name : adminSid);
             }
             await bm.UnBanPlayer(sid, adminSid, Config);
             if (Config.LogToVk)
@@ -649,11 +633,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             await bm.GagPlayer(name, sid, adminSid, duration, reason, Config);
             Console.WriteLine("[Iks_Admin] Player gagged!");
             await SetGaggedPlayers(sids);
-            Server.NextFrame(() =>
-            {
-                UpdateChatColorsGagged();
-                PrintGagMessage(name, adminName, duration, reason);
-            });
+            UpdateChatColorsGagged();
+            PrintGagMessage(name, adminName, duration, reason);
             if (Config.LogToVk)
             {
                 await vkLog.sendPunMessage(Config.LogToVkMessages["GagMessage"], name, sid, ip, adminName, reason, duration, offline);
@@ -702,11 +683,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             await SetGaggedPlayers(sids);
             if (bannedPlayer != null && (admin != null || adminSid == "CONSOLE"))
             {
-                Server.NextFrame(() =>
-                {
-                    PrintUnGagMessage(bannedPlayer.Name, admin != null ? admin.Name : adminSid);
-
-                });
+                PrintUnGagMessage(bannedPlayer.Name, admin != null ? admin.Name : adminSid);
                 if (Config.LogToVk)
                 {
                     await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnGagMessage"], bannedPlayer.Name, sid, admin != null ? admin.Name : adminSid, bannedPlayer.Ip, true);
@@ -783,10 +760,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             await bm.MutePlayer(name, sid, adminSid, duration, reason, Config);
             Console.WriteLine("[Iks_Admin] Player muted!");
             await SetMutedPlayers(sids);
-            Server.NextFrame(() =>
-            {
-                PrintMuteMessage(name, adminName, duration, reason);
-            });
+            PrintMuteMessage(name, adminName, duration, reason);
             if (Config.LogToVk)
             {
                 await vkLog.sendPunMessage(Config.LogToVkMessages["MuteMessage"], name, sid, ip, adminName, reason, duration, offline);
@@ -835,10 +809,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             await SetMutedPlayers(sids);
             if (bannedPlayer != null && (admin != null || adminSid == "CONSOLE"))
             {
-                Server.NextFrame(() =>
-                {
-                    PrintUnMuteMessage(bannedPlayer.Name, admin != null ? admin.Name : adminSid);
-                });
+                PrintUnMuteMessage(bannedPlayer.Name, admin != null ? admin.Name : adminSid);
             }
             if (Config.LogToVk)
             {
@@ -905,10 +876,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         Task.Run(async () =>
         {
             await am.DeleteAdmin(sid);
-            Server.NextFrame(() =>
-            {
-                ReloadAdmins(null);
-            });
+            ReloadAdmins(null);
         });
 
         if (controller != null)
@@ -1198,6 +1166,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         {
             admin = GetAdminBySid(controller.SteamID.ToString());
         }
+
+        var args = XHelper.GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count == 0)
+        {
+            MenuManager.OpenChatMenu(controller, SlayMenu(controller));
+            return;
+        }
+
         CCSPlayerController? target = GetPlayerFromSidOrUid(info.GetArg(1));
         string adminName = controller == null ? "CONSOLE" : controller.PlayerName;
         if (target == null && controller == null)
@@ -1210,7 +1187,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
             return;
         }
-        if (controller == null)
+        if (controller != null)
         {
             if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "s", admins))
             {
@@ -1242,6 +1219,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             }
         }
         List<string> args = GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count == 0)
+        {
+            MenuManager.OpenChatMenu(controller, KickMenuConstructor(controller));
+            return;
+        }
 
         if (args.Count < 3)
         {
@@ -1332,10 +1315,14 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 return;
             }
         }
-
-        
         
         List<string> args = XHelper.GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count == 0)
+        {
+            MenuManager.OpenChatMenu(controller, BanMenuConstructor(controller));
+            return;
+        }
 
         if (args.Count < 3)
         {
@@ -1391,18 +1378,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         {
             if (await bm.IsPlayerBannedAsync(identity, Config)) // Проверка есть ли бан по identity
             {
-                Server.NextFrame(() =>
-                {
-                    NotifyIfPlayerAlredyBanned(name, info);
-                });
+                NotifyIfPlayerAlredyBanned(name, info);
                 return;
             }
             if (await bm.IsPlayerBannedAsync(ip, Config)) // Проверка есть ли бан по ip
             {
-                Server.NextFrame(() =>
-                {
-                    NotifyIfPlayerAlredyBanned(name, info);
-                });
+                NotifyIfPlayerAlredyBanned(name, info);
                 return;
             }
 
@@ -1412,10 +1393,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, identity, ip, AdminName, reason, time, target == null);
             }
-            Server.NextFrame(() =>
-            {
-                PrintBanMessage(name, AdminName, time, reason);
-            });
+            PrintBanMessage(name, AdminName, time, reason);
         });
 
         // Кикаем игрока после бана
@@ -1535,18 +1513,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         {
             if (await bm.IsPlayerBannedAsync(identity, Config)) // Проверка есть ли бан по identity
             {
-                Server.NextFrame(() =>
-                {
-                    NotifyIfPlayerAlredyBanned(name, info);
-                });
+                NotifyIfPlayerAlredyBanned(name, info);
                 return;
             }
             if (await bm.IsPlayerBannedAsync(ip, Config)) // Проверка есть ли бан по ip
             {
-                Server.NextFrame(() =>
-                {
-                    NotifyIfPlayerAlredyBanned(name, info);
-                });
+                NotifyIfPlayerAlredyBanned(name, info);
                 return;
             }
 
@@ -1556,10 +1528,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, time, offline);
             }
-            Server.NextFrame(() =>
-            {
-                PrintBanMessage(name, AdminName, time, reason);
-            });
+            PrintBanMessage(name, AdminName, time, reason);
         });
 
         // Кикаем игрока после бана
@@ -1621,10 +1590,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             bannedPlayer = await bm.GetPlayerBan(arg, Config);
             if (bannedPlayer != null)
             {
-                Server.NextFrame(() =>
-                {
-                    PrintUnbanMessage(bannedPlayer.Name, adminName);
-                });
+                PrintUnbanMessage(bannedPlayer.Name, adminName);
             }
             await bm.UnBanPlayer(arg, adminSid, Config);
             Console.WriteLine("Unbanned");
@@ -1640,28 +1606,32 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
     public void PrintUnbanMessage(string playerName, string adminName)
     {
-        foreach (var str in Localizer["UnBanMessage"].ToString().Split("\n"))
-        {
-            Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
-                .Replace("{name}", playerName)
-                .Replace("{admin}", adminName)}");
-        }
+        Server.NextFrame(() => {
+            foreach (var str in Localizer["UnBanMessage"].ToString().Split("\n"))
+            {
+                Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+                    .Replace("{name}", playerName)
+                    .Replace("{admin}", adminName)}");
+            }
+        });
     }
     public void PrintBanMessage(string name, string aName, int duration, string reason)
     {
-        string title = $" {duration}{Localizer["min"]}";
-        if (duration == 0)
-        {
-            title = $" {Localizer["Options.Infinity"]}";
-        }
-        foreach (var str in Localizer["BanMessage"].ToString().Split("\n"))
-        {
-            Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
-                .Replace("{name}", name)
-                .Replace("{admin}", aName)
-                .Replace("{reason}", reason)
-                .Replace("{duration}", title)}");
-        }
+        Server.NextFrame(() => {
+            string title = $" {duration}{Localizer["min"]}";
+            if (duration == 0)
+            {
+                title = $" {Localizer["Options.Infinity"]}";
+            }
+            foreach (var str in Localizer["BanMessage"].ToString().Split("\n"))
+            {
+                Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+                    .Replace("{name}", name)
+                    .Replace("{admin}", aName)
+                    .Replace("{reason}", reason)
+                    .Replace("{duration}", title)}");
+            }
+        });
     }
 
 
@@ -1682,6 +1652,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         BanManager bm = new BanManager(_dbConnectionString);
 
         List<string> args = GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count == 0)
+        {
+            MenuManager.OpenChatMenu(controller, GagMenuConstructor(controller));
+            return;
+        }
 
         if (args.Count < 4)
         {
@@ -1773,10 +1749,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         {
             if (await bm.IsPlayerGaggedAsync(sid, Config)) // Проверка есть ли бан по identity
             {
-                Server.NextFrame(() =>
-                {
-                    NotifyIfPlayerAlredyBanned(name, info);
-                });
+                NotifyIfPlayerAlredyBanned(name, info);
                 return;
             }
 
@@ -1788,11 +1761,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             }
             await SetGaggedPlayers(sids);
 
-            Server.NextFrame(() =>
-            {
-                UpdateChatColorsGagged();
-                PrintGagMessage(name, AdminName, time, reason);
-            });
+            UpdateChatColorsGagged();
+            PrintGagMessage(name, AdminName, time, reason);
         });
 
     }
@@ -1867,10 +1837,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             mutedPlayer = await bm.GetPlayerGag(sid, Config);
             if (mutedPlayer != null)
             {
-                Server.NextFrame(() =>
-                {
-                    PrintUnGagMessage(mutedPlayer.Name, adminName);
-                });
+                PrintUnGagMessage(mutedPlayer.Name, adminName);
             }
 
             await bm.UnGagPlayer(sid, adminSid, Config);
@@ -1888,28 +1855,32 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
     public void PrintUnGagMessage(string playerName, string adminName)
     {
-        foreach (var str in Localizer["UnGagMessage"].ToString().Split("\n"))
-        {
-            Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
-                .Replace("{name}", playerName)
-                .Replace("{admin}", adminName)}");
-        }
+        Server.NextFrame(() => {
+            foreach (var str in Localizer["UnGagMessage"].ToString().Split("\n"))
+            {
+                Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+                    .Replace("{name}", playerName)
+                    .Replace("{admin}", adminName)}");
+            }
+        });
     }
     public void PrintGagMessage(string name, string aName, int duration, string reason)
     {
-        string title = $" {duration}{Localizer["min"]}";
-        if (duration == 0)
-        {
-            title = $" {Localizer["Options.Infinity"]}";
-        }
-        foreach (var str in Localizer["GagMessage"].ToString().Split("\n"))
-        {
-            Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
-                .Replace("{name}", name)
-                .Replace("{admin}", aName)
-                .Replace("{reason}", reason)
-                .Replace("{duration}", title)}");
-        }
+        Server.NextFrame(() => {
+            string title = $" {duration}{Localizer["min"]}";
+            if (duration == 0)
+            {
+                title = $" {Localizer["Options.Infinity"]}";
+            }
+            foreach (var str in Localizer["GagMessage"].ToString().Split("\n"))
+            {
+                Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+                    .Replace("{name}", name)
+                    .Replace("{admin}", aName)
+                    .Replace("{reason}", reason)
+                    .Replace("{duration}", title)}");
+            }
+        });
     }
 
     // MUTE
@@ -1929,6 +1900,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         //Fix args Need to do in other commands
         List<string> args = GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count == 0)
+        {
+            MenuManager.OpenChatMenu(controller, MuteMenuConstructor(controller));
+            return;
+        }
 
         if (args.Count < 4)
         {
@@ -2020,10 +1997,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         {
             if (await bm.IsPlayerMutedAsync(sid, Config)) // Проверка есть ли бан по identity
             {
-                Server.NextFrame(() =>
-                {
-                    NotifyIfPlayerAlredyBanned(name, info);
-                });
+                NotifyIfPlayerAlredyBanned(name, info);
                 return;
             }
 
@@ -2034,10 +2008,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 await vkLog.sendPunMessage(Config.LogToVkMessages["MuteMessage"], name, sid, ip, AdminName, reason, time, offline);
             }
             await SetMutedPlayers(sids);
-            Server.NextFrame(() =>
-            {
-                PrintMuteMessage(name, AdminName, time, reason);
-            });
+            PrintMuteMessage(name, AdminName, time, reason);
         });
 
     }
@@ -2059,6 +2030,13 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         //Fix args Need to do in other commands
         List<string> args = GetArgsFromCommandLine(info.GetCommandString);
+
+
+        if (args.Count == 0)
+        {
+            MenuManager.OpenChatMenu(controller, OpenSilenceMenu(controller));
+            return;
+        }
 
         if (args.Count < 4)
         {
@@ -2150,18 +2128,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         {
             if (await bm.IsPlayerMutedAsync(sid, Config))
             {
-                Server.NextFrame(() =>
-                {
-                    NotifyIfPlayerAlredyBanned(name, info);
-                });
+                NotifyIfPlayerAlredyBanned(name, info);
                 return;
             }
             if (await bm.IsPlayerGaggedAsync(sid, Config))
             {
-                Server.NextFrame(() =>
-                {
-                    NotifyIfPlayerAlredyBanned(name, info);
-                });
+                NotifyIfPlayerAlredyBanned(name, info);
                 return;
             }
 
@@ -2173,10 +2145,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 await vkLog.sendPunMessage(Config.LogToVkMessages["SilenceMessage"], name, sid, ip, AdminName, reason, time, offline);
             }
             await SetMutedPlayers(sids);
-            Server.NextFrame(() =>
-            {
-                PrintSilenceMessage(name, AdminName, time, reason);
-            });
+            await SetGaggedPlayers(sids);
+            PrintSilenceMessage(name, AdminName, time, reason);
         });
 
     }
@@ -2252,10 +2222,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             mutedPlayer = await bm.GetPlayerMute(sid, Config);
             if (mutedPlayer != null)
             {
-                Server.NextFrame(() =>
-                {
-                    PrintUnMuteMessage(mutedPlayer.Name, adminName);
-                });
+                PrintUnMuteMessage(mutedPlayer.Name, adminName);
             }
 
             await bm.UnMutePlayer(sid, adminSid, Config);
@@ -2272,44 +2239,50 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
     public void PrintUnMuteMessage(string playerName, string adminName)
     {
-        foreach (var str in Localizer["UnMuteMessage"].ToString().Split("\n"))
-        {
-            Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
-                .Replace("{name}", playerName)
-                .Replace("{admin}", adminName)}");
-        }
+        Server.NextFrame(() => {
+            foreach (var str in Localizer["UnMuteMessage"].ToString().Split("\n"))
+            {
+                Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+                    .Replace("{name}", playerName)
+                    .Replace("{admin}", adminName)}");
+            }
+        });
     }
     public void PrintMuteMessage(string name, string aName, int duration, string reason)
     {
-        string title = $" {duration}{Localizer["min"]}";
-        if (duration == 0)
-        {
-            title = $" {Localizer["Options.Infinity"]}";
-        }
-        foreach (var str in Localizer["MuteMessage"].ToString().Split("\n"))
-        {
-            Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
-                .Replace("{name}", name)
-                .Replace("{admin}", aName)
-                .Replace("{reason}", reason)
-                .Replace("{duration}", title)}");
-        }
+        Server.NextFrame(() => {
+          string title = $" {duration}{Localizer["min"]}";
+            if (duration == 0)
+            {
+                title = $" {Localizer["Options.Infinity"]}";
+            }
+            foreach (var str in Localizer["MuteMessage"].ToString().Split("\n"))
+            {
+                Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+                    .Replace("{name}", name)
+                    .Replace("{admin}", aName)
+                    .Replace("{reason}", reason)
+                    .Replace("{duration}", title)}");
+            }
+        });
     }
     public void PrintSilenceMessage(string name, string aName, int duration, string reason)
     {
-        string title = $" {duration}{Localizer["min"]}";
-        if (duration == 0)
-        {
-            title = $" {Localizer["Options.Infinity"]}";
-        }
-        foreach (var str in Localizer["SilenceMessage"].ToString().Split("\n"))
-        {
-            Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
-                .Replace("{name}", name)
-                .Replace("{admin}", aName)
-                .Replace("{reason}", reason)
-                .Replace("{duration}", title)}");
-        }
+        Server.NextFrame(() => {
+            string title = $" {duration}{Localizer["min"]}";
+            if (duration == 0)
+            {
+                title = $" {Localizer["Options.Infinity"]}";
+            }
+            foreach (var str in Localizer["SilenceMessage"].ToString().Split("\n"))
+            {
+                Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+                    .Replace("{name}", name)
+                    .Replace("{admin}", aName)
+                    .Replace("{reason}", reason)
+                    .Replace("{duration}", title)}");
+            }
+        });
     }
 
 
@@ -2318,9 +2291,15 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
     public void NotifyIfPlayerAlredyBanned(string name, CommandInfo info)
     {
-        
-        info.ReplyToCommand($" {Localizer["PluginTag"]} {Localizer["PlayerAlredyBanned"]}");
-        
+        Server.NextFrame(() => {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {Localizer["PlayerAlredyBanned"]}");
+        });
+    }
+    public void NotifyIfPlayerAlredyBanned(string name, CCSPlayerController controller)
+    {
+        Server.NextFrame(() => {
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerAlredyBanned"]}");
+        });
     }
 
 
@@ -2399,15 +2378,13 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         {
             playerBans = await bm.GetPlayerBansBySid(sid);
 
-            Server.NextFrame(() =>
-            {
-                WritePlayerBans(cSid, info, playerBans);
-            });
+            WritePlayerBans(cSid, info, playerBans);
         });
     }
     public void WritePlayerBans(string? cSid, CommandInfo info, List<BannedPlayer> playerBans)
     {
-        if (cSid == null)
+        Server.NextFrame(() => {
+            if (cSid == null)
         {
             info.ReplyToCommand("[Iks_Admin] Player bans:");
         }
@@ -2470,8 +2447,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         }
         info.ReplyToCommand("end?");
-
-
+        });
     }
     #endregion
 
@@ -2505,29 +2481,28 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         MutedSids = await bm.GetMutedPlayers(sids, Config);
 
-        Server.NextFrame(() =>
-        {
-            SetMuteForPlayers();
-        });
+        SetMuteForPlayers();
 
     }
 
     public void SetMuteForPlayers()
     {
-        foreach (var p in Helper.GetOnlinePlayers())
-        {
-            if (!p.IsBot && p.IsValid)
+        Server.NextFrame(() => {
+            foreach (var p in Helper.GetOnlinePlayers())
             {
-                if (MutedSids.Contains(p.SteamID.ToString()))
+                if (!p.IsBot && p.IsValid)
                 {
-                    p.VoiceFlags = VoiceFlags.Muted;
-                }
-                else
-                {
-                    p.VoiceFlags = VoiceFlags.Normal;
+                    if (MutedSids.Contains(p.SteamID.ToString()))
+                    {
+                        p.VoiceFlags = VoiceFlags.Muted;
+                    }
+                    else
+                    {
+                        p.VoiceFlags = VoiceFlags.Normal;
+                    }
                 }
             }
-        }
+        });
     }
 
     public List<string> GetListSids()
@@ -2549,10 +2524,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         GaggedSids = await bm.GetGaggedPlayers(sids, Config);
 
-        Server.NextFrame(() =>
-        {
-            UpdateChatColorsGagged();
-        });
+        UpdateChatColorsGagged();
 
     }
     public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
@@ -2564,84 +2536,169 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     }
     public void ReloadAdmins(string? sid)
     {
-        Console.WriteLine("[Iks_Admin] Admins reloaded!");
-        AdminManager am = new AdminManager(_dbConnectionString);
-        string server_id = Config.ServerId;
-        Task.Run(async () =>
-        {
-            admins = await am.GetAllAdmins(server_id);
-            Server.NextFrame(() =>
+        Server.NextFrame(() => {
+            Console.WriteLine("[Iks_Admin] Admins reloaded!");
+            AdminManager am = new AdminManager(_dbConnectionString);
+            string server_id = Config.ServerId;
+            Task.Run(async () =>
             {
+                admins = await am.GetAllAdmins(server_id);
                 PrintAdminList(sid);
             });
-        });
 
-        for (int i = 0; i < OwnReasonsTyper.Length; i++)
-        {
-            OwnReasonsTyper[i] = null;
-            Actions[i] = null;
-            ActionTargets[i] = null;
-            ActionTargetsDisconnected[i] = null;
-            SkipActionPlayer[i] = null;
-            ActionTimes[i] = 0;
-        }
+            for (int i = 0; i < OwnReasonsTyper.Length; i++)
+            {
+                OwnReasonsTyper[i] = null;
+                Actions[i] = null;
+                ActionTargets[i] = null;
+                ActionTargetsDisconnected[i] = null;
+                SkipActionPlayer[i] = null;
+                ActionTimes[i] = 0;
+            }
+        });
+    }
+
+    public void ReloadAdmins(string? sid, CommandInfo info)
+    {
+        Server.NextFrame(() => {
+            info.ReplyToCommand("[Iks_Admin] Admins reloaded!");
+            AdminManager am = new AdminManager(_dbConnectionString);
+            string server_id = Config.ServerId;
+            Task.Run(async () =>
+            {
+                admins = await am.GetAllAdmins(server_id);
+                PrintAdminList(sid, info);
+            });
+
+            for (int i = 0; i < OwnReasonsTyper.Length; i++)
+            {
+                OwnReasonsTyper[i] = null;
+                Actions[i] = null;
+                ActionTargets[i] = null;
+                ActionTargetsDisconnected[i] = null;
+                SkipActionPlayer[i] = null;
+                ActionTimes[i] = 0;
+            }
+        });
     }
     public void PrintAdminList(string? sid)
     {
-        CCSPlayerController? controller = null;
-        if (sid != null)
-        {
-            controller = Utilities.GetPlayerFromSteamId(UInt64.Parse(sid));
-        }
-        foreach (var a in admins)
-        {
-            if (sid == null)
+        Server.NextFrame(() => {
+            CCSPlayerController? controller = null;
+            if (sid != null)
             {
-                Console.WriteLine("=============");
-                Console.WriteLine($"Name: {a.Name}");
-                Console.WriteLine($"SteamId: {a.SteamId}");
-                Console.WriteLine($"Immunity: {a.Immunity}");
-                Console.WriteLine($"Flags: {a.Flags}");
-                Console.WriteLine($"Group Name: {a.GroupName}");
-                Console.WriteLine($"Group Id: {a.GroupId}");
-                Console.WriteLine("=============");
+                controller = Utilities.GetPlayerFromSteamId(UInt64.Parse(sid));
             }
-            if (controller != null)
+            foreach (var a in admins)
             {
-                controller.PrintToChat("=============");
-                controller.PrintToChat($"Name: {ChatColors.DarkBlue}{a.Name}");
-                controller.PrintToChat($"SteamId: {ChatColors.DarkBlue}{a.SteamId}");
-                controller.PrintToChat($"Immunity: {ChatColors.DarkBlue}{a.Immunity}");
-                controller.PrintToChat($"Flags: {ChatColors.DarkBlue}{a.Flags}");
-                controller.PrintToChat($"Group Name: {ChatColors.DarkBlue}{a.GroupName}");
-                controller.PrintToChat($"Group Id: {ChatColors.DarkBlue}{a.GroupId}");
-                controller.PrintToChat("=============");
-            }
-        }
-
-        // Устанавливаем CSS
-        foreach (var admin in admins)
-        {
-            ulong cSid = 0;
-            UInt64.TryParse(admin.SteamId, out cSid);
-            if (cSid == 0) continue;
-            SteamID asid = new SteamID(cSid);
-            // Устанавливаем иммунитет CSS и группы
-            cssAdminManager.AdminManager.AddPlayerToGroup(asid, $"#css/{admin.GroupName}");
-            cssAdminManager.AdminManager.SetPlayerImmunity(asid, admin.Immunity < 0 ? 0 : (uint)admin.Immunity);
-
-
-            foreach (var Flag in Config.ConvertedFlags)
-            {
-                if (admin.Flags.Contains(Flag.Key))
+                if (sid == null)
                 {
-                    Console.WriteLine(Flag.Key);
-                    SteamID steamID = new SteamID(cSid);
-                    cssAdminManager.AdminManager.AddPlayerPermissions(steamID, Flag.Value.ToArray());
+                    Console.WriteLine("=============");
+                    Console.WriteLine($"Name: {a.Name}");
+                    Console.WriteLine($"SteamId: {a.SteamId}");
+                    Console.WriteLine($"Immunity: {a.Immunity}");
+                    Console.WriteLine($"Flags: {a.Flags}");
+                    Console.WriteLine($"Group Name: {a.GroupName}");
+                    Console.WriteLine($"Group Id: {a.GroupId}");
+                    Console.WriteLine("=============");
+                }
+                if (controller != null)
+                {
+                    controller.PrintToChat("=============");
+                    controller.PrintToChat($"Name: {ChatColors.DarkBlue}{a.Name}");
+                    controller.PrintToChat($"SteamId: {ChatColors.DarkBlue}{a.SteamId}");
+                    controller.PrintToChat($"Immunity: {ChatColors.DarkBlue}{a.Immunity}");
+                    controller.PrintToChat($"Flags: {ChatColors.DarkBlue}{a.Flags}");
+                    controller.PrintToChat($"Group Name: {ChatColors.DarkBlue}{a.GroupName}");
+                    controller.PrintToChat($"Group Id: {ChatColors.DarkBlue}{a.GroupId}");
+                    controller.PrintToChat("=============");
                 }
             }
-        }
 
+            // Устанавливаем CSS
+            foreach (var admin in admins)
+            {
+                ulong cSid = 0;
+                UInt64.TryParse(admin.SteamId, out cSid);
+                if (cSid == 0) continue;
+                SteamID asid = new SteamID(cSid);
+                // Устанавливаем иммунитет CSS и группы
+                cssAdminManager.AdminManager.AddPlayerToGroup(asid, $"#css/{admin.GroupName}");
+                cssAdminManager.AdminManager.SetPlayerImmunity(asid, admin.Immunity < 0 ? 0 : (uint)admin.Immunity);
+
+
+                foreach (var Flag in Config.ConvertedFlags)
+                {
+                    if (admin.Flags.Contains(Flag.Key))
+                    {
+                        Console.WriteLine(Flag.Key);
+                        SteamID steamID = new SteamID(cSid);
+                        cssAdminManager.AdminManager.AddPlayerPermissions(steamID, Flag.Value.ToArray());
+                    }
+                }
+            }
+
+        });
+    }
+
+    public void PrintAdminList(string? sid, CommandInfo info)
+    {
+        Server.NextFrame(() => {
+            CCSPlayerController? controller = null;
+            if (sid != null)
+            {
+                controller = Utilities.GetPlayerFromSteamId(UInt64.Parse(sid));
+            }
+            foreach (var a in admins)
+            {
+                if (sid == null)
+                {
+                    info.ReplyToCommand("=============");
+                    info.ReplyToCommand($"Name: {a.Name}");
+                    info.ReplyToCommand($"SteamId: {a.SteamId}");
+                    info.ReplyToCommand($"Immunity: {a.Immunity}");
+                    info.ReplyToCommand($"Flags: {a.Flags}");
+                    info.ReplyToCommand($"Group Name: {a.GroupName}");
+                    info.ReplyToCommand($"Group Id: {a.GroupId}");
+                    info.ReplyToCommand("=============");
+                }
+                if (controller != null)
+                {
+                    controller.PrintToChat("=============");
+                    controller.PrintToChat($"Name: {ChatColors.DarkBlue}{a.Name}");
+                    controller.PrintToChat($"SteamId: {ChatColors.DarkBlue}{a.SteamId}");
+                    controller.PrintToChat($"Immunity: {ChatColors.DarkBlue}{a.Immunity}");
+                    controller.PrintToChat($"Flags: {ChatColors.DarkBlue}{a.Flags}");
+                    controller.PrintToChat($"Group Name: {ChatColors.DarkBlue}{a.GroupName}");
+                    controller.PrintToChat($"Group Id: {ChatColors.DarkBlue}{a.GroupId}");
+                    controller.PrintToChat("=============");
+                }
+            }
+
+            // Устанавливаем CSS
+            foreach (var admin in admins)
+            {
+                ulong cSid = 0;
+                UInt64.TryParse(admin.SteamId, out cSid);
+                if (cSid == 0) continue;
+                SteamID asid = new SteamID(cSid);
+                // Устанавливаем иммунитет CSS и группы
+                cssAdminManager.AdminManager.AddPlayerToGroup(asid, $"#css/{admin.GroupName}");
+                cssAdminManager.AdminManager.SetPlayerImmunity(asid, admin.Immunity < 0 ? 0 : (uint)admin.Immunity);
+
+
+                foreach (var Flag in Config.ConvertedFlags)
+                {
+                    if (admin.Flags.Contains(Flag.Key))
+                    {
+                        Console.WriteLine(Flag.Key);
+                        SteamID steamID = new SteamID(cSid);
+                        cssAdminManager.AdminManager.AddPlayerPermissions(steamID, Flag.Value.ToArray());
+                    }
+                }
+            }
+
+        });
     }
 
     public Admin? GetAdminBySid(string sid)
@@ -2993,15 +3050,83 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         Task.Run(async () =>
                         {
                             await SetGaggedPlayers(gagCheckSids);
-                            Server.NextFrame(() =>
-                            {
-                                UpdateChatColorsGagged();
-                            });
+                            UpdateChatColorsGagged();
                         });
 
 
 
                         foreach (var str in Localizer["GagMessage"].ToString().Split("\n"))
+                        {
+                            Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+                                .Replace("{name}", ActionTargets[i].PlayerName)
+                                .Replace("{admin}", OwnReasonsTyper[i].PlayerName)
+                                .Replace("{reason}", info.GetArg(1).Replace("!", ""))
+                                .Replace("{duration}", title)}");
+                        }
+
+                        break;
+                    case "silenceTime":
+                        if (ActionTargets[i].IsValid == false || ActionTargets[i] == null)
+                        {
+                            OwnReasonsTyper[i].PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
+                            break;
+                        }
+                        time = Int32.Parse(info.GetArg(1).Replace("!", ""));
+                        title = $"{time}{Localizer["min"]}";
+                        if (time == 0)
+                        {
+                            title = Localizer["Options.Infinity"].ToString();
+                        }
+
+                        ChatMenu SilenceMenuReasons = OpenSilenceMenuReasons(OwnReasonsTyper[i], ActionTargets[i], time, title);
+
+                        ChatMenus.OpenMenu(OwnReasonsTyper[i], SilenceMenuReasons);
+                        break;
+                    case "silenceReason":
+                        if (ActionTargets[i].IsValid == false || ActionTargets[i] == null)
+                        {
+                            OwnReasonsTyper[i].PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
+                            break;
+                        }
+                        title = $"{ActionTimes[i]}{Localizer["min"]}";
+                        if (ActionTimes[i] == 0)
+                        {
+                            title = Localizer["Options.Infinity"].ToString();
+                        }
+                        bm = new BanManager(_dbConnectionString);
+                        if (GaggedSids.Contains(ActionTargets[i].SteamID.ToString()))
+                        {
+                            OwnReasonsTyper[i].PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerAlredyBanned"]}");
+                            break;
+                        }
+
+                        name = ActionTargets[i].PlayerName;
+                        sid = ActionTargets[i].SteamID.ToString();
+                        adminsid = OwnReasonsTyper[i].SteamID.ToString();
+                        Btime = ActionTimes[i];
+                        reason = info.GetArg(1).Replace("!", "");
+                        AdminName = OwnReasonsTyper[i].PlayerName;
+                        ip = ActionTargets[i].IpAddress;
+                        Task.Run(async () =>
+                        {
+                            await bm.GagPlayer(name, sid, adminsid, Btime, reason, Config);
+                            await bm.MutePlayer(name, sid, adminsid, Btime, reason, Config);
+                            if (Config.LogToVk)
+                            {
+                                await vkLog.sendPunMessage(Config.LogToVkMessages["SilenceMessage"], name, sid, ip, AdminName, reason, Btime, false);
+                            }
+                        });
+                        List<string> sids = GetListSids();
+                        Task.Run(async () =>
+                        {
+                            await SetGaggedPlayers(sids);
+                            await SetMutedPlayers(sids);
+                            UpdateChatColorsGagged();
+                        });
+
+
+
+                        foreach (var str in Localizer["SilenceMessage"].ToString().Split("\n"))
                         {
                             Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
                                 .Replace("{name}", ActionTargets[i].PlayerName)
@@ -3040,17 +3165,11 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         {
             if (await bm.IsPlayerBannedAsync(sid, Config))
             {
-                Server.NextFrame(() =>
-                {
-                    Kick(uid);
-                });
+                Kick(uid);
             }
             if (await bm.IsPlayerBannedAsync(ip, Config))
             {
-                Server.NextFrame(() =>
-                {
-                    Kick(uid);
-                });
+                Kick(uid);
             }
         });
         CCSPlayerController controller = @event.Userid;
@@ -3085,7 +3204,9 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
     public void Kick(int? uid)
     {
-        NativeAPI.IssueServerCommand($"kickid {uid}");
+        Server.NextFrame(() => {
+            NativeAPI.IssueServerCommand($"kickid {uid}");
+        });
     }
 
 
@@ -3146,62 +3267,30 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         {
             controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
             MenuManager.CloseActiveMenu(controller);
-            MenuManager.CloseActiveMenu(controller);
         });
 
-        // Кик
-        if (admin.Flags.Contains("z") || admin.Flags.Contains("k"))
+        if (admin.Flags.Contains("z") || admin.Flags.Contains("k") || admin.Flags.Contains("s"))
         {
-            menu.AddMenuOption($" {Localizer["Options.Kick"]}", (controller, option) =>
+            // Управление игроками
+            menu.AddMenuOption($" {Localizer["Options.Players"]}", (controller, option) =>
             {
-                ChatMenus.OpenMenu(controller, KickMenuConstructor(controller));
-            });
-        }
-        // Бан
-        if (admin.Flags.Contains("z") || admin.Flags.Contains("b"))
-        {
-            menu.AddMenuOption($" {Localizer["Options.Ban"]}", (controller, option) =>
-            {
-                ChatMenus.OpenMenu(controller, BanMenuConstructor(controller));
-            });
-            menu.AddMenuOption($" {Localizer["Options.BanDisconnected"]}", (controller, option) =>
-            {
-                ChatMenus.OpenMenu(controller, BanMenuDisconnectedPlayersConstructor(controller));
-            });
-        }
-        // Мут
-        if (admin.Flags.Contains("z") || admin.Flags.Contains("m"))
-        {
-            menu.AddMenuOption($" {Localizer["Options.Mute"]}", (controller, option) =>
-            {
-                ChatMenus.OpenMenu(controller, MuteMenuConstructor(controller));
-            });
-        }
-        // Гаг
-        if (admin.Flags.Contains("z") || admin.Flags.Contains("g"))
-        {
-            menu.AddMenuOption($" {Localizer["Options.Gag"]}", (controller, option) =>
-            {
-                ChatMenus.OpenMenu(controller, GagMenuConstructor(controller));
-            });
-        }
-        // Снять наказание
-        if (admin.Flags.Contains("z") || admin.Flags.Contains("m") || admin.Flags.Contains("g"))
-        {
-            menu.AddMenuOption($" {Localizer["Options.UnGagMute"]}", (controller, option) =>
-            {
-                ChatMenus.OpenMenu(controller, UnMuteGagMenuConstructor(controller));
+                OpenPlayersManagementMenu(controller);
             });
         }
 
-        // Others menu const
-        if (admin.Flags.Contains("z") || admin.Flags.Contains("s") || admin.Flags.Contains("t"))
+        if (admin.Flags.Contains("z") || admin.Flags.Contains("b") || admin.Flags.Contains("m") || admin.Flags.Contains("g"))
         {
-            menu.AddMenuOption($" {Localizer["Options.Others"]}", (controller, option) =>
+            // Управление блокировками
+            menu.AddMenuOption($" {Localizer["Options.Blocks"]}", (controller, option) =>
             {
-                ChatMenus.OpenMenu(controller, OthersMenuConstructor(controller));
+                OpenBlocksManagementMenu(controller);
             });
         }
+        
+
+        
+
+        // Danger меню
         if (admin.Flags.Contains("z") || admin.Flags.Contains("d"))
         {
             menu.AddMenuOption($" {Localizer["Danger.Title"]}", (controller, option) =>
@@ -3212,6 +3301,201 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         return menu;
     }
+
+    public void OpenPlayersManagementMenu(CCSPlayerController controller)
+    {
+        Admin? admin = GetAdminBySid(controller.SteamID.ToString());
+        if (admin == null)
+        {
+            return;
+        }
+
+        ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.Players"]}");
+
+        // Назад
+        menu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
+        {
+            MenuManager.OpenChatMenu(activator, AdminMenuConstructor(admin));
+        });
+        
+        // Закрыть меню
+        menu.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
+        {
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(controller);
+        });
+
+        // Кик
+        if (Helper.AdminHaveFlag(controller.SteamID.ToString(), "k", admins))
+        {
+            menu.AddMenuOption($" {Localizer["Options.Kick"]}", (controller, option) =>
+            {
+                MenuManager.OpenChatMenu(controller, KickMenuConstructor(controller));
+            });
+        }
+        // Slay SwitchTeam ChangeTeam
+        if (Helper.AdminHaveFlag(controller.SteamID.ToString(), "s", admins))
+        {
+            menu.AddMenuOption(Localizer["Options.Slay"], (controller, info) =>
+            {
+                ChatMenus.OpenMenu(controller, SlayMenu(controller));
+                return;
+            });
+            menu.AddMenuOption(Localizer["Options.SwitchTeam"], (controller, info) =>
+            {
+                OpenSwitchTeamMenu(controller);
+                return;
+            });
+            menu.AddMenuOption(Localizer["Options.ChangeTeam"], (controller, info) =>
+            {
+                OpenChangeTeamMenu(controller);
+                return;
+            });
+        }
+
+        MenuManager.OpenChatMenu(controller, menu);
+    }
+
+    public void OpenBlocksManagementMenu(CCSPlayerController controller)
+    {
+        Admin? admin = GetAdminBySid(controller.SteamID.ToString());
+        if (admin == null)
+        {
+            return;
+        }
+
+        ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.Blocks"]}");
+        // Назад
+        menu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
+        {
+            OpenPlayersManagementMenu(activator);
+        });
+        // Закрыть меню
+        menu.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
+        {
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(controller);
+        });
+
+        
+        // Управление банами
+        if (admin.Flags.Contains("z") || admin.Flags.Contains("b"))
+        {
+            menu.AddMenuOption($" {Localizer["Options.Blocks.Bans"]}", (controller, option) =>
+            {
+                OpenBansManagementMenu(controller);
+            });
+        }
+        // Управление Мутами
+        if (admin.Flags.Contains("z") || admin.Flags.Contains("m") || admin.Flags.Contains("g"))
+        {
+            menu.AddMenuOption($" {Localizer["Options.Blocks.Comms"]}", (controller, option) =>
+            {
+                OpenCommsManagementMenu(controller);
+            });
+        }
+ 
+
+        MenuManager.OpenChatMenu(controller, menu);
+    }
+
+    public void OpenCommsManagementMenu(CCSPlayerController controller)
+    {
+        Admin? admin = GetAdminBySid(controller.SteamID.ToString());
+        if (admin == null)
+        {
+            return;
+        }
+
+        ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.Blocks"]}");
+        // Назад
+        menu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
+        {
+            OpenBlocksManagementMenu(activator);
+        });
+        // Закрыть меню
+        menu.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
+        {
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(controller);
+        });
+
+        // Мут
+        if (admin.Flags.Contains("z") || admin.Flags.Contains("m"))
+        {
+            menu.AddMenuOption($" {Localizer["Options.Mute"]}", (controller, option) =>
+            {
+                MenuManager.OpenChatMenu(controller, MuteMenuConstructor(controller));
+            });
+        }
+        // Гаг
+        if (admin.Flags.Contains("z") || admin.Flags.Contains("g"))
+        {
+            menu.AddMenuOption($" {Localizer["Options.Gag"]}", (controller, option) =>
+            {
+                MenuManager.OpenChatMenu(controller, GagMenuConstructor(controller));
+            });
+        }
+        // Заглушить
+        if (admin.Flags.Contains("z") || admin.Flags.Contains("g"))
+        {
+            menu.AddMenuOption($" {Localizer["Options.Silence"]}", (controller, option) =>
+            {
+                MenuManager.OpenChatMenu(controller, OpenSilenceMenu(controller));
+            });
+        }
+
+        // Снять наказание
+        if (admin.Flags.Contains("z") || admin.Flags.Contains("m") || admin.Flags.Contains("g"))
+        {
+            menu.AddMenuOption($" {Localizer["Options.UnGagMute"]}", (controller, option) =>
+            {
+                MenuManager.OpenChatMenu(controller, UnMuteGagMenuConstructor(controller));
+            });
+        }
+
+        MenuManager.OpenChatMenu(controller, menu);
+    }
+    public void OpenBansManagementMenu(CCSPlayerController controller)
+    {
+        Admin? admin = GetAdminBySid(controller.SteamID.ToString());
+        if (admin == null)
+        {
+            return;
+        }
+
+        ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.Blocks"]}");
+
+        // Назад
+        menu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
+        {
+            OpenBlocksManagementMenu(activator);
+        });
+        // Закрыть меню
+        menu.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
+        {
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(controller);
+        });
+
+        
+        // Бан
+        if (admin.Flags.Contains("z") || admin.Flags.Contains("b"))
+        {
+            menu.AddMenuOption($" {Localizer["Options.Ban"]}", (controller, option) =>
+            {
+                MenuManager.OpenChatMenu(controller, BanMenuConstructor(controller));
+            });
+            menu.AddMenuOption($" {Localizer["Options.BanDisconnected"]}", (controller, option) =>
+            {
+                MenuManager.OpenChatMenu(controller, BanMenuDisconnectedPlayersConstructor(controller));
+            });
+        }
+
+        MenuManager.OpenChatMenu(controller, menu);
+    }
+
+
     public ChatMenu KickMenuConstructor(CCSPlayerController activator)
     {
         ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["KickMenuTitle"]}");
@@ -3333,8 +3617,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
                 foreach (var time in Config.Times)
                 {
-                    string title = $"{time}{Localizer["min"]}";
-                    if (time == 0)
+                    string title = time.Key;
+                    if (time.Value == 0)
                     {
                         title = Localizer["Options.Infinity"].ToString();
                     }
@@ -3342,7 +3626,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                     BanMenuTimes.AddMenuOption(title, (ccsPlayerController, chatMenuOption) =>
                     {
 
-                        ChatMenu BanMenuReasons = BanMenuReasonsConstructor(ccsPlayerController, player, time, title);
+                        ChatMenu BanMenuReasons = BanMenuReasonsConstructor(ccsPlayerController, player, time.Value, title);
 
                         ChatMenus.OpenMenu(ccsPlayerController, BanMenuReasons);
 
@@ -3408,8 +3692,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
                 foreach (var time in Config.Times)
                 {
-                    string title = $"{time}{Localizer["min"]}";
-                    if (time == 0)
+                    string title = time.Key;
+                    if (time.Value == 0)
                     {
                         title = Localizer["Options.Infinity"].ToString();
                     }
@@ -3417,7 +3701,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                     BanMenuTimes.AddMenuOption(title, (ccsPlayerController, chatMenuOption) =>
                     {
 
-                        ChatMenu BanMenuReasons = BanMenuDisconnectedPlayersReasonsConstructor(ccsPlayerController, player, time, title);
+                        ChatMenu BanMenuReasons = BanMenuDisconnectedPlayersReasonsConstructor(ccsPlayerController, player, time.Value, title);
 
                         ChatMenus.OpenMenu(ccsPlayerController, BanMenuReasons);
 
@@ -3605,8 +3889,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 });
                 foreach (var time in Config.Times)
                 {
-                    string title = $"{time}{Localizer["min"]}";
-                    if (time == 0)
+                    string title = time.Key;
+                    if (time.Value == 0)
                     {
                         title = Localizer["Options.Infinity"].ToString();
                     }
@@ -3614,7 +3898,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                     MuteMenuTimes.AddMenuOption(title, (ccsPlayerController, chatMenuOption) =>
                     {
 
-                        ChatMenu BanMenuReasons = MuteMenuReasonsConstructor(ccsPlayerController, player, time, title);
+                        ChatMenu BanMenuReasons = MuteMenuReasonsConstructor(ccsPlayerController, player, time.Value, title);
 
                         ChatMenus.OpenMenu(ccsPlayerController, BanMenuReasons);
 
@@ -3776,8 +4060,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 });
                 foreach (var time in Config.Times)
                 {
-                    string title = $"{time}{Localizer["min"]}";
-                    if (time == 0)
+                    string title = time.Key;
+                    if (time.Value == 0)
                     {
                         title = Localizer["Options.Infinity"].ToString();
                     }
@@ -3785,7 +4069,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                     MuteMenuTimes.AddMenuOption(title, (ccsPlayerController, chatMenuOption) =>
                     {
 
-                        ChatMenu BanMenuReasons = GagMenuReasonsConstructor(ccsPlayerController, player, time, title);
+                        ChatMenu BanMenuReasons = GagMenuReasonsConstructor(ccsPlayerController, player, time.Value, title);
 
                         ChatMenus.OpenMenu(ccsPlayerController, BanMenuReasons);
 
@@ -3862,10 +4146,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 Task.Run(async () =>
                 {
                     await SetGaggedPlayers(gagCheckSids);
-                    Server.NextFrame(() =>
-                    {
-                        UpdateChatColorsGagged();
-                    });
+                    UpdateChatColorsGagged();
                 });
 
 
@@ -3888,6 +4169,201 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 {
                     OwnReasonsTyper[i] = playerController;
                     Actions[i] = "gagReason";
+                    ActionTargets[i] = player;
+                    ActionTimes[i] = time;
+                    return;
+                }
+            }
+        });
+        return MuteMenuReasons;
+    }
+
+    public ChatMenu OpenSilenceMenu(CCSPlayerController activator)
+    {
+        ChatMenu menu = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.Silence"]}");
+
+
+        // Закрыть меню
+        menu.AddMenuOption($" {Localizer["Options.Back"]}", (controller, option) =>
+        {
+            OpenCommsManagementMenu(controller);
+        });
+        // Закрыть меню
+        menu.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
+        {
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(controller);
+
+        });
+
+
+        foreach (var player in Helper.GetOnlinePlayers())
+        {
+            if (player.IsBot) continue;
+            if (!player.IsValid || player == null) continue;
+            if (player == activator) continue;
+
+            if (GaggedSids.Contains(player.SteamID.ToString()))
+            {
+                continue;
+            }
+            if (MutedSids.Contains(player.SteamID.ToString()))
+            {
+                continue;
+            }
+
+            if (GetAdminBySid(player.SteamID.ToString()) != null)
+            {
+                if (GetAdminBySid(player.SteamID.ToString()).Immunity > GetAdminBySid(activator.SteamID.ToString()).Immunity)
+                {
+                    continue;
+                }
+            }
+
+            menu.AddMenuOption($" {player.PlayerName}", (controller, option) =>
+            {
+                ChatMenu MuteMenuTimes = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["TimesTitle"]}");
+
+                MuteMenuTimes.AddMenuOption($" {Localizer["Options.Back"]}", (controller, option) =>
+                {
+                    ChatMenus.OpenMenu(controller, AdminMenuConstructor(GetAdminBySid(controller.SteamID.ToString())));
+                });
+                // Закрыть меню
+                MuteMenuTimes.AddMenuOption($" {Localizer["Options.Exit"]}", (controller, option) =>
+                {
+                    controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+                    MenuManager.CloseActiveMenu(controller);
+
+                });
+                foreach (var time in Config.Times)
+                {
+                    string title = time.Key;
+                    if (time.Value == 0)
+                    {
+                        title = Localizer["Options.Infinity"].ToString();
+                    }
+
+                    MuteMenuTimes.AddMenuOption(title, (ccsPlayerController, chatMenuOption) =>
+                    {
+
+                        ChatMenu BanMenuReasons = OpenSilenceMenuReasons(ccsPlayerController, player, time.Value, title);
+
+                        MenuManager.OpenChatMenu(ccsPlayerController, BanMenuReasons);
+
+                    });
+                }
+
+
+                MuteMenuTimes.AddMenuOption($"{Localizer["Options.OwnTime"]}", (playerController, menuOption) =>
+                {
+                    playerController.PrintToChat($" {Localizer["PluginTag"]} {Localizer[$"{Localizer["OwnTimeMessage"]}"]}");
+                    for (int i = 0; i < OwnReasonsTyper.Length; i++)
+                    {
+                        if (OwnReasonsTyper[i] == null)
+                        {
+                            OwnReasonsTyper[i] = playerController;
+                            Actions[i] = "silenceTime";
+                            ActionTargets[i] = player;
+                            return;
+                        }
+                    }
+                });
+                ChatMenus.OpenMenu(controller, MuteMenuTimes);
+            });
+        }
+
+        return menu;
+    }
+
+    public ChatMenu OpenSilenceMenuReasons(CCSPlayerController ccsPlayerController, CCSPlayerController player, int time, string title)
+    {
+        ChatMenu MuteMenuReasons = new ChatMenu($" {Localizer["PluginTag"]} {Localizer["Options.Silence"]}");
+
+        MuteMenuReasons.AddMenuOption($" {Localizer["Options.Back"]}", (ccsPlayerController, option) =>
+        {
+            OpenSilenceMenu(ccsPlayerController);
+        });
+        // Закрыть меню
+        MuteMenuReasons.AddMenuOption($" {Localizer["Options.Exit"]}", (ccsPlayerController, option) =>
+        {
+            ccsPlayerController.PrintToChat($" {Localizer["PluginTag"]} {Localizer["Options.ExitMessage"]}");
+            MenuManager.CloseActiveMenu(ccsPlayerController);
+        });
+        foreach (var reason in Config.SilenceReason)
+        {
+            MuteMenuReasons.AddMenuOption($"{reason}", (playerController, menuOption) =>
+            {
+                BanManager bm = new BanManager(_dbConnectionString);
+                if (player.IsValid == false || player == null)
+                {
+                    playerController.PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
+                    return;
+                }
+                if (GaggedSids.Contains(player.SteamID.ToString()))
+                {
+                    ccsPlayerController.PrintToChat($" {Localizer["PluginTag"]} {Localizer["PlayerAlredyBanned"]}");
+                    return;
+                }
+
+                string name = player.PlayerName;
+                string sid = player.SteamID.ToString();
+                string adminsid = ccsPlayerController.SteamID.ToString();
+                string AdminName = ccsPlayerController.PlayerName;
+                string ip = player.IpAddress;
+                List<string> sids = GetListSids();
+
+                Task.Run(async () =>
+                {
+                    if (await bm.IsPlayerMutedAsync(sid, Config))
+                    {
+                        NotifyIfPlayerAlredyBanned(name, playerController);
+                        return;
+                    }
+                    if (await bm.IsPlayerGaggedAsync(sid, Config))
+                    {
+                        NotifyIfPlayerAlredyBanned(name, playerController);
+                        return;
+                    }
+
+                    //Если всё нормально то баним
+                    await bm.MutePlayer(name, sid, adminsid, time, reason, Config);
+                    await bm.GagPlayer(name, sid, adminsid, time, reason, Config);
+                    if (Config.LogToVk)
+                    {
+                        await vkLog.sendPunMessage(Config.LogToVkMessages["SilenceMessage"], name, sid, ip, AdminName, reason, time, false);
+                    }
+                    await SetMutedPlayers(sids);
+                    await SetGaggedPlayers(sids);
+                    PrintSilenceMessage(name, AdminName, time, reason);
+                });
+                
+                List<string> gagCheckSids = GetListSids();
+                Task.Run(async () =>
+                {
+                    await SetGaggedPlayers(gagCheckSids);
+                    UpdateChatColorsGagged();
+                });
+
+
+                foreach (var str in Localizer["GagMessage"].ToString().Split("\n"))
+                {
+                    Server.PrintToChatAll($" {Localizer["PluginTag"]} {str
+                        .Replace("{name}", player.PlayerName)
+                        .Replace("{admin}", ccsPlayerController.PlayerName)
+                        .Replace("{reason}", reason)
+                        .Replace("{duration}", title)}");
+                }
+            });
+        }
+        MuteMenuReasons.AddMenuOption($"{Localizer["Options.OwnReason"]}", (playerController, menuOption) =>
+        {
+            playerController.PrintToChat($" {Localizer["PluginTag"]} {Localizer[$"{Localizer["OwnReasonMessage"]}"]}");
+            for (int i = 0; i < OwnReasonsTyper.Length; i++)
+            {
+                if (OwnReasonsTyper[i] == null)
+                {
+                    OwnReasonsTyper[i] = playerController;
+                    Actions[i] = "silenceReason";
                     ActionTargets[i] = player;
                     ActionTimes[i] = time;
                     return;
@@ -3982,10 +4458,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                         Task.Run(async () =>
                         {
                             await SetGaggedPlayers(gagCheckSids);
-                            Server.NextFrame(() =>
-                            {
-                                UpdateChatColorsGagged();
-                            });
+                            UpdateChatColorsGagged();
                         });
                         foreach (var str in Localizer["UnGagMessage"].ToString().Split("\n"))
                         {
@@ -4049,7 +4522,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         OthersMenu.AddMenuOption($" {Localizer["Options.Back"]}", (activator, option) =>
         {
-            ChatMenus.OpenMenu(activator, AdminMenuConstructor(GetAdminBySid(activator.SteamID.ToString())));
+            OpenPlayersManagementMenu(activator);
         });
         // Закрыть меню
         OthersMenu.AddMenuOption($" {Localizer["Options.Exit"]}", (activator, option) =>
@@ -4059,25 +4532,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         });
 
-
-        if (Helper.AdminHaveFlag(activator.SteamID.ToString(), "s", admins))
-        {
-            OthersMenu.AddMenuOption(Localizer["Options.Slay"], (controller, info) =>
-            {
-                ChatMenus.OpenMenu(activator, SlayMenu(activator));
-                return;
-            });
-            OthersMenu.AddMenuOption(Localizer["Options.SwitchTeam"], (controller, info) =>
-            {
-                OpenSwitchTeamMenu(controller);
-                return;
-            });
-            OthersMenu.AddMenuOption(Localizer["Options.ChangeTeam"], (controller, info) =>
-            {
-                OpenChangeTeamMenu(controller);
-                return;
-            });
-        }
+        
 
 
         return OthersMenu;
