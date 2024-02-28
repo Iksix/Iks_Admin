@@ -50,8 +50,7 @@ Admin system with menu <br>
 - `m` - Mute
 - `g` - Gag
 - `u` - Unban
-- `s` - css_slay `In the future..`
-- `t` - switch/change team `In the future..`
+- `s` - `css_slay` `css_switchteam` `css_changeteam`
 
 ## To Do
 - [ ] Log to discord
@@ -122,20 +121,18 @@ Admin system with menu <br>
 - `m` - Мут
 - `g` - Гаг
 - `u` - Разбан
-- `s` - css_slay `В планах...`
-- `t` - Смена сторон `В планах...`
+- `s` - `css_slay` `css_switchteam` `css_changeteam`
 
 ## Планы
-- Лог в дискорд
-- `css_slay` - будет в меню
-- `css_switchteam` - будет в меню
-- `css_changeteam` - будет в меню
-- `css_rename <uid> <name>` - In menu
-- `css_csay uid/@all/@ct/@t time "message"` - Print To Center
-- `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
-- Конвертация из флагов Iks_Admin в CSS +
-- Комманды для открытия меню
-- Сайт
+- [ ] Лог в дискорд
+- [x] `css_slay` - будет в меню
+- [x] `css_switchteam` - будет в меню
+- [x] `css_changeteam` - будет в меню
+- [x] `css_rename <uid> <name>` - In menu
+- [x] `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
+- [x] Конвертация из флагов Iks_Admin в CSS +
+- [x] Комманды для открытия меню
+- [ ] Сайт
 ## Зависимости
 - [CSSharp v161](https://github.com/roflmuffin/CounterStrikeSharp/releases/tag/v161)
 
