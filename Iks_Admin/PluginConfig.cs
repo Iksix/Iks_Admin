@@ -77,7 +77,7 @@ public class PluginConfig : BasePluginConfig
     };
 
     [JsonPropertyName("LogToDiscord")] public bool LogToDiscord { get; set; } = false;
-    [JsonPropertyName("WebHookUrl")] public string WebHookUrl { get; set; } = "ваш вебхук";
+    [JsonPropertyName("WebHookUrl")] public string WebHookUrl { get; set; } = "";
 
     [JsonPropertyName("LogToDiscordMessages")]
     public Dictionary<string, string> LogToDiscordMessages { get; set; } = new Dictionary<string, string>()

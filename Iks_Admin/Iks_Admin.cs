@@ -11,6 +11,7 @@ using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
+using Discord.Webhook;
 using Microsoft.VisualBasic;
 using MySqlConnector;
 using Serilog.Sinks.File;
@@ -45,6 +46,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     private List<Admin> admins = new List<Admin>();
 
     private VkLog? vkLog = null;
+    private DiscordLog dLog = null;
 
     public PluginConfig Config { get; set; }
 
@@ -143,6 +145,9 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         {
             vkLog = new VkLog(config.Token, config.ChatId, config);
         }
+        
+        dLog = new DiscordLog(config);
+
         Config = config;
 
         ReloadAdmins(null);
@@ -509,6 +514,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, adminName, reason, duration, offline);
             }
+            await dLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, adminName, reason, duration, offline);
         });
         if (target != null)
         {
@@ -564,6 +570,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnBanMessage"], bannedPlayer.Name, sid, admin != null ? admin.Name : adminSid, bannedPlayer.Ip, true);
             }
+                await dLog.sendUnPunMessage(Config.LogToVkMessages["UnBanMessage"], bannedPlayer.Name, sid, admin != null ? admin.Name : adminSid, bannedPlayer.Ip, true);
         });
         info.ReplyToCommand("[Iks_Admin] Player Unbanned!");
     }
@@ -639,6 +646,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await vkLog.sendPunMessage(Config.LogToVkMessages["GagMessage"], name, sid, ip, adminName, reason, duration, offline);
             }
+            await dLog.sendPunMessage(Config.LogToVkMessages["GagMessage"], name, sid, ip, adminName, reason, duration, offline);
         });
 
     }
@@ -688,6 +696,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                 {
                     await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnGagMessage"], bannedPlayer.Name, sid, admin != null ? admin.Name : adminSid, bannedPlayer.Ip, true);
                 }
+                    await dLog.sendUnPunMessage(Config.LogToVkMessages["UnGagMessage"], bannedPlayer.Name, sid, admin != null ? admin.Name : adminSid, bannedPlayer.Ip, true);
 
             }
         });
@@ -765,6 +774,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await vkLog.sendPunMessage(Config.LogToVkMessages["MuteMessage"], name, sid, ip, adminName, reason, duration, offline);
             }
+            await dLog.sendPunMessage(Config.LogToVkMessages["MuteMessage"], name, sid, ip, adminName, reason, duration, offline);
         });
 
     }
@@ -815,6 +825,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnMuteMessage"], bannedPlayer.Name, sid, admin != null ? admin.Name : adminSid, bannedPlayer.Ip, true);
             }
+                await dLog.sendUnPunMessage(Config.LogToVkMessages["UnMuteMessage"], bannedPlayer.Name, sid, admin != null ? admin.Name : adminSid, bannedPlayer.Ip, true);
         });
         info.ReplyToCommand("[Iks_Admin] Player Unmuted!");
     }
@@ -916,11 +927,14 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         string adminName = controller == null ? "CONSOLE" : controller.PlayerName;
         Task.Run(async () =>
         {
-            if (!Config.LogToVk) return;
             string message = Config.LogToVkMessages["HsayMessage"]
             .Replace("{admin}", adminName)
             .Replace("{text}", text);
-            await vkLog.sendMessage(message);
+            if (vkLog != null)
+            {
+                await vkLog.sendMessage(message);
+            }
+            await dLog.sendMessage(message, new DColor(255, 255, 255));
         });
         HSayMessage = text;
         HSayColor = color;
@@ -958,11 +972,16 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         Task.Run(async () =>
         {
-            if (!Config.LogToVk) return;
             string message = Config.LogToVkMessages["HsayMessage"]
             .Replace("{admin}", adminName)
             .Replace("{text}", text);
-            await vkLog.sendMessage(message);
+            if (vkLog != null)
+            {
+                await vkLog.sendMessage(message);
+            }
+            await dLog.sendMessage(message, new DColor(255, 255, 255));
+            
+            
         });
         HSayMessage = text;
         HSayColor = "white";
@@ -987,6 +1006,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         }
 
         var args = XHelper.GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count == 0)
+        {
+            OpenSwitchTeamMenu(controller);
+            return;
+        }
 
         if (args.Count < 2)
         {
@@ -1027,6 +1052,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         }
 
         var args = XHelper.GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count == 0)
+        {
+            OpenChangeTeamMenu(controller);
+            return;
+        }
 
         if (args.Count < 2)
         {
@@ -1088,7 +1119,6 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         Task.Run(async () =>
         {
-            if (!Config.LogToVk) return;
             string message = Config.LogToVkMessages["SwitchTeamMessage"]
             .Replace("{admin}", adminName)
             .Replace("{adminsid}", adminSid)
@@ -1096,7 +1126,12 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             .Replace("{sid}", targetParams.SteamID)
             .Replace("{oldteam}", oldTeamString)
             .Replace("{newteam}", team.ToUpper());
-            await vkLog.sendMessage(message);
+            if (vkLog != null){
+                await vkLog.sendMessage(message);
+            }
+            await dLog.sendMessage(message, new DColor(255, 255, 255));
+            
+            
         });
     }
     public void ChangeTeam(CCSPlayerController target, int oldteam, string team, CCSPlayerController? admin)
@@ -1137,15 +1172,17 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
         Task.Run(async () =>
         {
-            if (!Config.LogToVk) return;
-            string message = Config.LogToVkMessages["ChangeTeamMessage"]
+            string message = Config.LogToVkMessages["SwitchTeamMessage"]
             .Replace("{admin}", adminName)
             .Replace("{adminsid}", adminSid)
             .Replace("{name}", targetParams.PlayerName)
             .Replace("{sid}", targetParams.SteamID)
             .Replace("{oldteam}", oldTeamString)
             .Replace("{newteam}", team.ToUpper());
-            await vkLog.sendMessage(message);
+            if (vkLog != null){
+                await vkLog.sendMessage(message);
+            }
+            await dLog.sendMessage(message, new DColor(255, 255, 255));
         });
     }
 
@@ -1297,6 +1334,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await vkLog.sendPunMessage(Config.LogToVkMessages["KickMessage"], name, sid, ip, AdminName, reason, 0, false);
             }
+            await dLog.sendPunMessage(Config.LogToVkMessages["KickMessage"], name, sid, ip, AdminName, reason, 0, false);
         });
 
         NativeAPI.IssueServerCommand($"kickid {target.UserId}");
@@ -1393,6 +1431,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, identity, ip, AdminName, reason, time, target == null);
             }
+            await dLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, identity, ip, AdminName, reason, time, target == null);
             PrintBanMessage(name, AdminName, time, reason);
         });
 
@@ -1528,6 +1567,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, time, offline);
             }
+            await dLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, time, offline);
             PrintBanMessage(name, AdminName, time, reason);
         });
 
@@ -1598,6 +1638,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnBanMessage"], bannedPlayer.Name, arg, adminName, bannedPlayer.Ip, true);
             }
+                await dLog.sendUnPunMessage(Config.LogToVkMessages["UnBanMessage"], bannedPlayer.Name, arg, adminName, bannedPlayer.Ip, true);
         });
 
 
@@ -1759,6 +1800,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await vkLog.sendPunMessage(Config.LogToVkMessages["GagMessage"], name, sid, ip, AdminName, reason, time, offline);
             }
+            await dLog.sendPunMessage(Config.LogToVkMessages["GagMessage"], name, sid, ip, AdminName, reason, time, offline);
             await SetGaggedPlayers(sids);
 
             UpdateChatColorsGagged();
@@ -1846,6 +1888,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnGagMessage"], mutedPlayer.Name, sid, adminName, ip, offline);
             }
+                await dLog.sendUnPunMessage(Config.LogToVkMessages["UnGagMessage"], mutedPlayer.Name, sid, adminName, ip, offline);
             await SetMutedPlayers(sids);
         });
 
@@ -2007,6 +2050,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await vkLog.sendPunMessage(Config.LogToVkMessages["MuteMessage"], name, sid, ip, AdminName, reason, time, offline);
             }
+            await dLog.sendPunMessage(Config.LogToVkMessages["MuteMessage"], name, sid, ip, AdminName, reason, time, offline);
             await SetMutedPlayers(sids);
             PrintMuteMessage(name, AdminName, time, reason);
         });
@@ -2144,6 +2188,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await vkLog.sendPunMessage(Config.LogToVkMessages["SilenceMessage"], name, sid, ip, AdminName, reason, time, offline);
             }
+            await dLog.sendPunMessage(Config.LogToVkMessages["SilenceMessage"], name, sid, ip, AdminName, reason, time, offline);
             await SetMutedPlayers(sids);
             await SetGaggedPlayers(sids);
             PrintSilenceMessage(name, AdminName, time, reason);
@@ -2231,6 +2276,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnMuteMessage"], mutedPlayer.Name, sid, adminName, ip, offline);
             }
+                await dLog.sendUnPunMessage(Config.LogToVkMessages["UnMuteMessage"], mutedPlayer.Name, sid, adminName, ip, offline);
             await SetMutedPlayers(sids);
         });
 
@@ -2810,6 +2856,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             {
                                 await vkLog.sendPunMessage(Config.LogToVkMessages["KickMessage"], name, sid, ip, adminName, reason, 0, false);
                             }
+                            await dLog.sendPunMessage(Config.LogToVkMessages["KickMessage"], name, sid, ip, adminName, reason, 0, false);
                         });
                         foreach (var str in Localizer["KickMessage"].ToString().Split("\n"))
                         {
@@ -2879,6 +2926,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             {
                                 await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, Btime, false);
                             }
+                            await dLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, Btime, false);
                         });
                         NativeAPI.IssueServerCommand($"kickid {ActionTargets[i].UserId}");
 
@@ -2915,6 +2963,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             {
                                 await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, Btime, true);
                             }
+                            await dLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, Btime, true);
                         });
 
                         foreach (var str in Localizer["BanMessage"].ToString().Split("\n"))
@@ -2979,6 +3028,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             {
                                 await vkLog.sendPunMessage(Config.LogToVkMessages["MuteMessage"], name, sid, ip, AdminName, reason, Btime, false);
                             }
+                            await dLog.sendPunMessage(Config.LogToVkMessages["MuteMessage"], name, sid, ip, AdminName, reason, Btime, false);
                             List<string> sids = GetListSids();
                             Task.Run(async () =>
                             {
@@ -3045,6 +3095,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             {
                                 await vkLog.sendPunMessage(Config.LogToVkMessages["GagMessage"], name, sid, ip, AdminName, reason, Btime, false);
                             }
+                            await dLog.sendPunMessage(Config.LogToVkMessages["GagMessage"], name, sid, ip, AdminName, reason, Btime, false);
                         });
                         List<string> gagCheckSids = GetListSids();
                         Task.Run(async () =>
@@ -3115,6 +3166,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             {
                                 await vkLog.sendPunMessage(Config.LogToVkMessages["SilenceMessage"], name, sid, ip, AdminName, reason, Btime, false);
                             }
+                            await dLog.sendPunMessage(Config.LogToVkMessages["SilenceMessage"], name, sid, ip, AdminName, reason, Btime, false);
                         });
                         List<string> sids = GetListSids();
                         Task.Run(async () =>
@@ -3548,6 +3600,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             {
                                 await vkLog.sendPunMessage(Config.LogToVkMessages["KickMessage"], name, sid, ip, adminName, reason, 0, false);
                             }
+                            await dLog.sendPunMessage(Config.LogToVkMessages["KickMessage"], name, sid, ip, adminName, reason, 0, false);
                         });
                         foreach (var str in Localizer["KickMessage"].ToString().Split("\n"))
                         {
@@ -3749,6 +3802,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                     {
                         await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], player.Name, player.Sid, player.Ip, AdminName, reason, time, true);
                     }
+                    await dLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], player.Name, player.Sid, player.Ip, AdminName, reason, time, true);
                 });
 
                 foreach (var str in Localizer["BanMessage"].ToString().Split("\n"))
@@ -3807,6 +3861,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                     {
                         await vkLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, time, false);
                     }
+                        await dLog.sendPunMessage(Config.LogToVkMessages["BanMessage"], name, sid, ip, AdminName, reason, time, false);
                 });
                 NativeAPI.IssueServerCommand($"kickid {player.UserId}");
 
@@ -3971,6 +4026,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                     {
                         await vkLog.sendPunMessage(Config.LogToVkMessages["MuteMessage"], name, sid, ip, AdminName, reason, time, false);
                     }
+                        await dLog.sendPunMessage(Config.LogToVkMessages["MuteMessage"], name, sid, ip, AdminName, reason, time, false);
                     List<string> sids = GetListSids();
                     Task.Run(async () =>
                     {
@@ -4141,6 +4197,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                     {
                         await vkLog.sendPunMessage(Config.LogToVkMessages["GagMessage"], name, sid, ip, AdminName, reason, time, false);
                     }
+                        await dLog.sendPunMessage(Config.LogToVkMessages["GagMessage"], name, sid, ip, AdminName, reason, time, false);
                 });
                 List<string> gagCheckSids = GetListSids();
                 Task.Run(async () =>
@@ -4332,6 +4389,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                     {
                         await vkLog.sendPunMessage(Config.LogToVkMessages["SilenceMessage"], name, sid, ip, AdminName, reason, time, false);
                     }
+                        await dLog.sendPunMessage(Config.LogToVkMessages["SilenceMessage"], name, sid, ip, AdminName, reason, time, false);
                     await SetMutedPlayers(sids);
                     await SetGaggedPlayers(sids);
                     PrintSilenceMessage(name, AdminName, time, reason);
@@ -4453,6 +4511,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             {
                                 await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnGagMessage"], player.PlayerName, player.SteamID.ToString(), adminName, player.IpAddress, false);
                             }
+                                await dLog.sendUnPunMessage(Config.LogToVkMessages["UnGagMessage"], player.PlayerName, player.SteamID.ToString(), adminName, player.IpAddress, false);
                         });
                         List<string> gagCheckSids = GetListSids();
                         Task.Run(async () =>
@@ -4489,6 +4548,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
                             {
                                 await vkLog.sendUnPunMessage(Config.LogToVkMessages["UnMuteMessage"], player.PlayerName, player.SteamID.ToString(), adminName, player.IpAddress, false);
                             }
+                                await dLog.sendUnPunMessage(Config.LogToVkMessages["UnMuteMessage"], player.PlayerName, player.SteamID.ToString(), adminName, player.IpAddress, false);
 
                             List<string> sids = GetListSids();
                             Task.Run(async () =>
@@ -4722,14 +4782,14 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         string sid = target.SteamID.ToString();
         string ip = target.IpAddress;
 
-        if (Config.LogToVk)
+        Task.Run(async () =>
         {
-            Task.Run(async () =>
+            if (vkLog != null)
             {
                 await vkLog.sendPunMessage(Config.LogToDiscordMessages["SlayMessage"], name, sid, ip, adminName, "Undefined", 0, false);
-            });
-        }
-
+            }
+            await dLog.sendPunMessage(Config.LogToDiscordMessages["SlayMessage"], name, sid, ip, adminName, "Undefined", 0, false);
+        });
         Console.Write($"[Iks_Admin] {target.PlayerName} was killed by the admin {adminName}");
     }
 
