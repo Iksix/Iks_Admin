@@ -71,6 +71,7 @@
 ## To do...
 - [ ] Add `css_rename`
 - [ ] Add `css_hp`
+- [ ] Add `css_map`
 - [ ] Add `css_speed`
 - [ ] Add `css_psay`
 - [ ] Add `css_respawn`
@@ -79,6 +80,7 @@
 - [ ] Add `css_noclip`
 - [x] Add `css_hide`
 - [ ] Add `css_who`
+- [ ] Add possibility to change to workshop map from menu
 
 
 
