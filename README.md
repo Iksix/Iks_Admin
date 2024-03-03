@@ -42,6 +42,7 @@
 - ```css_kick <#uid/#sid/name> <reason>``` -> Kick the player
 - Example: ```css_kick iks Some reason```
 ### Flag `s`
+- ```css_hide``` -> Hide you from Scoreboard
 - ```css_slay <#uid/#sid/name>``` -> Kill the player
 - Example: ```css_slay iks```
 - ```css_switchteam <#uid/#sid/name> <ct/t>``` -> Switch player team without killing him
