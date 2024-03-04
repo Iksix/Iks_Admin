@@ -1,142 +1,87 @@
 ## Iks_Admin EN
-Support the author: <a href="https://www.donationalerts.com/r/iks__">DonationAlerts</a> <br>
-Admin system with menu <br>
-![image](imgs/image.png)
+**Support the author: [DonationAlerts](https://www.donationalerts.com/r/iks__)** <br>
+**Admin system with menu**<br><br>
+![image](https://github.com/Iksix/Iks_Admin/assets/109164274/66dd6026-66c2-4031-9130-7f03563c8ce6)
+
+## Features
+- Admin log to **Discord** and **VK**
+- Flexible configuration
+- Customizable translations
+- The ability to add a custom item to the menu
+- Admin chat. Starts with @
+- Plugin support and development
 
 ## Commands
-
-- `css_admin` - Open the admin menu | Flags are not needed
-- 
-- `css_ban #uid/#sid/username duration reason <name if needed>` - Ban a player | Flag: `b`
-- `css_banip #uid/#sid/username/ip(offline only) duration reason <name if needed>` - Ban the game by IP | Flag: `b`
-- `css_unban sid/ip` - Unban the player | Flag: `u`
-- `css_mute #uid/#sid/username duration reason <name if needed>` - Mute a player | Flag: `m`
-- `css_unmute #uid/#sid/username` - Unmute a player | Flag: `m`
-- `css_gag #uid/#sid/username duration reason <name if needed>` - Give a gag to the player | Flag: `g`
-- `css_ungag #uid/#sid/username` - Ungag the player | Flag: `g`
-- `css_kick #uid/#sid/username reason` - Kick the player | Flag: `k`
-- 
-- `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id/-> (FOR ALL SERVER)>` - Add admin | Flag: `z`
-- `group_id` = -1 => No group
-- `immunity` = -1 => Immunity from group
-- `flags` = - => Flags from group
-- `server_id` = - => All servers
-- `endtime` - Time to end admin 
-- 
-- `css_admindel <sid>` - Delete admin | Flag: `z`
-- `css_reload_admins` - Reload admins | Flag: `z`
-- `css_reload_admins_cfg` - Reload plugin cfg | Flag: `z`
-## Rcon comands
+- `css_admin` -> Open admin menu
+### Flag `z`
+- ```css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <time> <server_id/ - (ALL SERVERS)>``` -> Add Admin
+- Example: ```css_adminadd 76561199124384855 iks bkmgus 50 -1 0 -```
+- ```css_admindel <sid>``` -> Delete Admin
+- Example: ```css_admindel 76561199124384855```
+- `css_reload_admins_cfg` -> Reload admins and plugin config
+- `css_reload_amdins` -> Reload admins
+### Flag `b`
+- ```css_ban <#uid/#sid/name> <duration> <reason> <name if needed>``` -> Ban player
+- Example: ```css_ban #76561199124384855 0 "Use cheats" iks```
+- ```css_banip <#uid/#sid/name/#ip(if offline)> <duration> <reason> <name if needed>``` -> Ban player by ip
+- Example: ```css_banip #127.0.0.1 0 "Use cheats" iks```
+### Flag `u`
+- ```css_unban sid``` -> Unban player
+- Example: ```css_unban 76561199124384855```
+### Flag `m`
+- ```css_mute <#uid/#sid/name> <duration> <reason> <name if needed>``` -> Mute in voice chat
+- Example: ```css_mute iks 0 14+ iks```
+- ```css_unmute <#uid/#sid/name>``` -> Unmute player
+- Example: ```css_unmute #76561199124384855```
+### Flag `g`
+- ```css_gag <#uid/#sid/name> <duration> <reason> <name if needed>``` -> Mute in chat
+- Example: ```css_gag iks 0 Spam iks```
+- ```css_gag <#uid/#sid/name>``` -> Ungag player
+- Example: ```css_ungag #76561199124384855```
+### Flag `k`
+- ```css_kick <#uid/#sid/name> <reason>``` -> Kick the player
+- Example: ```css_kick iks Some reason```
+### Flag `s`
+- ```css_hide``` -> Hide you from Scoreboard
+- ```css_slay <#uid/#sid/name>``` -> Kill the player
+- Example: ```css_slay iks```
+- ```css_switchteam <#uid/#sid/name> <ct/t>``` -> Switch player team without killing him
+- Example: ```css_switchteam iks t```
+- ```css_changeteam <#uid/#sid/name> <ct/t/spec>``` -> Change player team with killing him
+- Example: ```css_changeteam iks spec```
+- `css_hsay <color> <text>` -> Print message to center on 5sec.
+- Example: ```css_hsay red Pls send me discord```
+- `css_isay "<img link>"` -> Print image to center. 100% support: `.png ; .jpg ; .gif`
+- Example: ```css_isay "Some image link.png"```
+### Server(RCON) only
 - `css_rban <sid> <ip/-(Auto)> <adminsid/CONSOLE> <duration> <reason> <BanType (0 - default / 1 - ip> <name if needed>`
 - `css_runban <sid> <adminsid/CONSOLE>`
--
+- `css_rmute <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed>`
+- `css_runmute <sid> <adminsid/CONSOLE>`
 - `css_rgag <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed>`
 - `css_rungag <sid> <adminsid/CONSOLE>`
--
-- `css_rmute <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed`
-- `css_runmute <sid> <adminsid/CONSOLE>`
 
-## Settings
-- Configure the database `cfg`
-- Change the Server Id to the desired one `cfg`
-- Configure the reasons `cfg`
-- Set up translations `lang/en.json`
-- You can convert flags from the plugin to CSSharp flags `cfg - "ConvertedFlags"`
+> [!IMPORTANT]
+> - ServerID in config must be only 1 symbol
 
-## Flags:
-- `z` - All rights
-- `b` - Ban
-- `k` - Kick
-- `m` - Mute
-- `g` - Gag
-- `u` - Unban
-- `s` - `css_slay` `css_switchteam` `css_changeteam`
-- `c` - Управление сервером
+> [!TIP]
+> - You can write "ABCD" in ServerID column for admin
+> - At the moment, you can add groups only directly to the database.
+> - Tested on [CS# v172](https://docs.cssharp.dev/index.html)
 
-## To Do
-- [x] Log to discord
-- [x] `css_slay` - In menu
-- [x] `css_switchteam` - In menu
-- [ ] `css_rename <uid> <name>` - In menu
-- [x] `css_changeteam` - In menu
-- [x] `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
-- [x] Commands for open menus
-- [x] Converting from Iks_Admin flags to CS#
-- [ ] WebSite
-## Required
-- [CSSharp v172](https://github.com/roflmuffin/CounterStrikeSharp/releases/tag/v172)
-
-
-
-
-## Iks_Admin RU
-Поддержать автора: <a href="https://www.donationalerts.com/r/iks__">DonationAlerts</a> <br>
-Админ система с меню <br>
-![image](imgs/MenuScreen.png)
-
-## Команды
-
-- `css_admin` - Открыть админ меню | Флаги не нужны
-- 
-- `css_ban #uid/#sid/username duration reason <name if needed>` - Забанить игрока | Флаг: `b`
-- `css_banip #uid/#sid/username/ip(offline only) duration reason <name if needed>` - Забанить игрока по айпи | Флаг: `b`
-- `css_unban sid/ip` - Разбанить игрока | Флаг: `u`
-- `css_mute #uid/#sid/username duration reason <name if needed>` - Замутить игрока | Флаг: `m`
-- `css_unmute #uid/#sid/username` - Размутить игрока | Флаг: `m`
-- `css_gag #uid/#sid/username duration reason <name if needed>` - Дать гаг игроку | Флаг: `g`
-- `css_ungag #uid/#sid/username` - Снять гаг с игрока | Флаг: `g`
-- `css_kick #uid/#sid/username reason` - Кикнуть игрока | Флаг: `k`
-- 
-- `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <endtime> <server_id/-> (ДЛЯ ВСЕХ СЕРВЕРОВ)>` - Добавить админа | Флаг: `z`
-- `group_id` = -1 => Нет группы
-- `immunity` = -1 => Иммунитет из группы
-- `flags` = - => Флаги из группы
-- `server_id` = - => Все сервера
-- `endtime` - Время до конца админки
-- 
-- `css_admindel <sid>` - Удалить админа | Флаг: `z`
-- `css_reload_admins` - Перезагрузить админов | Флаг: `z`
-- `css_reload_admins_cfg` - Перезагрузить конфиг | Флаг: `z`
-## Ркон команды
-- `css_rban <sid> <ip/-(Auto)> <adminsid/CONSOLE> <duration> <reason> <BanType (0 - default / 1 - ip> <name if needed>`
-- `css_runban <sid> <adminsid/CONSOLE>`
--
-- `css_rgag <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed>`
-- `css_rungag <sid> <adminsid/CONSOLE>`
--
-- `css_rmute <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed`
-- `css_runmute <sid> <adminsid/CONSOLE>`
-- Команда проеряет может ли админ выполнить её
-
-## Настройка
-- Настройте базу данных `cfg`
-- Поменяйте ServerId на нужный `cfg`
-- Настройте причины `cfg`
-- Настройте переводы `lang/en.json`
-- Вы можете конвертировать флаги из плагина в CSSharp флаги `cfg - "ConvertedFlags"`
-
-## Флаги:
-- `z` - Все права
-- `b` - Бан
-- `k` - Кик
-- `m` - Мут
-- `g` - Гаг
-- `u` - Разбан
-- `s` - `css_slay` `css_switchteam` `css_changeteam`
-- `c` - Управление сервером
-
-## Планы
-- [x] Лог в дискорд
-- [x] `css_slay` - будет в меню
-- [x] `css_switchteam` - будет в меню
-- [x] `css_changeteam` - будет в меню
-- [ ] `css_rename <uid> <name>` - In menu
-- [x] `css_hsay uid/@all/@ct/@t time "message"` - Print To CenterHtml
-- [x] Конвертация из флагов Iks_Admin в CSS +
-- [x] Комманды для открытия меню
-- [ ] Сайт
-## Зависимости
-- [CSSharp v172](https://github.com/roflmuffin/CounterStrikeSharp/releases/tag/v172)
+## To do...
+- [ ] Add `css_rename`
+- [ ] Add `css_hp`
+- [ ] Add `css_map`
+- [ ] Add `css_speed`
+- [ ] Add `css_psay`
+- [ ] Add `css_respawn`
+- [ ] Add `css_give`
+- [ ] Add `css_rcon`
+- [ ] Add `css_noclip`
+- [x] Add `css_hide`
+- [ ] Add `css_who`
+- [ ] Add possibility to change to workshop map from menu
 
 
 
