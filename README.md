@@ -19,7 +19,7 @@
 - ```css_admindel <sid>``` -> Delete Admin
 - Example: ```css_admindel 76561199124384855```
 - `css_reload_admins_cfg` -> Reload admins and plugin config
-- `css_reload_amdins` -> Reload admins
+- `css_reload_admins` -> Reload admins
 ### Flag `b`
 - ```css_ban <#uid/#sid/name> <duration> <reason> <name if needed>``` -> Ban player
 - Example: ```css_ban #76561199124384855 0 "Use cheats" iks```
