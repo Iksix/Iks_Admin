@@ -44,6 +44,7 @@
 ### Flag `s`
 - ```css_hide``` -> Hide you from Scoreboard
 - ```css_slay <#uid/#sid/name>``` -> Kill the player
+- `css_rename <#uid/#sid/name> <new name>` -> Rename the player
 - Example: ```css_slay iks```
 - ```css_switchteam <#uid/#sid/name> <ct/t>``` -> Switch player team without killing him
 - Example: ```css_switchteam iks t```
@@ -53,6 +54,9 @@
 - Example: ```css_hsay red Pls send me discord```
 - `css_isay "<img link>"` -> Print image to center. 100% support: `.png ; .jpg ; .gif`
 - Example: ```css_isay "Some image link.png"```
+### Flags `d`
+- `css_respawn <#uid/#sid/name/>` -> Respawn the player
+- `css_noclip <#uid/#sid/name/>` -> On/Off noclip to the player
 ### Server(RCON) only
 - `css_rban <sid> <ip/-(Auto)> <adminsid/CONSOLE> <duration> <reason> <BanType (0 - default / 1 - ip> <name if needed>`
 - `css_runban <sid> <adminsid/CONSOLE>`
@@ -70,15 +74,15 @@
 > - Tested on [CS# v172](https://docs.cssharp.dev/index.html)
 
 ## To do...
-- [ ] Add `css_rename`
+- [x] Add `css_rename`
 - [ ] Add `css_hp`
 - [ ] Add `css_map`
 - [ ] Add `css_speed`
 - [ ] Add `css_psay`
-- [ ] Add `css_respawn`
+- [x] Add `css_respawn`
 - [ ] Add `css_give`
 - [ ] Add `css_rcon`
-- [ ] Add `css_noclip`
+- [x] Add `css_noclip`
 - [x] Add `css_hide`
 - [ ] Add `css_who`
 - [ ] Add possibility to change to workshop map from menu
