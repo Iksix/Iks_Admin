@@ -57,6 +57,15 @@
     "SilenceMessage": "The player {red}{name}{white} was silenced by the admin {darkblue}{admin} \n Reason: {darkblue}{reason} \n Duration: {darkblue}{duration}", // [1.1.6]
 
 	"ChangeMapMessage": "Admin {darkblue}{admin}{white} changed map on {map}", // [1.1.6]
+
+    // [1.1.6.2]
+
+	"RenameMessage" : "{white}Admin {darkblue}{admin} {white}changed player {darkblue}{name} {white}to {darkblue}{newName}{red}!",
+    "NoclipOnMessage" : "{white}Admin {darkblue}{admin} {white}enabled noclip for player {darkblue}{name}!",
+    "NoclipOffMessage" : "{white}Admin {darkblue}{admin} {white}disabled noclip for player {darkblue}{name}!",
+    "RespawnMessage" : "{white}Admin {darkblue}{admin} {white}respawned player {darkblue}{name}!",
+
+	// /[1.1.6.2]
  
     "ToAdmins": "{green}[To admins] {name}: {message}", // From player [1.1.6]
     "AdminChat": "{green}[Admin chat] {admin}: {message}", // From admin [1.1.6]
@@ -79,6 +88,8 @@
     "searchbansTitle": "{darkblue}Player Bans:",
     "Danger.Title": "{darkred}Danger!",
     "SilenceReason": "{darkblue}Reasons:", // [1.1.6]
+    "HideMessage" : "You are hide!", // [1.1.6.1]
+    "UnHideMessage" : "You are unhide!", // [1.1.6.1]
 
 	
     // /Titles

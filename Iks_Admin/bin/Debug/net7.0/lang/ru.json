@@ -55,12 +55,24 @@
 	"SlayMessage": "{red}{name} {white}был убит админом {darkblue}{admin}",
 	"SwitchTeamMessage": "Админ {darkblue}{admin}{white} переместил игрока {name} \n Прошлая команда: {darkblue}{oldteam} \n Новая команда: {darkblue}{newteam}",
 	"ChangeTeamMessage": "Админ {darkblue}{admin}{white} сменил команду игрока {name} \n Прошлая команда: {darkblue}{oldteam} \n Новая команда: {darkblue}{newteam}",
+	"HideMessage" : "Теперь вас не видно!",
+	"UnHideMessage" : "Теперь вас видно!",
 	
 	"SilenceMessage": "Игрок {red}{name}{white} был заглушен админом {darkblue}{admin} \n Причина: {darkblue}{reason} \n Срок: {darkblue}{duration}", // [1.1.6]
 	"ChangeMapMessage": "Админ {darkblue}{admin}{white} сменил карту на {map}", // [1.1.6]
 
 	"ToAdmins": "{green}[Админам] {name}: {message}", // От игрока [1.1.6]
 	"AdminChat": "{green}[Админ чат] {admin}: {message}", // От админа [1.1.6]
+
+	// [1.1.6.2]
+
+	"RenameMessage" : "{white}Админ {darkblue}{admin} {white}изменил имя игрока {darkblue}{name} {white}на {darkblue}{newName}{red}!",
+	"NoclipOnMessage" : "{white}Админ {darkblue}{admin} {white}включил noclip игроку {darkblue}{name}!",
+	"NoclipOffMessage" : "{white}Админ {darkblue}{admin} {white}выключил noclip игроку {darkblue}{name}!",
+	"RespawnMessage" : "{white}Админ {darkblue}{admin} {white}зареспавнил игрока {darkblue}{name}!",
+
+	// /[1.1.6.2]
+	
 	// /Messages
 
 	// Titles

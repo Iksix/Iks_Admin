@@ -1,4 +1,6 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using System.Text;
 using System.Text.RegularExpressions;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
@@ -50,6 +52,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
     public PluginConfig Config { get; set; }
 
+    // # a
+    List<CCSPlayerController> hidenPlayers = new();
 
     // # Danger Menu
 
@@ -58,6 +62,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
     // # MESSAGES
     public string? HSayMessage = null;
     public string? HSayColor = null;
+
+    public List<CCSPlayerController> noclipedPlayers = new();
 
     public void OnConfigParsed(PluginConfig config)
     {
@@ -161,7 +167,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         if (controller != null)
         {
             // Проверка на флаг у админа
-            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "b", admins))
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "z", admins))
             {
                 controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
                 return;
@@ -1479,7 +1485,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         if (args.Count < 4)
         {
             info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
-            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.Darkred}css_banip <#uid/#sid/name/ip(if offline)> <duration> <reason> <name if needed>");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.Darkred}css_banip <#uid/#sid/name/#ip(if offline)> <duration> <reason> <name if needed>");
             return;
         }
 
@@ -2447,6 +2453,37 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             WritePlayerBans(cSid, info, playerBans);
         });
     }
+    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
+    [ConsoleCommand("css_hide")]
+    public void OnHideCommand(CCSPlayerController controller, CommandInfo command)
+    {
+        // Проверка на флаг у админа
+        if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "s", admins))
+        {
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+            return;
+        }
+
+        if (hidenPlayers.Contains(controller))
+        {
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["UnHideMessage"]}");
+            controller.ChangeTeam(CsTeam.Spectator);
+            hidenPlayers.Remove(controller);
+        }
+        else
+        {
+            hidenPlayers.Add(controller);
+            Server.ExecuteCommand("sv_disable_teamselect_menu 1");
+
+            if (controller.PlayerPawn.Value != null && controller.PawnIsAlive)
+                controller.PlayerPawn.Value.CommitSuicide(true, false);
+
+            AddTimer(1.0f, () => { Server.NextFrame(() => controller.ChangeTeam(CsTeam.Spectator)); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
+            AddTimer(1.4f, () => { Server.NextFrame(() => controller.ChangeTeam(CsTeam.None)); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
+            controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HideMessage"]}");
+            AddTimer(2.0f, () => { Server.NextFrame(() => Server.ExecuteCommand("sv_disable_teamselect_menu 0")); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
+        }
+    }
     public void WritePlayerBans(string? cSid, CommandInfo info, List<BannedPlayer> playerBans)
     {
         Server.NextFrame(() => {
@@ -3303,6 +3340,8 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         DisconnectedPlayer disconnectedPlayer = new DisconnectedPlayer(controller.PlayerName, controller.SteamID.ToString(), controller.IpAddress);
 
         DisconnectedPlayers.Add(disconnectedPlayer);
+        hidenPlayers.Remove(@event.Userid);
+        noclipedPlayers.Remove(@event.Userid);
 
 
         return HookResult.Continue;
@@ -3382,7 +3421,7 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
         
 
         // Danger меню
-        if (admin.Flags.Contains("z") || admin.Flags.Contains("d"))
+        if (admin.Flags.Contains("d"))
         {
             menu.AddMenuOption($" {Localizer["Danger.Title"]}", (controller, option) =>
             {
@@ -4935,8 +4974,6 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
             });
 
         }
-
-
         return SlayMenu;
     }
     public void SlayFunc(CCSPlayerController target, CCSPlayerController? admin)
@@ -5011,4 +5048,286 @@ public class Iks_Admin : BasePlugin, IPluginConfig<PluginConfig>
 
     #endregion
 
+    [ConsoleCommand("css_rename")]
+    public void OnRenameCmd(CCSPlayerController? controller, CommandInfo info)
+    {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "s", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
+        Admin? admin = null;
+        if (controller != null)
+        {
+            admin = GetAdminBySid(controller.SteamID.ToString());
+        }
+
+        List<string> args = GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count < 2)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_rename <#uid/#sid/name> <new name>");
+            return;
+        }
+
+        CCSPlayerController? target = XHelper.GetPlayerFromArg(args[0]);
+        if (target == null)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
+            return;
+        }
+
+        string newName = string.Join(" ", args.Skip(1));
+        string oldName = target.PlayerName;
+        string adminName = controller == null ? "CONSOLE" : controller.PlayerName;
+        string adminSid = controller == null ? "CONSOLE" : controller.SteamID.ToString();
+
+        SchemaString<CBasePlayerController> playerName = new SchemaString<CBasePlayerController>(target, "m_iszPlayerName");
+        playerName.Set(newName);
+
+        string message = Localizer["RenameMessage"].ToString()
+        .Replace("{name}", oldName)
+        .Replace("{newName}", newName)
+        .Replace("{admin}", adminName)
+        .Replace("{sid}", target.SteamID.ToString())
+        .Replace("{adminsid}", adminSid);
+
+        string d_message = Config.LogToDiscordMessages["RenameMessage"]
+        .Replace("{name}", oldName)
+        .Replace("{newName}", newName)
+        .Replace("{admin}", adminName)
+        .Replace("{sid}", target.SteamID.ToString())
+        .Replace("{adminsid}", adminSid);
+        string vk_message = Config.LogToVkMessages["RenameMessage"]
+        .Replace("{name}", oldName)
+        .Replace("{newName}", newName)
+        .Replace("{admin}", adminName)
+        .Replace("{sid}", target.SteamID.ToString())
+        .Replace("{adminsid}", adminSid);
+
+        Server.PrintToChatAll(message);
+
+        Task.Run(async () => 
+        {
+            if (Config.LogToVk)
+            {
+                vkLog.sendMessage(vk_message);
+            }
+            if (Config.LogToDiscord)
+            {
+                dLog.sendMessage(d_message, new DColor(255, 0, 0));
+            }
+        });
+    }
+
+    [ConsoleCommand("css_noclip")]
+    public void OnNoclipCmd(CCSPlayerController? controller, CommandInfo info)
+    {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "d", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
+        Admin? admin = null;
+        if (controller != null)
+        {
+            admin = GetAdminBySid(controller.SteamID.ToString());
+        }
+
+        List<string> args = GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count < 2 && args.Count != 0)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_noclip <#uid/#sid/name/>");
+            return;
+        }
+
+        CCSPlayerController? target = XHelper.GetPlayerFromArg(args[0]);
+        if (target == null && args.Count != 0)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
+            return;
+        }
+        if (args.Count == 0 && controller == null)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_noclip <#uid/#sid/name/>");
+            return;
+        }
+        if (args.Count == 0)
+        {
+            target = controller;
+        }
+
+        
+        string adminName = controller == null ? "CONSOLE" : controller.PlayerName;
+        string adminSid = controller == null ? "CONSOLE" : controller.SteamID.ToString();
+        string name = target.PlayerName;
+
+        string messageString = "NoclipOnMessage";
+
+        Server.ExecuteCommand("sv_cheats 1");
+
+        target.ExecuteClientCommandFromServer("noclip");
+
+        Server.ExecuteCommand("sv_cheats 0");
+
+        if (noclipedPlayers.Contains(target))
+        {
+            messageString = "NoclipOffMessage";
+            noclipedPlayers.Remove(target);
+        } else {
+            noclipedPlayers.Add(target);
+        }
+        
+
+        string message = Localizer[messageString].ToString()
+        .Replace("{name}", name)
+        .Replace("{admin}", adminName)
+        .Replace("{sid}", target.SteamID.ToString())
+        .Replace("{adminsid}", adminSid);
+
+        string d_message = Config.LogToDiscordMessages[messageString]
+        .Replace("{name}", name)
+        .Replace("{admin}", adminName)
+        .Replace("{sid}", target.SteamID.ToString())
+        .Replace("{adminsid}", adminSid);
+        string vk_message = Config.LogToVkMessages[messageString]
+        .Replace("{name}", name)
+        .Replace("{admin}", adminName)
+        .Replace("{sid}", target.SteamID.ToString())
+        .Replace("{adminsid}", adminSid);
+
+        Server.PrintToChatAll(message);
+
+        Task.Run(async () => 
+        {
+            if (Config.LogToVk)
+            {
+                vkLog.sendMessage(vk_message);
+            }
+            if (Config.LogToDiscord)
+            {
+                dLog.sendMessage(d_message, new DColor(255, 255, 255));
+            }
+        });
+    }
+
+    [ConsoleCommand("css_respawn")]
+    public void OnRespawnCmd(CCSPlayerController? controller, CommandInfo info)
+    {
+        if (controller != null)
+        {
+            // Проверка на флаг у админа
+            if (!Helper.AdminHaveFlag(controller.SteamID.ToString(), "d", admins))
+            {
+                controller.PrintToChat($" {Localizer["PluginTag"]} {Localizer["HaveNotAccess"]}");
+                return;
+            }
+        }
+        Admin? admin = null;
+        if (controller != null)
+        {
+            admin = GetAdminBySid(controller.SteamID.ToString());
+        }
+
+        List<string> args = GetArgsFromCommandLine(info.GetCommandString);
+
+        if (args.Count < 2 && args.Count != 0)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_respawn <#uid/#sid/name/>");
+            return;
+        }
+
+        CCSPlayerController? target = XHelper.GetPlayerFromArg(args[0]);
+        if (target == null && args.Count != 0)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {Localizer["PlayerNotFound"]}");
+            return;
+        }
+        if (args.Count == 0 && controller == null)
+        {
+            info.ReplyToCommand($" {Localizer["PluginTag"]} Command usage:");
+            info.ReplyToCommand($" {Localizer["PluginTag"]} {ChatColors.DarkRed}css_noclip <#uid/#sid/name/>");
+            return;
+        }
+        if (args.Count == 0)
+        {
+            target = controller;
+        }
+
+        
+        string adminName = controller == null ? "CONSOLE" : controller.PlayerName;
+        string adminSid = controller == null ? "CONSOLE" : controller.SteamID.ToString();
+        string name = target.PlayerName;
+        string messageString = "RespawnMessage";
+
+        target.Respawn();
+        
+
+        string message = Localizer[messageString].ToString()
+        .Replace("{name}", name)
+        .Replace("{admin}", adminName)
+        .Replace("{sid}", target.SteamID.ToString())
+        .Replace("{adminsid}", adminSid);
+
+        string d_message = Config.LogToDiscordMessages[messageString]
+        .Replace("{name}", name)
+        .Replace("{admin}", adminName)
+        .Replace("{sid}", target.SteamID.ToString())
+        .Replace("{adminsid}", adminSid);
+        string vk_message = Config.LogToVkMessages[messageString]
+        .Replace("{name}", name)
+        .Replace("{admin}", adminName)
+        .Replace("{sid}", target.SteamID.ToString())
+        .Replace("{adminsid}", adminSid);
+
+        Server.PrintToChatAll(message);
+
+        Task.Run(async () => 
+        {
+            if (Config.LogToVk)
+            {
+                vkLog.sendMessage(vk_message);
+            }
+            if (Config.LogToDiscord)
+            {
+                dLog.sendMessage(d_message, new DColor(255, 255, 255));
+            }
+        });
+    }
+
+    public class SchemaString<SchemaClass> : NativeObject where SchemaClass : NativeObject
+    {
+        public SchemaString(SchemaClass instance, string member) : base(Schema.GetSchemaValue<nint>(instance.Handle, typeof(SchemaClass).Name!, member))
+            { }
+
+        public unsafe void Set(string str)
+        {
+            byte[] bytes = this.GetStringBytes(str);
+
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                Unsafe.Write((void*)(this.Handle.ToInt64() + i), bytes[i]);
+            }
+
+            Unsafe.Write((void*)(this.Handle.ToInt64() + bytes.Length), 0);
+        }
+
+        private byte[] GetStringBytes(string str)
+        {
+            return Encoding.UTF8.GetBytes(str);
+        }
+    }
 }

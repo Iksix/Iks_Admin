@@ -87,6 +87,15 @@ public class PluginConfig : BasePluginConfig
         {"SwitchTeamMessage", "Админ: {admin} \n Перемещение игрока {name} \n Прошлая команда: {oldteam} \n Новая команда: {newteam}!"},
         {"ChangeTeamMessage", "Админ: {admin} \n Смена команды игрока: {name} \n Прошлая команда: {oldteam} \n Новая команда: {newteam}"},
 
+        // [1.1.6.2]
+
+        {"RenameSessage", "Админ {darkblue}{admin} {white}изменил имя игрока {darkblue}{name} {white}на {darkblue}{newName}{red}!"},
+        {"NoclipOnMessage", "{white}Админ {darkblue}{admin} {white}включил noclip игроку {darkblue}{name}!"},
+        {"NoclipOffMessage", "{white}Админ {darkblue}{admin} {white}выключил noclip игроку {darkblue}{name}!"},
+        {"RespawnMessage", "{white}Админ {darkblue}{admin} {white}зареспавнил игрока {darkblue}{name}!"},
+
+        // /[1.1.6.2]
+
         {"OfflineOption", "Offline"},
         {"OnlineOption", "Online"}
     };
@@ -111,6 +120,15 @@ public class PluginConfig : BasePluginConfig
         {"HsayMessage", "Админ {admin} написал сообщение в худ! \n Текст: {text}"},
         {"SwitchTeamMessage", "Админ: {admin} \n Перемещение игрока {name} \n Прошлая команда: {oldteam} \n Новая команда: {newteam}!"},
         {"ChangeTeamMessage", "Админ: {admin} \n Смена команды игрока: {name} \n Прошлая команда: {oldteam} \n Новая команда: {newteam}"},
+
+        // [1.1.6.2]
+
+        {"RenameSessage", "Админ {darkblue}{admin} {white}изменил имя игрока {darkblue}{name} {white}на {darkblue}{newName}{red}!"},
+        {"NoclipOnMessage", "{white}Админ {darkblue}{admin} {white}включил noclip игроку {darkblue}{name}!"},
+        {"NoclipOffMessage", "{white}Админ {darkblue}{admin} {white}выключил noclip игроку {darkblue}{name}!"},
+        {"RespawnMessage", "{white}Админ {darkblue}{admin} {white}зареспавнил игрока {darkblue}{name}!"},
+
+        // /[1.1.6.2]
 
         {"OfflineOption", "Offline"},
         {"OnlineOption", "Online"}
