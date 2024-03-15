@@ -1,0 +1,16 @@
+D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\bin\Debug\net7.0\IksAdmin.deps.json
+D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\bin\Debug\net7.0\IksAdmin.dll
+D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\bin\Debug\net7.0\IksAdmin.pdb
+D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\bin\Debug\net7.0\IksAdminApi.dll
+D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\bin\Debug\net7.0\IksAdminApi.pdb
+D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\obj\Debug\net7.0\IksAdmin.csproj.AssemblyReference.cache
+D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\obj\Debug\net7.0\IksAdmin.GeneratedMSBuildEditorConfig.editorconfig
+D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\obj\Debug\net7.0\IksAdmin.AssemblyInfoInputs.cache
+D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\obj\Debug\net7.0\IksAdmin.AssemblyInfo.cs
+D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\obj\Debug\net7.0\IksAdmin.csproj.CoreCompileInputs.cache
+D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\obj\Debug\net7.0\IksAdmin.csproj.Up2Date
+D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\obj\Debug\net7.0\IksAdmin.dll
+D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\obj\Debug\net7.0\refint\IksAdmin.dll
+D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\obj\Debug\net7.0\IksAdmin.pdb
+D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\obj\Debug\net7.0\ref\IksAdmin.dll
+D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\obj\Debug\net7.0\IksAdmin.sourcelink.json
