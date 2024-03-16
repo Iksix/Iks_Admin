@@ -54,10 +54,10 @@ public interface IIksAdminApi
         string flagDefault, CommandUsage whoCanExecute,
         Action<CCSPlayerController, Admin?, List<string>, CommandInfo> onCommandExecute);
 
-    public bool HasAccess(CCSPlayerController? caller, CommandUsage commandUsage, string flagsAccess,
+    public bool HasAccess(string adminSid, CommandUsage commandUsage, string flagsAccess,
         string flagsDefault);
     
-    public bool HasPermisions(CCSPlayerController caller, string flagsAccess, string flagsDefault);
+    public bool HasPermisions(string adminSid, string flagsAccess, string flagsDefault);
     public bool HasMoreImmunity(string adminSid, string targetSid);
     
     // Events

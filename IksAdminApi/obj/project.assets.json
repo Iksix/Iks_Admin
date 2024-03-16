@@ -2313,11 +2313,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\__iksAdmin\\Iks_Admin_2.0_rewrite\\IksAdminApi\\IksAdminApi.csproj",
+      "projectUniqueName": "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj",
       "projectName": "IksAdminApi",
-      "projectPath": "D:\\__iksAdmin\\Iks_Admin_2.0_rewrite\\IksAdminApi\\IksAdminApi.csproj",
+      "projectPath": "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj",
       "packagesPath": "C:\\Users\\Iks\\.nuget\\packages\\",
-      "outputPath": "D:\\__iksAdmin\\Iks_Admin_2.0_rewrite\\IksAdminApi\\obj\\",
+      "outputPath": "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Iks\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -2340,11 +2340,6 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
       }
     },
     "frameworks": {

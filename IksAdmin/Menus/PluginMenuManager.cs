@@ -9,27 +9,28 @@ namespace IksAdmin.Menus;
 
 public static class PluginMenuManager
 {
-    private static IIksAdminApi? _api = IksAdmin.Api;
-    private static IStringLocalizer _localizer = _api!.Localizer;
-    private static PluginConfig _config = IksAdmin.ConfigNow;
+    private static readonly IIksAdminApi? Api = IksAdmin.Api;
+    private static readonly IStringLocalizer Localizer = Api!.Localizer;
+    private static readonly PluginConfig Config = IksAdmin.ConfigNow;
     public static void OpenAdminMenu(CCSPlayerController caller)
     {
         var menu = new Menu(caller, ConstructAdminMenu);
-        menu.Open(caller, _localizer["MENUTITLE_Main"]);
+        menu.Open(caller, Localizer["MENUTITLE_Main"]);
     }
 
     public static void ConstructAdminMenu(CCSPlayerController caller, Admin? admin, IMenu menu)
     {
-        if (_api!.HasPermisions(caller, "blocks", "bmg"))
-            menu.AddMenuOption(_localizer["MENUOPTION_Blocks"], (p, _) => { OpenBlocksMenu(p, menu); });
-        if (_api.HasPermisions(caller, "players", "skt"))
-            menu.AddMenuOption(_localizer["MENUOPTION_Players"], (p, _) => { OpenPlayersMenu(p, menu); });
-        if (_api.HasPermisions(caller, "server", "z"))
-            menu.AddMenuOption(_localizer["MENUOPTION_Server"], (p, _) => { OpenBlocksMenu(p, menu); });
+        var adminSid = caller.AuthorizedSteamID!.SteamId64.ToString();
+        if (Api!.HasPermisions(adminSid, "blocks", "bmg"))
+            menu.AddMenuOption(Localizer["MENUOPTION_Blocks"], (p, _) => { OpenBlocksMenu(p, menu); });
+        if (Api.HasPermisions(adminSid, "players", "skt"))
+            menu.AddMenuOption(Localizer["MENUOPTION_Players"], (p, _) => { OpenPlayersMenu(p, menu); });
+        if (Api.HasPermisions(adminSid, "server", "z"))
+            menu.AddMenuOption(Localizer["MENUOPTION_Server"], (p, _) => { OpenBlocksMenu(p, menu); });
         
         // Добавляем пункты из модулей
-        var items = _api.ModulesOptions.Where(
-            x => _api.HasPermisions(caller, x.FlagsAccess, x.FlagsDefault )
+        var items = Api.ModulesOptions.Where(
+            x => Api.HasPermisions(adminSid, x.FlagsAccess, x.FlagsDefault )
             && x.OptionLocation == "Main"
             );
         foreach (var item in items)
@@ -44,41 +45,42 @@ public static class PluginMenuManager
     public static void OpenBlocksMenu(CCSPlayerController caller, IMenu backMenu)
     {
         var menu = new Menu(caller, ConstructBlocksMenu);
-        menu.Open(caller, _localizer["MENUTITLE_Blocks"], backMenu);
+        menu.Open(caller, Localizer["MENUTITLE_Blocks"], backMenu);
     }
     
     public static void OpenPlayersMenu(CCSPlayerController caller, IMenu backMenu)
     {
         var menu = new Menu(caller, ConstructPlayersMenu);
-        menu.Open(caller, _localizer["MENUTITLE_Players"], backMenu);
+        menu.Open(caller, Localizer["MENUTITLE_Players"], backMenu);
     }
 
     private static void ConstructPlayersMenu(CCSPlayerController caller, Admin? admin, IMenu menu)
     {
-        if (_api!.HasPermisions(caller, "slay", "s"))
+        var adminSid = caller.AuthorizedSteamID!.SteamId64.ToString();
+        if (Api!.HasPermisions(adminSid, "slay", "s"))
         {
-            menu.AddMenuOption(_localizer["MENUOPTION_Slay"], (_, _) =>
+            menu.AddMenuOption(Localizer["MENUOPTION_Slay"], (_, _) =>
             {   
                 OpenSlayMenu(caller, menu);
             });
         }
-        if (_api.HasPermisions(caller, "kick", "k"))
+        if (Api.HasPermisions(adminSid, "kick", "k"))
         {
-            menu.AddMenuOption(_localizer["MENUOPTION_Kick"], (_, _) =>
+            menu.AddMenuOption(Localizer["MENUOPTION_Kick"], (_, _) =>
             {   
                 OpenKickMenu(caller, menu);
             });
         }
-        if (_api.HasPermisions(caller, "switchteam", "s"))
+        if (Api.HasPermisions(adminSid, "switchteam", "s"))
         {
-            menu.AddMenuOption(_localizer["MENUOPTION_SwitchTeam"], (_, _) =>
+            menu.AddMenuOption(Localizer["MENUOPTION_SwitchTeam"], (_, _) =>
             {   
                 OpenSwitchTeamMenu(caller, menu);
             });
         }
-        if (_api.HasPermisions(caller, "changeteam", "s"))
+        if (Api.HasPermisions(adminSid, "changeteam", "s"))
         {
-            menu.AddMenuOption(_localizer["MENUOPTION_ChangeTeam"], (_, _) =>
+            menu.AddMenuOption(Localizer["MENUOPTION_ChangeTeam"], (_, _) =>
             {   
                 OpenChangeTeamMenu(caller, menu);
             });
@@ -91,14 +93,14 @@ public static class PluginMenuManager
         OpenSelectPlayersMenu(caller, menu, (target, playersMenu) =>
         {
             OpenTeamsMenu(caller, target, playersMenu);
-        }, false, false, _localizer["MENUTITLE_SwitchTeam"]);
+        }, false, false, Localizer["MENUTITLE_SwitchTeam"]);
     }
     private static void OpenChangeTeamMenu(CCSPlayerController caller, IMenu menu)
     {
         OpenSelectPlayersMenu(caller, menu, (target, playersMenu) =>
         {
             OpenTeamsMenu(caller, target, playersMenu, true);
-        }, false, false, _localizer["MENUTITLE_ChangeTeam"]);
+        }, false, false, Localizer["MENUTITLE_ChangeTeam"]);
     }
 
     private static void OpenTeamsMenu(CCSPlayerController caller, PlayerInfo target, IMenu backMenu, bool changeTeam = false)
@@ -107,7 +109,7 @@ public static class PluginMenuManager
         {
             TeamsMenuConstructor(menu, caller, target, changeTeam);
         });
-        menu.Open(caller, _localizer["MENUTITLE_SelectTeam"], backMenu);
+        menu.Open(caller, Localizer["MENUTITLE_SelectTeam"], backMenu);
     }
 
     private static void TeamsMenuConstructor(IMenu menu, CCSPlayerController caller, PlayerInfo target, bool changeTeam)
@@ -123,12 +125,12 @@ public static class PluginMenuManager
             if (changeTeam)
             {
                 selectedPlayer.ChangeTeam(newTeam);
-                _api!.EChangeTeam(adminSid, target, oldTeam, newTeam);
+                Api!.EChangeTeam(adminSid, target, oldTeam, newTeam);
             }
             else
             {
                 selectedPlayer.SwitchTeam(newTeam);
-                _api!.ESwitchTeam(adminSid, target, oldTeam, newTeam);
+                Api!.ESwitchTeam(adminSid, target, oldTeam, newTeam);
             }
         });
         menu.AddMenuOption("To T", (_, _) =>
@@ -140,12 +142,12 @@ public static class PluginMenuManager
             if (changeTeam)
             {
                 selectedPlayer.ChangeTeam(newTeam);
-                _api!.EChangeTeam(adminSid, target, oldTeam, newTeam);
+                Api!.EChangeTeam(adminSid, target, oldTeam, newTeam);
             }
             else
             {
                 selectedPlayer.SwitchTeam(newTeam);
-                _api!.ESwitchTeam(adminSid, target, oldTeam, newTeam);
+                Api!.ESwitchTeam(adminSid, target, oldTeam, newTeam);
             }
         });
         if (changeTeam)
@@ -157,7 +159,7 @@ public static class PluginMenuManager
                 var newTeam = CsTeam.Spectator;
                 var oldTeam = XHelper.GetTeamFromNum(selectedPlayer.TeamNum);
                 selectedPlayer.ChangeTeam(newTeam);
-                _api!.EChangeTeam(adminSid, target, oldTeam, newTeam);
+                Api!.EChangeTeam(adminSid, target, oldTeam, newTeam);
             });
         }
     }
@@ -170,72 +172,73 @@ public static class PluginMenuManager
             var selectedPlayer = XHelper.GetPlayerFromArg($"#{target.SteamId.SteamId64}");
             if (selectedPlayer == null) return;
             selectedPlayer.CommitSuicide(true,true);
-            _api!.ESlay(caller.AuthorizedSteamID!.SteamId64.ToString(), target);
-        }, false, false, _localizer["MENUTITLE_Slay"], true);
+            Api!.ESlay(caller.AuthorizedSteamID!.SteamId64.ToString(), target);
+        }, false, false, Localizer["MENUTITLE_Slay"], true);
     }
     
     private static void OpenKickMenu(CCSPlayerController caller, IMenu menu)
     {
         OpenSelectPlayersMenu(caller, menu, (target, _) =>
         {
-            SelectReason(caller, menu, _config.KickReasons, s =>
+            SelectReason(caller, menu, Config.KickReasons, s =>
             {
                 MenuManager.CloseActiveMenu(caller);
                 var selectedPlayer = XHelper.GetPlayerFromArg($"#{target.SteamId.SteamId64}");
                 if (selectedPlayer == null) return;
                 Server.ExecuteCommand("kickid " + selectedPlayer.UserId);
-                _api!.EKick(caller.AuthorizedSteamID!.SteamId64.ToString(), target, s);
+                Api!.EKick(caller.AuthorizedSteamID!.SteamId64.ToString(), target, s);
             });
-        }, true, false, _localizer["MENUTITLE_Kick"]);
+        }, true, false, Localizer["MENUTITLE_Kick"]);
     }
 
     public static void ConstructBlocksMenu(CCSPlayerController caller, Admin? admin, IMenu menu)
     {
-        if (_api!.HasPermisions(caller, "ban", "b"))
+        var adminSid = caller.AuthorizedSteamID!.SteamId64.ToString();
+        if (Api!.HasPermisions(adminSid, "ban", "b"))
         {
-            menu.AddMenuOption(_localizer["MENUOPTION_Ban"], (_, _) =>
+            menu.AddMenuOption(Localizer["MENUOPTION_Ban"], (_, _) =>
             {   
                 OpenBanMenu(caller, menu);
             });
-            menu.AddMenuOption(_localizer["MENUOPTION_OfflineBan"], (_, _) =>
+            menu.AddMenuOption(Localizer["MENUOPTION_OfflineBan"], (_, _) =>
             {
                 OpenOfflineBanMenu(caller, menu);
             });
         }
-        if (_api.HasPermisions(caller, "gag", "g"))
+        if (Api.HasPermisions(adminSid, "gag", "g"))
         {
-            menu.AddMenuOption(_localizer["MENUOPTION_Gag"], (_, _) =>
+            menu.AddMenuOption(Localizer["MENUOPTION_Gag"], (_, _) =>
             {
                 OpenGagMenu(caller, menu);
             });
         }
-        if (_api.HasPermisions(caller, "mute", "m"))
+        if (Api.HasPermisions(adminSid, "mute", "m"))
         {
-            menu.AddMenuOption(_localizer["MENUOPTION_Mute"], (_, _) =>
+            menu.AddMenuOption(Localizer["MENUOPTION_Mute"], (_, _) =>
             {
                 OpenMuteMenu(caller, menu);
             });
         }
-        if (_api.HasPermisions(caller, "ungag", "g"))
+        if (Api.HasPermisions(adminSid, "ungag", "g"))
         {
-            menu.AddMenuOption(_localizer["MENUOPTION_UnGag"], (_, _) =>
+            menu.AddMenuOption(Localizer["MENUOPTION_UnGag"], (_, _) =>
             {
                 var gagMenu = new Menu(caller, ConstructUnGagMenu);
-                gagMenu.Open(caller, _localizer["MENUTITLE_UnGag"], menu);
+                gagMenu.Open(caller, Localizer["MENUTITLE_UnGag"], menu);
             });
         }
-        if (_api.HasPermisions(caller, "unmute", "m"))
+        if (Api.HasPermisions(adminSid, "unmute", "m"))
         {
-            menu.AddMenuOption(_localizer["MENUOPTION_UnMute"], (_, _) =>
+            menu.AddMenuOption(Localizer["MENUOPTION_UnMute"], (_, _) =>
             {
                 var gagMenu = new Menu(caller, ConstructUnMuteMenu);
-                gagMenu.Open(caller, _localizer["MENUTITLE_UnMute"], menu);
+                gagMenu.Open(caller, Localizer["MENUTITLE_UnMute"], menu);
             });
         }
         
         // Добавляем пункты из модулей
-        var items = _api.ModulesOptions.Where(
-            x => _api.HasPermisions(caller, x.FlagsAccess, x.FlagsDefault )
+        var items = Api.ModulesOptions.Where(
+            x => Api.HasPermisions(adminSid, x.FlagsAccess, x.FlagsDefault )
                  && x.OptionLocation == "ManageBlocks"
         );
         foreach (var item in items)
@@ -251,7 +254,7 @@ public static class PluginMenuManager
     {
         OpenSelectPlayersMenu(caller, menu, (target, _) =>
         {
-            SelectReasonAndTime(caller, menu, _config.BanReasons, (reason, time) =>
+            SelectReasonAndTime(caller, menu, Config.BanReasons, (reason, time) =>
             {
                 time = time * 60;
                 var newBan = new PlayerBan(
@@ -263,21 +266,21 @@ public static class PluginMenuManager
                     time,
                     (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
                     reason,
-                    _config.ServerId
+                    Config.ServerId
                 );
                 Task.Run(async () =>
                 {
-                    await _api!.AddBan(newBan.AdminSid, newBan);
+                    await Api!.AddBan(newBan.AdminSid, newBan);
                 });
             });
-        }, true, false, _localizer["MENUTITLE_Ban"]);
+        }, true, false, Localizer["MENUTITLE_Ban"]);
     }
     
     private static void OpenOfflineBanMenu(CCSPlayerController caller, IMenu menu)
     {
         OpenSelectPlayersMenu(caller, menu, (target, _) =>
         {
-            SelectReasonAndTime(caller, menu, _config.BanReasons, (reason, time) =>
+            SelectReasonAndTime(caller, menu, Config.BanReasons, (reason, time) =>
             {
                 time = time * 60;
                 var newBan = new PlayerBan(
@@ -289,21 +292,21 @@ public static class PluginMenuManager
                     time,
                     (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
                     reason,
-                    _config.ServerId
+                    Config.ServerId
                 );
                 Task.Run(async () =>
                 {
-                    await _api!.AddBan(newBan.AdminSid, newBan);
+                    await Api!.AddBan(newBan.AdminSid, newBan);
                 });
             });
-        }, true, true, _localizer["MENUTITLE_OfflineBan"]);
+        }, true, true, Localizer["MENUTITLE_OfflineBan"]);
     }
     
     private static void OpenGagMenu(CCSPlayerController caller, IMenu menu)
     {
         OpenSelectPlayersMenu(caller, menu, (target, _) =>
         {
-            SelectReasonAndTime(caller, menu, _config.GagReasons, (reason, time) =>
+            SelectReasonAndTime(caller, menu, Config.GagReasons, (reason, time) =>
             {
                 time = time * 60;
                 var newBan = new PlayerComm(
@@ -314,14 +317,14 @@ public static class PluginMenuManager
                     time,
                     (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
                     reason,
-                    _config.ServerId
+                    Config.ServerId
                 );
                 Task.Run(async () =>
                 {
-                    await _api!.AddGag(newBan.AdminSid, newBan);
+                    await Api!.AddGag(newBan.AdminSid, newBan);
                 });
             });
-        }, true, false, _localizer["MENUTITLE_Gag"]);
+        }, true, false, Localizer["MENUTITLE_Gag"]);
     }
     private static void ConstructUnGagMenu(CCSPlayerController caller, Admin? admin, IMenu menu)
     {
@@ -330,13 +333,13 @@ public static class PluginMenuManager
         {
             var playerSid = player.AuthorizedSteamID!.SteamId64.ToString();
             var adminSid = caller.AuthorizedSteamID!.SteamId64.ToString();
-            if (_api!.OnlineGaggedPlayers.Any(x => x.Sid == playerSid))
+            if (Api!.OnlineGaggedPlayers.Any(x => x.Sid == playerSid))
             {
                 menu.AddMenuOption(player.PlayerName, (_, _) =>
                 {
                     Task.Run(async () =>
                     {
-                        await _api.UnGag(playerSid, adminSid);
+                        await Api.UnGag(playerSid, adminSid);
                     });
                 });
             }
@@ -350,13 +353,13 @@ public static class PluginMenuManager
         {
             var playerSid = player.AuthorizedSteamID!.SteamId64.ToString();
             var adminSid = caller.AuthorizedSteamID!.SteamId64.ToString();
-            if (_api!.OnlineGaggedPlayers.Any(x => x.Sid == playerSid))
+            if (Api!.OnlineGaggedPlayers.Any(x => x.Sid == playerSid))
             {
                 menu.AddMenuOption(player.PlayerName, (_, _) =>
                 {
                     Task.Run(async () =>
                     {
-                        await _api.UnGag(playerSid, adminSid);
+                        await Api.UnGag(playerSid, adminSid);
                     });
                 });
             }
@@ -367,7 +370,7 @@ public static class PluginMenuManager
     {
         OpenSelectPlayersMenu(caller, menu, (target, _) =>
         {
-            SelectReasonAndTime(caller, menu, _config.MuteReasons, (reason, time) =>
+            SelectReasonAndTime(caller, menu, Config.MuteReasons, (reason, time) =>
             {
                 time = time * 60;
                 var newBan = new PlayerComm(
@@ -378,21 +381,21 @@ public static class PluginMenuManager
                     time,
                     (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
                     reason,
-                    _config.ServerId
+                    Config.ServerId
                 );
                 Task.Run(async () =>
                 {
-                    await _api!.AddMute(newBan.AdminSid, newBan);
+                    await Api!.AddMute(newBan.AdminSid, newBan);
                 });
             });
-        }, true, false, _localizer["MENUTITLE_Mute"]);
+        }, true, false, Localizer["MENUTITLE_Mute"]);
     }
     
     private static void SelectReasonAndTime(CCSPlayerController caller, IMenu backMenu ,List<Reason> reasons, Action<string, int> onSelect)
     {
         Menu menu = new Menu(caller, (controller, _, arg3) => 
             SelectReasonAndTimeConstructor(controller, arg3, reasons, onSelect));
-        menu.Open(caller, _localizer["MENUTITLE_Reason"], backMenu);
+        menu.Open(caller, Localizer["MENUTITLE_Reason"], backMenu);
     }
 
     private static void SelectReasonAndTimeConstructor(CCSPlayerController caller, IMenu menu, 
@@ -417,8 +420,8 @@ public static class PluginMenuManager
             }
             if (reason.Time == -1)
             {
-                _api!.SendMessageToPlayer(caller, _localizer["NOTIFY_WriteReason"]);
-                _api.NextCommandAction.Add(caller, s =>
+                Api!.SendMessageToPlayer(caller, Localizer["NOTIFY_WriteReason"]);
+                Api.NextCommandAction.Add(caller, s =>
                 {
                     SelectTime(caller, menu, time =>
                     {
@@ -435,23 +438,23 @@ public static class PluginMenuManager
         {
             SelectTimeConstructor(controller, arg3, onSelect);
         });
-        menu.Open(caller, _localizer["MENUTITLE_Time"], backMenu);
+        menu.Open(caller, Localizer["MENUTITLE_Time"], backMenu);
     }
     private static void SelectTimeConstructor(CCSPlayerController caller, IMenu menu, Action<int> onSelect)
     {
         menu.PostSelectAction = PostSelectAction.Nothing;
-        foreach (var time in _config.Times)
+        foreach (var time in Config.Times)
         {
             if (time.Value == -1)
             {
                 menu.AddMenuOption(time.Key, (_, _) =>
                 {
-                    _api!.SendMessageToPlayer(caller, _localizer["NOTIFY_WriteTime"]);
-                    _api.NextCommandAction.Add(caller, s =>
+                    Api!.SendMessageToPlayer(caller, Localizer["NOTIFY_WriteTime"]);
+                    Api.NextCommandAction.Add(caller, s =>
                     {
                         if (!int.TryParse(s, out var result))
                         {
-                            _api.SendMessageToPlayer(caller, _localizer["NOTIFY_ErrorTime"]);
+                            Api.SendMessageToPlayer(caller, Localizer["NOTIFY_ErrorTime"]);
                         }
                         onSelect.Invoke(result);
                     });
@@ -471,7 +474,7 @@ public static class PluginMenuManager
     {
         Menu menu = new Menu(caller, (controller, _, arg3) => 
             SelectReasonConstructor(controller, arg3, reasons, onSelect));
-        menu.Open(caller, _localizer["MENUTITLE_Reason"], backMenu);
+        menu.Open(caller, Localizer["MENUTITLE_Reason"], backMenu);
     }
     
     private static void SelectReasonConstructor(CCSPlayerController caller, IMenu menu, 
@@ -483,8 +486,8 @@ public static class PluginMenuManager
             {
                 menu.AddMenuOption(reason.Remove(0, 1), (_, _) =>
                 {
-                    _api!.SendMessageToPlayer(caller, _localizer["NOTIFY_WriteReason"]);
-                    _api.NextCommandAction.Add(caller, onSelect.Invoke);
+                    Api!.SendMessageToPlayer(caller, Localizer["NOTIFY_WriteReason"]);
+                    Api.NextCommandAction.Add(caller, onSelect.Invoke);
                 });
                 continue;
             }
@@ -502,13 +505,13 @@ public static class PluginMenuManager
         {
             ConstructSelectPlayerMenu(controller, arg3, onSelect, ignoreYourself, offline, aliveOnly);
         });
-        title = title == null ? _localizer["MENUTITLE_SelectPlayer"] : title;
+        title = title == null ? Localizer["MENUTITLE_SelectPlayer"] : title;
         menu.Open(caller, title, backMenu);
     }
 
     private static void ConstructSelectPlayerMenu(CCSPlayerController caller, IMenu menu, Action<PlayerInfo, IMenu> onSelect, bool ignoreYourself = true, bool offline = false, bool aliveOnly = false)
     {
-        var players = _api!.DisconnectedPlayers;
+        var players = Api!.DisconnectedPlayers;
         if (!offline)
         {
             players.Clear();
@@ -521,7 +524,7 @@ public static class PluginMenuManager
         foreach (var player in players)
         {
             var playerInfo = new PlayerInfo(player.PlayerName, player.SteamId.SteamId64, player.IpAddress);
-            if (!_api.HasMoreImmunity(caller.AuthorizedSteamID!.SteamId64.ToString(),
+            if (!Api.HasMoreImmunity(caller.AuthorizedSteamID!.SteamId64.ToString(),
                     playerInfo.SteamId.SteamId64.ToString()))
             {
                 if (playerInfo.SteamId.SteamId64 == caller.AuthorizedSteamID.SteamId64)

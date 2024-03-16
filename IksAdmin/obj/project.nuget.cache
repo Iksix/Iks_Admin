@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "J5USBx3jwfi4vSj/rpWfUxNuN2vQGat7rCI05iJjKAfh9Wx6iN/ENh7Aq1Pp2tcsyIVXlLBe0OV9WeGA0QInxA==",
+  "dgSpecHash": "80oJ0ETtLxVE8bVaGlAnCtcZr6P6DoHeyGR9L4FUIZVQ9h1s3aNZV6mY2iV2FvtMPcb+Zx9uEF44VfpKA3+KNA==",
   "success": true,
-  "projectFilePath": "D:\\__iksAdmin\\Iks_Admin_2.0_rewrite\\IksAdmin\\IksAdmin.csproj",
+  "projectFilePath": "D:\\__iksAdmin\\Iks_Admin\\IksAdmin\\IksAdmin.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Iks\\.nuget\\packages\\counterstrikesharp.api\\1.0.193\\counterstrikesharp.api.1.0.193.nupkg.sha512",
     "C:\\Users\\Iks\\.nuget\\packages\\dapper\\2.1.35\\dapper.2.1.35.nupkg.sha512",

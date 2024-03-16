@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = IksAdmin
-build_property.ProjectDir = D:\__iksAdmin\Iks_Admin_2.0_rewrite\IksAdmin\
+build_property.ProjectDir = D:\__iksAdmin\Iks_Admin\IksAdmin\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

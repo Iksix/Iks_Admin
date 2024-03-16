@@ -31,9 +31,9 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     public PluginConfig Config { get; set; } = new();
     public static PluginConfig ConfigNow = new();
 
-    private static Dictionary<SteamID, List<string>> _convertedFlags = new();
-    private static Dictionary<SteamID, string> _convertedGroups = new();
-    private static Dictionary<SteamID, uint> _convertedImmunity = new();
+    private static readonly Dictionary<SteamID, List<string>> ConvertedFlags = new();
+    private static readonly Dictionary<SteamID, string> ConvertedGroups = new();
+    private static readonly Dictionary<SteamID, uint> ConvertedImmunity = new();
     
     public void OnConfigParsed(PluginConfig config)
     {
@@ -135,7 +135,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         };
     }
 
-        private void InitializeCommands()
+    private void InitializeCommands()
     {
         Api!.AddNewCommand(
             "reload_infractions", 
@@ -147,7 +147,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             CommandUsage.CLIENT_AND_SERVER,
             BaseCommands.ReloadInfractions
         );
-        Api!.AddNewCommand(
+        Api.AddNewCommand(
             "who", 
             "print info about admin in chat", 
             "css_who <name>",
@@ -298,6 +298,58 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             CommandUsage.CLIENT_AND_SERVER,
             BaseCommands.ChangeTeam
         );
+        
+        // Rcon commands
+        Api.AddNewCommand(
+            "rban",
+            "ban from rcon",
+            "css_rban <sid> <ip/-(Auto)> <adminSid/CONSOLE> <duration> <reason> <BanType (0 - default / 1 - ip> <name>",
+            7,
+            "rcon",
+            "z",
+            CommandUsage.CLIENT_AND_SERVER,
+            BaseCommands.RBan
+        );
+        Api.AddNewCommand(
+            "rgag",
+            "gag from rcon",
+            "css_rgag <sid> <adminSid/CONSOLE> <duration> <reason> <name>",
+            5,
+            "rcon",
+            "z",
+            CommandUsage.CLIENT_AND_SERVER,
+            BaseCommands.RGag
+        );
+        Api.AddNewCommand(
+            "rmute",
+            "mute from rcon",
+            "css_rmute <sid> <adminSid/CONSOLE> <duration> <reason> <name>",
+            5,
+            "rcon",
+            "z",
+            CommandUsage.CLIENT_AND_SERVER,
+            BaseCommands.RMute
+        );
+        Api.AddNewCommand(
+            "rungag",
+            "gag from rcon",
+            "css_rungag <sid> <adminSid/CONSOLE>",
+            2,
+            "rcon",
+            "z",
+            CommandUsage.CLIENT_AND_SERVER,
+            BaseCommands.RUnGag
+        );
+        Api.AddNewCommand(
+            "runban",
+            "ban from rcon",
+            "css_runban <sid> <adminSid/CONSOLE>",
+            2,
+            "rcon",
+            "z",
+            CommandUsage.CLIENT_AND_SERVER,
+            BaseCommands.RUnBan
+        );
     }
     private string ReplaceComm(string message, PlayerComm comm, string unbannedBy = "")
     {
@@ -437,23 +489,23 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         Server.NextFrame(() =>
         {
             // Удаляем все установленные флаги
-            foreach (var target in _convertedFlags)
+            foreach (var target in ConvertedFlags)
             {
                 AdminManager.RemovePlayerPermissions(target.Key, target.Value.ToArray());
             }
-            _convertedFlags.Clear();
+            ConvertedFlags.Clear();
             // Устанавливаем иммунитет на прошлый
-            foreach (var target in _convertedImmunity)
+            foreach (var target in ConvertedImmunity)
             {
                 AdminManager.SetPlayerImmunity(target.Key, target.Value);
             }
-            _convertedImmunity.Clear();
+            ConvertedImmunity.Clear();
             // Удаляем из группы
-            foreach (var target in _convertedGroups)
+            foreach (var target in ConvertedGroups)
             {
                 AdminManager.RemovePlayerFromGroup(target.Key, true, target.Value);
             }
-            _convertedGroups.Clear();
+            ConvertedGroups.Clear();
             // Устанавливаем флаги для текущих админов
             var admins = Api!.ThisServerAdmins;
             foreach (var admin in admins)
@@ -473,16 +525,16 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
                             }
                         }
                     }
-                    _convertedFlags.Add(steamId, finalFlags);
+                    ConvertedFlags.Add(steamId, finalFlags);
                     if (admin.GroupName.Trim() != "")
                     {
                         var group = $"#css/{admin.GroupName}";
                         AdminManager.AddPlayerToGroup(steamId, group);
-                        _convertedGroups.Add(steamId, group);
+                        ConvertedGroups.Add(steamId, group);
                     }
                     if (admin.Immunity > 0)
                     {
-                        _convertedImmunity.Add(steamId, AdminManager.GetPlayerImmunity(steamId));
+                        ConvertedImmunity.Add(steamId, AdminManager.GetPlayerImmunity(steamId));
                         AdminManager.SetPlayerImmunity(steamId, (uint)admin.Immunity);
                     }
                     Console.WriteLine($"[IksAdmin] Admin {admin.Name} | #{admin.SteamId} -> flags, immunity and group converted!");
@@ -841,13 +893,14 @@ public class PluginApi : IIksAdminApi
         Plugin.AddCommand("css_" + command, description, (player, info) =>
         {
             Admin? admin = null;
+            var adminSid = player == null ? "console" : player.AuthorizedSteamID!.SteamId64.ToString();
             if (player != null)
             {
                 admin = ThisServerAdmins.FirstOrDefault(x =>
                     x.SteamId == player.AuthorizedSteamID!.SteamId64.ToString());
             }
             
-            if (!HasAccess(player, whoCanExecute, flagAccess, flagDefault))
+            if (!HasAccess(adminSid, whoCanExecute, flagAccess, flagDefault))
             {
                 info.ReplyToCommand(player == null
                     ? $" [IksAdmin] You haven't access to this command"
@@ -883,20 +936,22 @@ public class PluginApi : IIksAdminApi
             OnCommandUsed?.Invoke(player, info);
         });
     }
-    public bool HasAccess(CCSPlayerController? caller, CommandUsage commandUsage, string flagsAccess, string flagsDefault)
+    public bool HasAccess(string adminSid, CommandUsage commandUsage, string flagsAccess, string flagsDefault)
     {
-        if (commandUsage == CommandUsage.CLIENT_ONLY && caller == null) return false;
-        if (commandUsage == CommandUsage.SERVER_ONLY && caller != null) return false;
-        if (caller == null && commandUsage != CommandUsage.CLIENT_ONLY) return true;
+        adminSid = adminSid.ToLower();
+        if (commandUsage == CommandUsage.CLIENT_ONLY && adminSid == "console") return false;
+        if (commandUsage == CommandUsage.SERVER_ONLY && adminSid != "console") return false;
+        if (adminSid == "console" && commandUsage != CommandUsage.CLIENT_ONLY) return true;
         
-        return HasPermisions(caller!, flagsAccess, flagsDefault);
+        return HasPermisions(adminSid, flagsAccess, flagsDefault);
     }
     
-    public bool HasPermisions(CCSPlayerController? caller, string flagsAccess, string flagsDefault)
+    public bool HasPermisions(string adminSid, string flagsAccess, string flagsDefault)
     {
-        if (caller == null) return true;
+        adminSid = adminSid.ToLower();
+        if (adminSid == "console") return true;
         var admin = ThisServerAdmins.FirstOrDefault(x =>
-            x.SteamId == caller.AuthorizedSteamID!.SteamId64.ToString());
+            x.SteamId == adminSid);
         var containsKey = Config.Flags.ContainsKey(flagsAccess);
         if (containsKey)
         {
@@ -938,7 +993,13 @@ public class PluginApi : IIksAdminApi
         var matches = regex.Matches(commandLine);
         foreach (Match match in matches)
         {
-            args.Add(match.Value);
+            var arg = match.Value;
+            if (arg.StartsWith('"'))
+            {
+                arg = arg.Remove(0, 1);
+                arg = arg.TrimEnd('"');
+            }
+            args.Add(arg);
         }
         args.RemoveAt(0);
         return args;

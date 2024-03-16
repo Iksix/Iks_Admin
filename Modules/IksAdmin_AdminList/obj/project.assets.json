@@ -2332,11 +2332,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\__iksAdmin\\Iks_Admin_2.0_rewrite\\Modules\\IksAdmin_AdminList\\IksAdmin_AdminList.csproj",
+      "projectUniqueName": "D:\\__iksAdmin\\Iks_Admin\\Modules\\IksAdmin_AdminList\\IksAdmin_AdminList.csproj",
       "projectName": "IksAdmin_AdminList",
-      "projectPath": "D:\\__iksAdmin\\Iks_Admin_2.0_rewrite\\Modules\\IksAdmin_AdminList\\IksAdmin_AdminList.csproj",
+      "projectPath": "D:\\__iksAdmin\\Iks_Admin\\Modules\\IksAdmin_AdminList\\IksAdmin_AdminList.csproj",
       "packagesPath": "C:\\Users\\Iks\\.nuget\\packages\\",
-      "outputPath": "D:\\__iksAdmin\\Iks_Admin_2.0_rewrite\\Modules\\IksAdmin_AdminList\\obj\\",
+      "outputPath": "D:\\__iksAdmin\\Iks_Admin\\Modules\\IksAdmin_AdminList\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Iks\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -2353,8 +2353,8 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "D:\\__iksAdmin\\Iks_Admin_2.0_rewrite\\IksAdminApi\\IksAdminApi.csproj": {
-              "projectPath": "D:\\__iksAdmin\\Iks_Admin_2.0_rewrite\\IksAdminApi\\IksAdminApi.csproj"
+            "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj": {
+              "projectPath": "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj"
             }
           }
         }
@@ -2363,11 +2363,6 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
       }
     },
     "frameworks": {

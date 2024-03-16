@@ -439,4 +439,178 @@ public class BaseCommands
         var groupInfo = existingAdmin.GroupId != -1 ? $"\n Group Name: {existingAdmin.GroupName} \n GroupId: {existingAdmin.GroupId}" : "";
         ReplyToCommand(info, $"Name: {existingAdmin.Name} \n Flags: {existingAdmin.Flags} {groupInfo} \n Immunity: {existingAdmin.Immunity} \n SteamId: {existingAdmin.SteamId} \n ServerId: {existingAdmin.ServerId}");
     }
+
+    public static void RBan(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
+    {
+        // css_rban <sid> <ip/-(Auto)> <adminSid/CONSOLE> <duration> <reason> <BanType (0 - default / 1 - ip> <name/-(Auto)>
+        var sid = args[0];
+        if (!IsSteamId(sid))
+        {
+            ReplyToCommand(info, "Incorrect SteamId");
+            return;
+        }
+        var target = XHelper.GetPlayerFromArg($"#{sid}");
+        var ip = args[1] != "-" ? args[1] : target == null ? "Undefined" : target.IpAddress!;
+        var adminSid = args[2];
+        if (!_api!.HasAccess(adminSid, CommandUsage.CLIENT_AND_SERVER, "ban", "b"))
+        {
+            ReplyToCommand(info, "This admin haven't access to this command!");
+            return;
+        }
+        if (!_api.HasMoreImmunity(adminSid, sid)) return;
+        var time = int.Parse(args[3])*60;
+        var reason = args[4];
+        var banType = int.Parse(args[5]);
+        var name = args[6] != "-" ? args[6] : target == null ? "Undefined" : target.PlayerName;
+        var serverId = Config!.ServerId;
+        var newBan = new PlayerBan(
+        name,
+        sid,
+        ip,
+        adminSid,
+        (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+        time,
+        (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
+        reason,
+        serverId,
+        banType
+        );
+        Task.Run(async () =>
+        {
+            await _api.AddBan(adminSid, newBan);
+        });
+    }
+    public static void RGag(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
+    {
+        // css_rgag <sid> <adminSid/CONSOLE> <duration> <reason> <name/-(Auto)>
+        var sid = args[0];
+        if (!IsSteamId(sid))
+        {
+            ReplyToCommand(info, "Incorrect SteamId");
+            return;
+        }
+        var target = XHelper.GetPlayerFromArg($"#{sid}");
+        var adminSid = args[1];
+        if (!_api!.HasAccess(adminSid, CommandUsage.CLIENT_AND_SERVER, "gag", "g"))
+        {
+            ReplyToCommand(info, "This admin haven't access to this command!");
+            return;
+        }
+        if (!_api.HasMoreImmunity(adminSid, sid)) return;
+        var time = int.Parse(args[2])*60;
+        var reason = args[3];
+        var name = args[4] != "-" ? args[4] : target == null ? "Undefined" : target.PlayerName;
+        var serverId = Config!.ServerId;
+        var newGag = new PlayerComm(
+            name,
+            sid,
+            adminSid,
+            (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            time,
+            (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
+            reason,
+            serverId
+        );
+        Task.Run(async () =>
+        {
+            await _api.AddGag(adminSid, newGag);
+        });
+    }
+    public static void RMute(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
+    {
+        // css_rmute <sid> <adminSid/CONSOLE> <duration> <reason> <name/-(Auto)>
+        var sid = args[0];
+        if (!IsSteamId(sid))
+        {
+            ReplyToCommand(info, "Incorrect SteamId");
+            return;
+        }
+        var target = XHelper.GetPlayerFromArg($"#{sid}");
+        var adminSid = args[1];
+        if (!_api!.HasAccess(adminSid, CommandUsage.CLIENT_AND_SERVER, "mute", "m"))
+        {
+            ReplyToCommand(info, "This admin haven't access to this command!");
+            return;
+        }
+        if (!_api.HasMoreImmunity(adminSid, sid)) return;
+        var time = int.Parse(args[2])*60;
+        var reason = args[3];
+        var name = args[4] != "-" ? args[4] : target == null ? "Undefined" : target.PlayerName;
+        var serverId = Config!.ServerId;
+        var newMute = new PlayerComm(
+            name,
+            sid,
+            adminSid,
+            (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            time,
+            (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
+            reason,
+            serverId
+        );
+        Task.Run(async () =>
+        {
+            await _api.AddMute(adminSid, newMute);
+        });
+    }
+    
+    public static void RUnMute(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
+    {
+        // css_runmute <sid> <adminSid/CONSOLE>
+        var sid = args[0];
+        if (!IsSteamId(sid))
+        {
+            ReplyToCommand(info, "Incorrect SteamId");
+            return;
+        }
+        var adminSid = args[1];
+        if (!_api!.HasAccess(adminSid, CommandUsage.CLIENT_AND_SERVER, "unmute", "m"))
+        {
+            ReplyToCommand(info, "This admin haven't access to this command!");
+            return;
+        }
+        Task.Run(async () =>
+        {
+            await _api.UnMute(adminSid, sid);
+        });
+    }
+    public static void RUnGag(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
+    {
+        // css_rungag <sid> <adminSid/CONSOLE>
+        var sid = args[0];
+        if (!IsSteamId(sid))
+        {
+            ReplyToCommand(info, "Incorrect SteamId");
+            return;
+        }
+        var adminSid = args[1];
+        if (!_api!.HasAccess(adminSid, CommandUsage.CLIENT_AND_SERVER, "ungag", "g"))
+        {
+            ReplyToCommand(info, "This admin haven't access to this command!");
+            return;
+        }
+        Task.Run(async () =>
+        {
+            await _api.UnGag(adminSid, sid);
+        });
+    }
+    public static void RUnBan(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
+    {
+        // css_runban <sid> <adminSid/CONSOLE>
+        var sid = args[0];
+        if (!IsSteamId(sid))
+        {
+            ReplyToCommand(info, "Incorrect SteamId");
+            return;
+        }
+        var adminSid = args[1];
+        if (!_api!.HasAccess(adminSid, CommandUsage.CLIENT_AND_SERVER, "unban", "g"))
+        {
+            ReplyToCommand(info, "This admin haven't access to this command!");
+            return;
+        }
+        Task.Run(async () =>
+        {
+            await _api.UnBan(adminSid, sid);
+        });
+    }
 }
