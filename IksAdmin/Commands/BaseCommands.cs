@@ -603,7 +603,7 @@ public class BaseCommands
             return;
         }
         var adminSid = args[1];
-        if (!_api!.HasAccess(adminSid, CommandUsage.CLIENT_AND_SERVER, "unban", "g"))
+        if (!_api!.HasPermisions(adminSid, "unban", "g"))
         {
             ReplyToCommand(info, "This admin haven't access to this command!");
             return;
@@ -612,5 +612,28 @@ public class BaseCommands
         {
             await _api.UnBan(adminSid, sid);
         });
+    }
+
+    public static void Rename(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
+    {
+        var identity = args[0];
+        var target = XHelper.GetPlayerFromArg(identity);
+        if (target == null)
+        {
+            ReplyToCommand(info, _localizer["NOTIFY_PlayerNotFound"], "Target not found!");
+            return;
+        }
+        var adminSid = caller == null ? "CONSOLE" : caller.AuthorizedSteamID!.SteamId64.ToString();
+        if (!_api!.HasMoreImmunity(adminSid, target.AuthorizedSteamID!.SteamId64.ToString()))
+        {
+            ReplyToCommand(info, _localizer["NOTIFY_PlayerHaveBiggerImmunity"], "Target have >= immunity then yours");
+            return;
+        }
+        var newName = string.Join(" ", args.Skip(1));
+        var oldName = target.PlayerName;
+        if (newName.Trim() == "") return;
+        target.PlayerName = newName;
+        Utilities.SetStateChanged(target, "CBasePlayerController", "m_iszPlayerName");
+        _api.ERename(adminSid, XHelper.CreateInfo(target), oldName, newName);
     }
 }

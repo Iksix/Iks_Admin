@@ -85,7 +85,40 @@ public static class PluginMenuManager
                 OpenChangeTeamMenu(caller, menu);
             });
         }
-        
+        if (Api.HasPermisions(adminSid, "changeteam", "s"))
+        {
+            menu.AddMenuOption(Localizer["MENUOPTION_ChangeTeam"], (_, _) =>
+            {   
+                OpenChangeTeamMenu(caller, menu);
+            });
+        }
+        if (Api.HasPermisions(adminSid, "rename", "s"))
+        {
+            menu.AddMenuOption(Localizer["MENUOPTION_Rename"], (_, _) =>
+            {   
+                OpenRenameMenu(caller, menu);
+            });
+        }
+    }
+    
+    private static void OpenRenameMenu(CCSPlayerController caller, IMenu menu)
+    {
+        OpenSelectPlayersMenu(caller, menu, (target, playersMenu) =>
+        {
+            MenuManager.CloseActiveMenu(caller);
+            var adminSid = caller.AuthorizedSteamID!.SteamId64.ToString();
+            var player = XHelper.GetPlayerFromArg($"#{target.SteamId}");
+            if (player == null) return;
+            Api!.SendMessageToPlayer(caller, Localizer["NOTIFY_WriteName"]);
+            Api.NextCommandAction.Add(caller, msg =>
+            {
+                if (!XHelper.IsControllerValid(player)) return;
+                var oldName = player.PlayerName;
+                player.PlayerName = msg;
+                Utilities.SetStateChanged(player, "CBasePlayerController", "m_iszPlayerName");
+                Api.ERename(adminSid, target, oldName, msg);
+            });
+        }, false, false, Localizer["MENUTITLE_Rename"]);
     }
 
     private static void OpenSwitchTeamMenu(CCSPlayerController caller, IMenu menu)

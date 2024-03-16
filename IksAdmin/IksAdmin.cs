@@ -298,6 +298,16 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             CommandUsage.CLIENT_AND_SERVER,
             BaseCommands.ChangeTeam
         );
+        Api.AddNewCommand(
+            "rename",
+            "rename the player",
+            "css_rename <#uid/#sid/name> <new name>",
+            2,
+            "rename",
+            "s",
+            CommandUsage.CLIENT_AND_SERVER,
+            BaseCommands.Rename
+        );
         
         // Rcon commands
         Api.AddNewCommand(
@@ -876,6 +886,7 @@ public class PluginApi : IIksAdminApi
     public event Action<PlayerComm, string>? OnUnMute;
     public event Action<PlayerComm, string>? OnUnGag;
     public event Action<string, PlayerInfo, string>? OnKick;
+    public event Action<string, PlayerInfo, string, string>? OnRename;
     public event Action<string, PlayerInfo>? OnSlay;
     public event Action<string, PlayerInfo, CsTeam, CsTeam>? OnSwitchTeam;
     public event Action<string, PlayerInfo, CsTeam, CsTeam>? OnChangeTeam;
@@ -1339,6 +1350,10 @@ public class PluginApi : IIksAdminApi
     public void EChangeTeam(string adminSid, PlayerInfo target, CsTeam oldTeam, CsTeam newTeam)
     {
         OnChangeTeam?.Invoke(adminSid, target, oldTeam, newTeam);
+    }
+    public void ERename(string adminSid, PlayerInfo target, string oldName, string newName)
+    {
+        OnRename?.Invoke(adminSid, target, oldName, newName);
     }
 
     #endregion

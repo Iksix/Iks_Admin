@@ -71,6 +71,7 @@ public interface IIksAdminApi
     event Action<PlayerComm, string> OnUnGag;
 
     event Action<string, PlayerInfo, string> OnKick; // AdminSid -> Target info
+    event Action<string, PlayerInfo, string, string> OnRename; // AdminSid -> Target info -> OldName -> newName
     event Action<string, PlayerInfo> OnSlay; // AdminSid -> Target info
     event Action<string, PlayerInfo, CsTeam, CsTeam> OnSwitchTeam; // AdminSid -> Target Info -> Old Team -> New Team 
     event Action<string, PlayerInfo, CsTeam, CsTeam> OnChangeTeam; // AdminSid -> Target Info -> Old Team -> New Team 
@@ -79,6 +80,7 @@ public interface IIksAdminApi
     
     // events callers
     public void EKick(string adminSid, PlayerInfo target, string reason);
+    public void ERename(string adminSid, PlayerInfo target, string oldName, string newName);
     public void ESlay(string adminSid, PlayerInfo target);
     public void ESwitchTeam(string adminSid, PlayerInfo target, CsTeam oldTeam, CsTeam newTeam);
     public void EChangeTeam(string adminSid, PlayerInfo target, CsTeam oldTeam, CsTeam newTeam);
