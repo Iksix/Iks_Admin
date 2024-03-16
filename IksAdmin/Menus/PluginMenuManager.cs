@@ -85,13 +85,6 @@ public static class PluginMenuManager
                 OpenChangeTeamMenu(caller, menu);
             });
         }
-        if (Api.HasPermisions(adminSid, "changeteam", "s"))
-        {
-            menu.AddMenuOption(Localizer["MENUOPTION_ChangeTeam"], (_, _) =>
-            {   
-                OpenChangeTeamMenu(caller, menu);
-            });
-        }
         if (Api.HasPermisions(adminSid, "rename", "s"))
         {
             menu.AddMenuOption(Localizer["MENUOPTION_Rename"], (_, _) =>
@@ -103,18 +96,18 @@ public static class PluginMenuManager
     
     private static void OpenRenameMenu(CCSPlayerController caller, IMenu menu)
     {
-        OpenSelectPlayersMenu(caller, menu, (target, playersMenu) =>
+        OpenSelectPlayersMenu(caller, menu, (target, _) =>
         {
             MenuManager.CloseActiveMenu(caller);
             var adminSid = caller.AuthorizedSteamID!.SteamId64.ToString();
-            var player = XHelper.GetPlayerFromArg($"#{target.SteamId}");
+            var player = XHelper.GetPlayerFromArg($"#{target.SteamId.SteamId64}");
             if (player == null) return;
             Api!.SendMessageToPlayer(caller, Localizer["NOTIFY_WriteName"]);
             Api.NextCommandAction.Add(caller, msg =>
             {
                 if (!XHelper.IsControllerValid(player)) return;
                 var oldName = player.PlayerName;
-                player.PlayerName = msg;
+                player.PlayerName = msg; 
                 Utilities.SetStateChanged(player, "CBasePlayerController", "m_iszPlayerName");
                 Api.ERename(adminSid, target, oldName, msg);
             });
@@ -357,7 +350,7 @@ public static class PluginMenuManager
                     await Api!.AddGag(newBan.AdminSid, newBan);
                 });
             });
-        }, true, false, Localizer["MENUTITLE_Gag"]);
+        }, true, false, Localizer["MENUTITLE_Gag"], false, "gag");
     }
     private static void ConstructUnGagMenu(CCSPlayerController caller, Admin? admin, IMenu menu)
     {
@@ -386,13 +379,13 @@ public static class PluginMenuManager
         {
             var playerSid = player.AuthorizedSteamID!.SteamId64.ToString();
             var adminSid = caller.AuthorizedSteamID!.SteamId64.ToString();
-            if (Api!.OnlineGaggedPlayers.Any(x => x.Sid == playerSid))
+            if (Api!.OnlineMutedPlayers.Any(x => x.Sid == playerSid))
             {
                 menu.AddMenuOption(player.PlayerName, (_, _) =>
                 {
                     Task.Run(async () =>
                     {
-                        await Api.UnGag(playerSid, adminSid);
+                        await Api.UnMute(playerSid, adminSid);
                     });
                 });
             }
@@ -421,7 +414,7 @@ public static class PluginMenuManager
                     await Api!.AddMute(newBan.AdminSid, newBan);
                 });
             });
-        }, true, false, Localizer["MENUTITLE_Mute"]);
+        }, true, false, Localizer["MENUTITLE_Mute"], false,  "mute");
     }
     
     private static void SelectReasonAndTime(CCSPlayerController caller, IMenu backMenu ,List<Reason> reasons, Action<string, int> onSelect)
@@ -453,12 +446,15 @@ public static class PluginMenuManager
             }
             if (reason.Time == -1)
             {
-                Api!.SendMessageToPlayer(caller, Localizer["NOTIFY_WriteReason"]);
-                Api.NextCommandAction.Add(caller, s =>
+                menu.AddMenuOption(reason.Title, (_, _) =>
                 {
-                    SelectTime(caller, menu, time =>
+                    Api!.SendMessageToPlayer(caller, Localizer["NOTIFY_WriteReason"]);
+                    Api.NextCommandAction.Add(caller, s =>
                     {
-                        onSelect.Invoke(s, time);
+                        SelectTime(caller, menu, time =>
+                        {
+                            onSelect.Invoke(s, time);
+                        });
                     });
                 });
             }
@@ -532,17 +528,18 @@ public static class PluginMenuManager
     }
 
     private static void OpenSelectPlayersMenu(CCSPlayerController caller, IMenu backMenu, Action<PlayerInfo, IMenu> onSelect,
-        bool ignoreYourself = true, bool offline = false, string? title = null, bool aliveOnly = false)
+        bool ignoreYourself = true, bool offline = false, string? title = null, bool aliveOnly = false, string? filter = null)
     {
         Menu menu = new Menu(caller, (controller, _, arg3) =>
         {
-            ConstructSelectPlayerMenu(controller, arg3, onSelect, ignoreYourself, offline, aliveOnly);
+            ConstructSelectPlayerMenu(controller, arg3, onSelect, ignoreYourself, offline, aliveOnly, filter);
         });
         title = title == null ? Localizer["MENUTITLE_SelectPlayer"] : title;
         menu.Open(caller, title, backMenu);
     }
 
-    private static void ConstructSelectPlayerMenu(CCSPlayerController caller, IMenu menu, Action<PlayerInfo, IMenu> onSelect, bool ignoreYourself = true, bool offline = false, bool aliveOnly = false)
+    private static void ConstructSelectPlayerMenu(CCSPlayerController caller, IMenu menu, 
+        Action<PlayerInfo, IMenu> onSelect, bool ignoreYourself = true, bool offline = false, bool aliveOnly = false, string? filter = null)
     {
         var players = Api!.DisconnectedPlayers;
         if (!offline)
@@ -557,6 +554,20 @@ public static class PluginMenuManager
         foreach (var player in players)
         {
             var playerInfo = new PlayerInfo(player.PlayerName, player.SteamId.SteamId64, player.IpAddress);
+            if (filter != null)
+            {
+                switch (filter)
+                {
+                    case "gag":
+                        if (Api.OnlineGaggedPlayers.Any(x => x.Sid == playerInfo.SteamId.SteamId64.ToString()))
+                            continue;
+                        break;
+                    case "mute":
+                        if (Api.OnlineMutedPlayers.Any(x => x.Sid == playerInfo.SteamId.SteamId64.ToString()))
+                            continue;
+                        break;
+                }
+            }
             if (!Api.HasMoreImmunity(caller.AuthorizedSteamID!.SteamId64.ToString(),
                     playerInfo.SteamId.SteamId64.ToString()))
             {

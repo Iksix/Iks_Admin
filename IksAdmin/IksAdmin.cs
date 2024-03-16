@@ -133,6 +133,16 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
                 .Replace("{adminSid}", adminSid)
             );
         };
+        Api.OnRename += (adminSid, target, oldName, newName) =>
+        {
+            Api.SendMessageToAll(Localizer["SERVER_Rename"].Value
+                .Replace("{oldName}", oldName)
+                .Replace("{newName}",  newName)
+                .Replace("{sid}", target.SteamId.SteamId64.ToString())
+                .Replace("{admin}", AdminName(adminSid))
+                .Replace("{adminSid}", adminSid)
+            );
+        };
     }
 
     private void InitializeCommands()

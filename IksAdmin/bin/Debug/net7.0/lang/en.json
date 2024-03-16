@@ -18,6 +18,7 @@
 	"SERVER_OnSlay": "Админ {red}{admin} убил игрока {red}{name}",
 	"SERVER_SwitchTeam": "Админ {red}{admin}{white} переместил игрока {red}{name}{white} в команду {red}{newTeam}{white}!",
 	"SERVER_ChangeTeam": "Админ {red}{admin}{white} сменил команду игрока {red}{name}{white} на {red}{newTeam}{white}!",
+	"SERVER_Rename": "Админ {red}{admin}{white} сменил имя игрока {red}{oldName}{white} на {red}{newName}{white}!",
 	// 		действия (снятие наказаний)
 	"SERVER_OnUnBan": "Игрок {red}{name}{white} был разбанен админом {red}{admin}",
 	"SERVER_OnUnMute": "Игрок {red}{name}{white} был размучен админом {red}{admin}",
