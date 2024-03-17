@@ -55,6 +55,17 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
 
         AddTimer(3, () =>
         {
+            var allAdmins = Api.AllAdmins;
+            foreach (var admin in allAdmins)
+            {
+                if (admin.End != 0 && admin.End < DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+                {
+                    Task.Run(async () =>
+                    {
+                        await Api.DelAdmin(admin.SteamId);
+                    });
+                }
+            }
             var players = XHelper.GetOnlinePlayers();
             foreach (var p in players)
             {
