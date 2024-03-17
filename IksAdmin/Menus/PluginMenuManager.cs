@@ -61,19 +61,32 @@ public static class PluginMenuManager
         {
             menu.AddMenuOption(Localizer["MENUOPTION_Maps"], (_, _) =>
             {
-                foreach (var map in Config.Maps)
+                OpenMapsMenu(caller, menu);
+                
+            });
+        }
+    }
+    
+    public static void OpenMapsMenu(CCSPlayerController caller, IMenu backMenu)
+    {
+        var menu = new Menu(caller, ConstructMapsMenu);
+        menu.Open(caller, Localizer["MENUTITLE_Maps"], backMenu);
+    }
+
+    private static void ConstructMapsMenu(CCSPlayerController caller, Admin? admin, IMenu menu)
+    {
+        foreach (var map in Config.Maps)
+        {
+            menu.AddMenuOption(map.Title, (_, _) =>
+            {
+                MenuManager.CloseActiveMenu(caller);
+                Api!.SendMessageToAll($"Change map to {map.Title} ...");
+                Api.Plugin.AddTimer(3, () =>
                 {
-                    menu.AddMenuOption(map.Title, (_, _) =>
-                    {
-                        Api.SendMessageToAll($"Change map to {map.Title} ...");
-                        Api.Plugin.AddTimer(3, () =>
-                        {
-                            if (map.Workshop)
-                                Server.ExecuteCommand($"host_workshop_map {map.Id}");
-                            else Server.ExecuteCommand($"map {map.Id}");
-                        });
-                    });
-                }
+                    if (map.Workshop)
+                        Server.ExecuteCommand($"host_workshop_map {map.Id}");
+                    else Server.ExecuteCommand($"map {map.Id}");
+                });
             });
         }
     }
