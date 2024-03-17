@@ -70,4 +70,10 @@ public class PluginConfig : BasePluginConfig
         {"6", new() {"@css/someTag"}}
     };
 
+    [JsonPropertyName("Maps")]
+    public List<Map> Maps { get; set; } = new()
+    {
+        new Map("Mirage", "de_mirage", false),
+        new Map("Awp Lego", "3146105097", true)
+    };
 }

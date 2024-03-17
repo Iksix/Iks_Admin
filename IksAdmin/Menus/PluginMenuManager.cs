@@ -26,7 +26,7 @@ public static class PluginMenuManager
         if (Api.HasPermisions(adminSid, "players", "skt"))
             menu.AddMenuOption(Localizer["MENUOPTION_Players"], (p, _) => { OpenPlayersMenu(p, menu); });
         if (Api.HasPermisions(adminSid, "server", "z"))
-            menu.AddMenuOption(Localizer["MENUOPTION_Server"], (p, _) => { OpenBlocksMenu(p, menu); });
+            menu.AddMenuOption(Localizer["MENUOPTION_Server"], (p, _) => { OpenServerMenu(p, menu); });
         
         // Добавляем пункты из модулей
         var items = Api.ModulesOptions.Where(
@@ -48,6 +48,36 @@ public static class PluginMenuManager
         menu.Open(caller, Localizer["MENUTITLE_Blocks"], backMenu);
     }
     
+    public static void OpenServerMenu(CCSPlayerController caller, IMenu backMenu)
+    {
+        var menu = new Menu(caller, ConstructServerMenu);
+        menu.Open(caller, Localizer["MENUTITLE_Server"], backMenu);
+    }
+
+    private static void ConstructServerMenu(CCSPlayerController caller, Admin? admin, IMenu menu)
+    {
+        var adminSid = caller.AuthorizedSteamID!.SteamId64.ToString();
+        if (Api!.HasPermisions(adminSid, "map", "z"))
+        {
+            menu.AddMenuOption(Localizer["MENUOPTION_Maps"], (_, _) =>
+            {
+                foreach (var map in Config.Maps)
+                {
+                    menu.AddMenuOption(map.Title, (_, _) =>
+                    {
+                        Api.SendMessageToAll($"Change map to {map.Title} ...");
+                        Api.Plugin.AddTimer(3, () =>
+                        {
+                            if (map.Workshop)
+                                Server.ExecuteCommand($"host_workshop_map {map.Id}");
+                            else Server.ExecuteCommand($"map {map.Id}");
+                        });
+                    });
+                }
+            });
+        }
+    }
+
     public static void OpenPlayersMenu(CCSPlayerController caller, IMenu backMenu)
     {
         var menu = new Menu(caller, ConstructPlayersMenu);

@@ -79,6 +79,7 @@
 
 	"MENUTITLE_Kick" : "Кикнуть игрока",
 	"MENUTITLE_Slay" : "Убить игрока",
+	"MENUTITLE_Maps" : "Выберите карту",
 	
 	// Меню опции
 	"MENUOPTION_Close" : "{red}Выйти",
@@ -99,6 +100,7 @@
 	
 	"MENUOPTION_UnGag" : "Снять Гаг",
 	"MENUOPTION_UnMute" : "Снять Мут",
+	"MENUOPTION_Maps" : "Сменить карту",
 
 	"MENUOPTION_Kick" : "Кикнуть игрока",
 	"MENUOPTION_Slay" : "Убить игрока",

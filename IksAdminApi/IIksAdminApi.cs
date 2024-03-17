@@ -75,6 +75,7 @@ public interface IIksAdminApi
     event Action<string, PlayerInfo> OnSlay; // AdminSid -> Target info
     event Action<string, PlayerInfo, CsTeam, CsTeam> OnSwitchTeam; // AdminSid -> Target Info -> Old Team -> New Team 
     event Action<string, PlayerInfo, CsTeam, CsTeam> OnChangeTeam; // AdminSid -> Target Info -> Old Team -> New Team 
+    event Action<string, string> OnChangeMap;
     event Action<List<Admin>> OnReloadAdmins;
     event Action<CCSPlayerController?, CommandInfo> OnCommandUsed;
     
@@ -84,6 +85,7 @@ public interface IIksAdminApi
     public void ESlay(string adminSid, PlayerInfo target);
     public void ESwitchTeam(string adminSid, PlayerInfo target, CsTeam oldTeam, CsTeam newTeam);
     public void EChangeTeam(string adminSid, PlayerInfo target, CsTeam oldTeam, CsTeam newTeam);
+    public void EChangeMap(string adminSid, string newMap);
 
 }
 public class Admin
