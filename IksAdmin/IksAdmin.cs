@@ -582,7 +582,8 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
     {
         var player = @event.Userid;
-        Api!.DisconnectedPlayers.Add(new PlayerInfo(player.PlayerName, player.AuthorizedSteamID!.SteamId64, player.IpAddress!));
+        if (!XHelper.IsControllerValid(player)) return HookResult.Continue;
+        Api!.DisconnectedPlayers.Add(XHelper.CreateInfo(player));
         return HookResult.Continue;
     }
     
