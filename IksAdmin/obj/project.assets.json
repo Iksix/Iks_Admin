@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     "net7.0": {
-      "CounterStrikeSharp.API/1.0.193": {
+      "CounterStrikeSharp.API/1.0.197": {
         "type": "package",
         "dependencies": {
           "McMaster.NETCore.Plugins": "1.4.0",
@@ -879,14 +879,14 @@
     }
   },
   "libraries": {
-    "CounterStrikeSharp.API/1.0.193": {
-      "sha512": "8joDJBTDg8/GA25tYbXrhArNF1ZRDUrouiwYOTFRVIxmNq7lP+XtgnY48B9BHagEwz6odtbTJMWUFlpbdhJkFg==",
+    "CounterStrikeSharp.API/1.0.197": {
+      "sha512": "JtcEW0Zu945Bz3mtbaUQVR1du91xSq4shtslmuY3CR0qGCHjWf6KYGahzGuBep4TE3l4LEeRxVEdrrvEAuygzw==",
       "type": "package",
-      "path": "counterstrikesharp.api/1.0.193",
+      "path": "counterstrikesharp.api/1.0.197",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "counterstrikesharp.api.1.0.193.nupkg.sha512",
+        "counterstrikesharp.api.1.0.197.nupkg.sha512",
         "counterstrikesharp.api.nuspec",
         "lib/net7.0/CounterStrikeSharp.API.dll",
         "lib/net7.0/CounterStrikeSharp.API.runtimeconfig.json",
@@ -2322,7 +2322,7 @@
   },
   "projectFileDependencyGroups": {
     "net7.0": [
-      "CounterStrikeSharp.Api >= 1.0.193",
+      "CounterStrikeSharp.Api >= 1.0.197",
       "Dapper >= 2.1.35",
       "IksAdminApi >= 1.0.0",
       "MySqlConnector >= 2.3.5"
@@ -2365,6 +2365,11 @@
         "warnAsError": [
           "NU1605"
         ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -2373,7 +2378,7 @@
         "dependencies": {
           "CounterStrikeSharp.Api": {
             "target": "Package",
-            "version": "[1.0.193, )"
+            "version": "[1.0.197, )"
           },
           "Dapper": {
             "target": "Package",

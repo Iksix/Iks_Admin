@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "80oJ0ETtLxVE8bVaGlAnCtcZr6P6DoHeyGR9L4FUIZVQ9h1s3aNZV6mY2iV2FvtMPcb+Zx9uEF44VfpKA3+KNA==",
+  "dgSpecHash": "yjVUlF2+MwgjDfzI5+OElXQ/+L9BIaqAL3okzcjMX+Hf0+0PbjCQJ4iUbHRuyArMmIWPQfzR1jPKakC5R7U/Jw==",
   "success": true,
   "projectFilePath": "D:\\__iksAdmin\\Iks_Admin\\IksAdmin\\IksAdmin.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Iks\\.nuget\\packages\\counterstrikesharp.api\\1.0.193\\counterstrikesharp.api.1.0.193.nupkg.sha512",
+    "C:\\Users\\Iks\\.nuget\\packages\\counterstrikesharp.api\\1.0.197\\counterstrikesharp.api.1.0.197.nupkg.sha512",
     "C:\\Users\\Iks\\.nuget\\packages\\dapper\\2.1.35\\dapper.2.1.35.nupkg.sha512",
     "C:\\Users\\Iks\\.nuget\\packages\\mcmaster.netcore.plugins\\1.4.0\\mcmaster.netcore.plugins.1.4.0.nupkg.sha512",
     "C:\\Users\\Iks\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
