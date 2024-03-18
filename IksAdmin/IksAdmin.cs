@@ -52,6 +52,14 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         InitializeMessages();
         AddCommandListener("say", OnSay);
         AddCommandListener("say_team", OnSay);
+        AddCommandListener("jointeam", (p, _) =>
+        {
+            if (BaseCommands.HidenPlayers.Contains(p!))
+            {
+                BaseCommands.HidenPlayers.Remove(p!);
+            }
+            return HookResult.Continue;
+        });
 
         AddTimer(3, () =>
         {
@@ -328,6 +336,16 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             "s",
             CommandUsage.CLIENT_AND_SERVER,
             BaseCommands.Rename
+        );
+        Api.AddNewCommand(
+            "hide",
+            "hide yourself",
+            "css_hide",
+            0,
+            "hide",
+            "bkmg",
+            CommandUsage.CLIENT_ONLY,
+            BaseCommands.Hide
         );
         
         // Rcon commands

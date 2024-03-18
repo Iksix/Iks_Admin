@@ -13,6 +13,7 @@ public class BaseCommands
     private static IIksAdminApi? _api = IksAdmin.Api;
     private static IStringLocalizer _localizer = _api!.Localizer;
     public static PluginConfig? Config;
+    public static List<CCSPlayerController> HidenPlayers = new();
     
 
     public static void ReplyToCommand(CommandInfo info, string reply, string? replyToConsole = null)
@@ -635,5 +636,25 @@ public class BaseCommands
         target.PlayerName = newName;
         Utilities.SetStateChanged(target, "CBasePlayerController", "m_iszPlayerName");
         _api.ERename(adminSid, XHelper.CreateInfo(target), oldName, newName);
+    }
+
+    public static void Hide(CCSPlayerController caller, Admin? admin, List<string> args, CommandInfo info)
+    {
+        if (HidenPlayers.Contains(caller))
+        {
+            HidenPlayers.Remove(caller);
+            ReplyToCommand(info, _localizer["NOTIFY_OffHide"] ,"Now you are not hidden!");
+            caller.ChangeTeam(CsTeam.Spectator);
+            return;
+        }
+        HidenPlayers.Add(caller);
+        Server.ExecuteCommand("sv_disable_teamselect_menu 1");
+        if (caller.PlayerPawn.Value != null && caller.PawnIsAlive)
+            caller.PlayerPawn.Value.CommitSuicide(true, false);
+        _api!.Plugin.AddTimer(1.0f, () => { Server.NextFrame(() => caller.ChangeTeam(CsTeam.Spectator)); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
+        _api.Plugin.AddTimer(1.4f, () => { Server.NextFrame(() => caller.ChangeTeam(CsTeam.None)); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
+        ReplyToCommand(info, _localizer["NOTIFY_OnHide"] ,"Now you are hidden!");
+        _api.Plugin.AddTimer(2.0f, () => { Server.NextFrame(() => Server.ExecuteCommand("sv_disable_teamselect_menu 0")); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
+
     }
 }
