@@ -325,6 +325,7 @@ public static class PluginMenuManager
         {
             SelectReasonAndTime(caller, menu, Config.BanReasons, (reason, time) =>
             {
+                MenuManager.CloseActiveMenu(caller);
                 time = time * 60;
                 var newBan = new PlayerBan(
                     target.PlayerName,
@@ -377,6 +378,7 @@ public static class PluginMenuManager
         {
             SelectReasonAndTime(caller, menu, Config.GagReasons, (reason, time) =>
             {
+                MenuManager.CloseActiveMenu(caller);
                 time = time * 60;
                 var newBan = new PlayerComm(
                     target.PlayerName,
@@ -441,6 +443,7 @@ public static class PluginMenuManager
         {
             SelectReasonAndTime(caller, menu, Config.MuteReasons, (reason, time) =>
             {
+                MenuManager.CloseActiveMenu(caller);
                 time = time * 60;
                 var newBan = new PlayerComm(
                     target.PlayerName,
