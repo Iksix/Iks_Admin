@@ -86,6 +86,7 @@ public static class PluginMenuManager
                     if (map.Workshop)
                         Server.ExecuteCommand($"host_workshop_map {map.Id}");
                     else Server.ExecuteCommand($"map {map.Id}");
+                    Api.EChangeMap(caller.AuthorizedSteamID!.SteamId64.ToString(), map);
                 });
             });
         }

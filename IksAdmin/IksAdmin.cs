@@ -930,7 +930,7 @@ public class PluginApi : IIksAdminApi
     public event Action<string, PlayerInfo>? OnSlay;
     public event Action<string, PlayerInfo, CsTeam, CsTeam>? OnSwitchTeam;
     public event Action<string, PlayerInfo, CsTeam, CsTeam>? OnChangeTeam;
-    public event Action<string, string>? OnChangeMap;
+    public event Action<string, Map>? OnChangeMap;
     public event Action<List<Admin>>? OnReloadAdmins;
     public event Action<CCSPlayerController?, CommandInfo>? OnCommandUsed;
 
@@ -1393,7 +1393,7 @@ public class PluginApi : IIksAdminApi
         OnChangeTeam?.Invoke(adminSid, target, oldTeam, newTeam);
     }
 
-    public void EChangeMap(string adminSid, string newMap)
+    public void EChangeMap(string adminSid, Map newMap)
     {
         OnChangeMap?.Invoke(adminSid, newMap);
     }

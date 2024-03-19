@@ -1,0 +1,16 @@
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_SocietyLogs\obj\Debug\net7.0\IksAdmin_SocietyLogs.csproj.AssemblyReference.cache
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_SocietyLogs\obj\Debug\net7.0\IksAdmin_SocietyLogs.GeneratedMSBuildEditorConfig.editorconfig
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_SocietyLogs\obj\Debug\net7.0\IksAdmin_SocietyLogs.AssemblyInfoInputs.cache
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_SocietyLogs\obj\Debug\net7.0\IksAdmin_SocietyLogs.AssemblyInfo.cs
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_SocietyLogs\obj\Debug\net7.0\IksAdmin_SocietyLogs.csproj.CoreCompileInputs.cache
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_SocietyLogs\obj\Debug\net7.0\IksAdmin_SocietyLogs.sourcelink.json
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_SocietyLogs\bin\Debug\net7.0\IksAdmin_SocietyLogs.deps.json
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_SocietyLogs\bin\Debug\net7.0\IksAdmin_SocietyLogs.dll
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_SocietyLogs\bin\Debug\net7.0\IksAdmin_SocietyLogs.pdb
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_SocietyLogs\bin\Debug\net7.0\IksAdminApi.dll
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_SocietyLogs\bin\Debug\net7.0\IksAdminApi.pdb
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_SocietyLogs\obj\Debug\net7.0\IksAdmin.FF4563E3.Up2Date
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_SocietyLogs\obj\Debug\net7.0\IksAdmin_SocietyLogs.dll
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_SocietyLogs\obj\Debug\net7.0\refint\IksAdmin_SocietyLogs.dll
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_SocietyLogs\obj\Debug\net7.0\IksAdmin_SocietyLogs.pdb
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_SocietyLogs\obj\Debug\net7.0\ref\IksAdmin_SocietyLogs.dll
