@@ -367,7 +367,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             CommandUsage.CLIENT_AND_SERVER,
             BaseCommands.Map
         );
-        
+
         // Rcon commands
         Api.AddNewCommand(
             "rban",
