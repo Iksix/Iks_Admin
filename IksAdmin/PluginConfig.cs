@@ -1,9 +1,10 @@
 ﻿using System.Text.Json.Serialization;
 using CounterStrikeSharp.API.Core;
+using IksAdminApi;
 
 namespace IksAdmin;
 
-public class PluginConfig : BasePluginConfig
+public class PluginConfig : BasePluginConfig, IPluginCfg
 {
     [JsonPropertyName("ServerId")] public string ServerId { get; set; } = "A";
     [JsonPropertyName("Host")] public string Host { get; set; } = "host";

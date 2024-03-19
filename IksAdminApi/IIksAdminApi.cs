@@ -1,4 +1,5 @@
-﻿using CounterStrikeSharp.API.Core;
+﻿using System.Text.Json.Serialization;
+using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Menu;
@@ -14,6 +15,8 @@ public interface IIksAdminApi
         Chat,
         Html
     }
+    
+    public IPluginCfg Config { get; set; }
     // Fields
     public List<AdminMenuOption> ModulesOptions { get; set; }
     public List<PlayerComm> OnlineMutedPlayers { get; set; }
@@ -241,4 +244,68 @@ public interface IBaseMenu
 {
     public event Action<CCSPlayerController, Admin?, IMenu>? OnOpen;
     public void Open(CCSPlayerController caller, string title, IMenu? backMenu = null);
+}
+
+public class Reason
+{
+    public string Title { get; set; }
+    /// <summary>
+    /// >= 0 - instantly ban
+    /// == null - Select time
+    /// == -1 - Own reason and select time
+    /// </summary>
+    public int? Time { get; set; }
+    
+    public Reason(string title, int? time)
+    {
+        Title = title;
+        Time = time;
+    }
+}
+
+public class Map
+{
+    public string Title { get; set; }
+    public string Id { get; set; }
+    public bool Workshop { get; set; }
+    
+    public Map(string title, string id, bool workshop)
+    {
+        Title = title;
+        Id = id;
+        Workshop = workshop;
+    }
+}
+
+public interface IPluginCfg
+{
+    [JsonPropertyName("ServerId")] public string ServerId { get; set; }
+    [JsonPropertyName("Host")] public string Host { get; set; } 
+    [JsonPropertyName("Database")] public string Database { get; set; } 
+    [JsonPropertyName("Password")] public string Password { get; set; }
+    [JsonPropertyName("Port")] public string Port { get; set; }
+    [JsonPropertyName("UseHtmlMenu")] public bool UseHtmlMenu { get; set; } 
+
+    [JsonPropertyName("HasAccessIfImmunityIsEqual")]
+    public bool HasAccessIfImmunityIsEqual { get; set; }  // Give access to command above the target if immunity == caller
+    [JsonPropertyName("Flags")] public Dictionary<string, string> Flags { get; set; }
+ 
+
+
+    [JsonPropertyName("BanReasons")]
+    public List<Reason> BanReasons { get; set; }
+    [JsonPropertyName("GagReasons")]
+    public List<Reason> GagReasons { get; set; } 
+    [JsonPropertyName("MuteReasons")]
+    public List<Reason> MuteReasons { get; set; }
+    [JsonPropertyName("KickReasons")]
+    public List<string> KickReasons { get; set; } 
+    
+    [JsonPropertyName("Times")] public Dictionary<string, int> Times { get; set; } 
+
+    [JsonPropertyName("ConvertedFlags")]
+    public Dictionary<string, List<string>> ConvertedFlags { get; set; } 
+
+    [JsonPropertyName("Maps")]
+    public List<Map> Maps { get; set; } 
 }

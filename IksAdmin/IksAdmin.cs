@@ -702,7 +702,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
 public class PluginApi : IIksAdminApi
 {
     public string DbConnectionString { get; set; }
-    private PluginConfig Config { get; set; }
+    public IPluginCfg Config { get; set; }
     public List<Admin> AllAdmins { get; set; } = new();
     public List<Admin> ThisServerAdmins { get; set; } = new();
     public Dictionary<CCSPlayerController, Admin> OnlineAdmins { get; set; } = new();
