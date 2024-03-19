@@ -657,4 +657,30 @@ public class BaseCommands
         _api.Plugin.AddTimer(2.0f, () => { Server.NextFrame(() => Server.ExecuteCommand("sv_disable_teamselect_menu 0")); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
 
     }
+
+    public static void Rcon(CCSPlayerController caller, Admin? admin, List<string> args, CommandInfo info)
+    {
+        var command = string.Join(" ", args);
+        Server.ExecuteCommand(command);
+        ReplyToCommand(info, "Rcon command executed!");
+    }
+
+    public static void Map(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
+    {
+        var adminSid = caller == null ? "CONSOLE" : caller.AuthorizedSteamID!.SteamId64.ToString();
+        var map = args[0];
+        var isWorkshop = args.Count > 1 ? args[1] : "false";
+        if (isWorkshop == "true")
+        {
+            Server.ExecuteCommand($"host_workshop_map {map}");
+            var newMap = new Map(map, map, true);
+            _api!.EChangeMap(adminSid, newMap);
+        }
+        else
+        {
+            Server.ExecuteCommand($"map {map}");
+            var newMap = new Map(map, map, false);
+            _api!.EChangeMap(adminSid, newMap);
+        }
+    }
 }

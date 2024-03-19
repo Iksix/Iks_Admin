@@ -187,6 +187,16 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             BaseCommands.Who
         );
         Api.AddNewCommand(
+            "rcon", 
+            "execute command from server", 
+            "css_rcon <command>",
+            1,
+            "rcon",
+            "z",
+            CommandUsage.CLIENT_AND_SERVER,
+            BaseCommands.Rcon
+        );
+        Api.AddNewCommand(
             "adminadd", 
             "add the admin", 
             "css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <time> <server_id/ - (ALL SERVERS)>",
@@ -346,6 +356,16 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             "bkmg",
             CommandUsage.CLIENT_ONLY,
             BaseCommands.Hide
+        );
+        Api.AddNewCommand(
+            "map",
+            "set map",
+            "css_map <id> <(Workshop Map?) true/false>",
+            1,
+            "map",
+            "z",
+            CommandUsage.CLIENT_AND_SERVER,
+            BaseCommands.Map
         );
         
         // Rcon commands

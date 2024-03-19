@@ -1,27 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj": {}
+    "/home/user/Documents/Iks_Admin/IksAdminApi/IksAdminApi.csproj": {}
   },
   "projects": {
-    "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj": {
+    "/home/user/Documents/Iks_Admin/IksAdminApi/IksAdminApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj",
+        "projectUniqueName": "/home/user/Documents/Iks_Admin/IksAdminApi/IksAdminApi.csproj",
         "projectName": "IksAdminApi",
-        "projectPath": "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj",
-        "packagesPath": "C:\\Users\\Iks\\.nuget\\packages\\",
-        "outputPath": "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\obj\\",
+        "projectPath": "/home/user/Documents/Iks_Admin/IksAdminApi/IksAdminApi.csproj",
+        "packagesPath": "/home/user/.nuget/packages/",
+        "outputPath": "/home/user/Documents/Iks_Admin/IksAdminApi/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Iks\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/home/user/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -67,15 +65,7 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[7.0.16, 7.0.16]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[7.0.16, 7.0.16]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[7.0.16, 7.0.16]"
+              "version": "[7.0.15, 7.0.15]"
             }
           ],
           "frameworkReferences": {
@@ -83,7 +73,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.201\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/7.0.115/RuntimeIdentifierGraph.json"
         }
       }
     }
