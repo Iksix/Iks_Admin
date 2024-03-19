@@ -520,6 +520,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     public HookResult OnPlayerConnected(EventPlayerConnectFull @event, GameEventInfo info)
     {
         var player = @event.Userid;
+        if (!XHelper.IsControllerValid(player)) return HookResult.Continue;
         string sid64 = player.AuthorizedSteamID!.SteamId64.ToString();
         string ip = player.IpAddress!;
         var disconnectedPlayer =
