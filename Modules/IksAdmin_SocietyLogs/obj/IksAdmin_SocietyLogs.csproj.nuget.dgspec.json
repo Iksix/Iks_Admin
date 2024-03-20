@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "/home/user/Documents/Iks_Admin/Modules/IksAdmin_SocietyLogs/IksAdmin_SocietyLogs.csproj": {}
+    "D:\\__iksAdmin\\Iks_Admin\\Modules\\IksAdmin_SocietyLogs\\IksAdmin_SocietyLogs.csproj": {}
   },
   "projects": {
-    "/home/user/Documents/Iks_Admin/IksAdminApi/IksAdminApi.csproj": {
+    "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/user/Documents/Iks_Admin/IksAdminApi/IksAdminApi.csproj",
+        "projectUniqueName": "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj",
         "projectName": "IksAdminApi",
-        "projectPath": "/home/user/Documents/Iks_Admin/IksAdminApi/IksAdminApi.csproj",
-        "packagesPath": "/home/user/.nuget/packages/",
-        "outputPath": "/home/user/Documents/Iks_Admin/IksAdminApi/obj/",
+        "projectPath": "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj",
+        "packagesPath": "C:\\Users\\Iks\\.nuget\\packages\\",
+        "outputPath": "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/user/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Iks\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -65,7 +67,15 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[7.0.15, 7.0.15]"
+              "version": "[7.0.16, 7.0.16]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[7.0.16, 7.0.16]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[7.0.16, 7.0.16]"
             }
           ],
           "frameworkReferences": {
@@ -73,34 +83,36 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/7.0.115/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.201\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "/home/user/Documents/Iks_Admin/Modules/IksAdmin_SocietyLogs/IksAdmin_SocietyLogs.csproj": {
+    "D:\\__iksAdmin\\Iks_Admin\\Modules\\IksAdmin_SocietyLogs\\IksAdmin_SocietyLogs.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/user/Documents/Iks_Admin/Modules/IksAdmin_SocietyLogs/IksAdmin_SocietyLogs.csproj",
+        "projectUniqueName": "D:\\__iksAdmin\\Iks_Admin\\Modules\\IksAdmin_SocietyLogs\\IksAdmin_SocietyLogs.csproj",
         "projectName": "IksAdmin_SocietyLogs",
-        "projectPath": "/home/user/Documents/Iks_Admin/Modules/IksAdmin_SocietyLogs/IksAdmin_SocietyLogs.csproj",
-        "packagesPath": "/home/user/.nuget/packages/",
-        "outputPath": "/home/user/Documents/Iks_Admin/Modules/IksAdmin_SocietyLogs/obj/",
+        "projectPath": "D:\\__iksAdmin\\Iks_Admin\\Modules\\IksAdmin_SocietyLogs\\IksAdmin_SocietyLogs.csproj",
+        "packagesPath": "C:\\Users\\Iks\\.nuget\\packages\\",
+        "outputPath": "D:\\__iksAdmin\\Iks_Admin\\Modules\\IksAdmin_SocietyLogs\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/user/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Iks\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "/home/user/Documents/Iks_Admin/IksAdminApi/IksAdminApi.csproj": {
-                "projectPath": "/home/user/Documents/Iks_Admin/IksAdminApi/IksAdminApi.csproj"
+              "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj": {
+                "projectPath": "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj"
               }
             }
           }
@@ -142,7 +154,15 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[7.0.15, 7.0.15]"
+              "version": "[7.0.16, 7.0.16]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[7.0.16, 7.0.16]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[7.0.16, 7.0.16]"
             }
           ],
           "frameworkReferences": {
@@ -150,7 +170,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/7.0.115/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.201\\RuntimeIdentifierGraph.json"
         }
       }
     }

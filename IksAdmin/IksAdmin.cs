@@ -764,8 +764,8 @@ public class PluginApi : IIksAdminApi
             create table if not exists iks_admins (
                 id INT NOT NULL AUTO_INCREMENT,
                 sid VARCHAR(17) NOT NULL,
-                name VARCHAR NOT NULL,
-                flags VARCHAR NOT NULL,
+                name VARCHAR(32) NOT NULL,
+                flags VARCHAR(64) NOT NULL,
                 immunity INT NOT NULL,
                 group_id INT NOT NULL DEFAULT '-1',
                 end INT NOT NULL,
@@ -829,7 +829,7 @@ public class PluginApi : IIksAdminApi
             await conn.QueryAsync(@"
             create table if not exists iks_groups (
                 id INT NOT NULL AUTO_INCREMENT,
-                flags VARCHAR NOT NULL,
+                flags VARCHAR(64) NOT NULL,
                 name VARCHAR(32) NOT NULL,
                 immunity INT NOT NULL,
                 PRIMARY KEY (id)

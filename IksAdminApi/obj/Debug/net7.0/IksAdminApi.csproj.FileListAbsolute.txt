@@ -36,3 +36,16 @@ D:/__iksAdmin/Iks_Admin/IksAdminApi/obj/Debug/net7.0/ref/IksAdminApi.dll
 /home/user/Documents/Iks_Admin/IksAdminApi/obj/Debug/net7.0/refint/IksAdminApi.dll
 /home/user/Documents/Iks_Admin/IksAdminApi/obj/Debug/net7.0/IksAdminApi.pdb
 /home/user/Documents/Iks_Admin/IksAdminApi/obj/Debug/net7.0/ref/IksAdminApi.dll
+D:\__iksAdmin\Iks_Admin\IksAdminApi\bin\Debug\net7.0\IksAdminApi.deps.json
+D:\__iksAdmin\Iks_Admin\IksAdminApi\bin\Debug\net7.0\IksAdminApi.dll
+D:\__iksAdmin\Iks_Admin\IksAdminApi\bin\Debug\net7.0\IksAdminApi.pdb
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net7.0\IksAdminApi.csproj.AssemblyReference.cache
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net7.0\IksAdminApi.GeneratedMSBuildEditorConfig.editorconfig
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net7.0\IksAdminApi.AssemblyInfoInputs.cache
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net7.0\IksAdminApi.AssemblyInfo.cs
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net7.0\IksAdminApi.csproj.CoreCompileInputs.cache
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net7.0\IksAdminApi.sourcelink.json
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net7.0\IksAdminApi.dll
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net7.0\refint\IksAdminApi.dll
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net7.0\IksAdminApi.pdb
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net7.0\ref\IksAdminApi.dll
