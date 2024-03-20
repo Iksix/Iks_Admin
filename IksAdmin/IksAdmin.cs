@@ -609,6 +609,9 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
                         AdminManager.SetPlayerImmunity(steamId, (uint)admin.Immunity);
                     }
                     Console.WriteLine($"[IksAdmin] Admin {admin.Name} | #{admin.SteamId} -> flags, immunity and group converted!");
+                    Console.WriteLine($"[IksAdmin] Admin {admin.Name} | flags: {string.Join(", ", finalFlags)}");
+                    Console.WriteLine($"[IksAdmin] Admin {admin.Name} | group: {ConvertedGroups[steamId]}");
+                    Console.WriteLine($"[IksAdmin] Admin {admin.Name} | immunity: {ConvertedImmunity[steamId]}");
                 }
                 catch (Exception e)
                 {
@@ -714,7 +717,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             if (adminInThisServerAdmins != null) Api.ThisServerAdmins.Remove(adminInThisServerAdmins);
             Api.AllAdmins.Add(existingAdmin);
             var serverId = existingAdmin.ServerId;
-            if (serverId == ConfigNow.ServerId || serverId.Trim() == ""){
+            if (serverId.Contains(ConfigNow.ServerId)  || serverId.Trim() == ""){
                 Api.ThisServerAdmins.Add(existingAdmin);
             }
         }
