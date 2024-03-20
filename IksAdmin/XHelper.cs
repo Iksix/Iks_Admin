@@ -31,6 +31,7 @@ public class XHelper
         foreach (var p in players)
         {
             if (!p.IsValid) continue;
+            if (p.AuthorizedSteamID == null && !getBots) continue;
             if (p.IsBot && !getBots) continue;
             if (p.Connected != PlayerConnectedState.PlayerConnected) continue;
             validPlayers.Add(p);

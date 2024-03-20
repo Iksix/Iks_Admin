@@ -749,8 +749,98 @@ public class PluginApi : IIksAdminApi
         MenuType = Config.UseHtmlMenu ? IIksAdminApi.UsedMenuType.Html : IIksAdminApi.UsedMenuType.Chat;
         Task.Run(async () =>
         {
+            await CreateTables();
             await ReloadAdmins();
         });
+    }
+
+    private async Task CreateTables()
+    {
+        try
+        {
+            await using var conn = new MySqlConnection(DbConnectionString);
+            await conn.OpenAsync();
+            await conn.QueryAsync(@"
+            create table if not exists iks_admins (
+                id INT NOT NULL AUTO_INCREMENT,
+                sid VARCHAR(17) NOT NULL,
+                name VARCHAR NOT NULL,
+                flags VARCHAR NOT NULL,
+                immunity INT NOT NULL,
+                group_id INT NOT NULL DEFAULT '-1',
+                end INT NOT NULL,
+                server_id VARCHAR(64) NOT NULL,
+                PRIMARY KEY (id)
+            );
+            ");
+
+            await conn.QueryAsync(@"
+            create table if not exists iks_bans (
+                id INT NOT NULL AUTO_INCREMENT ,
+                name VARCHAR(32) NOT NULL ,
+                sid VARCHAR(32) NOT NULL,
+                ip VARCHAR(32) NULL ,
+                adminsid VARCHAR(32) NOT NULL ,
+                created INT NOT NULL ,
+                time INT NOT NULL ,
+                end INT NOT NULL ,
+                reason VARCHAR(255) NOT NULL,
+                BanType INT(1) NOT NULL DEFAULT '0',
+                Unbanned INT(1) NOT NULL DEFAULT '0',
+                UnbannedBy VARCHAR(32) NULL ,
+                server_id VARCHAR(1) NOT NULL DEFAULT '',
+                PRIMARY KEY (id)
+            );
+            ");
+            
+            await conn.QueryAsync(@"
+            create table if not exists iks_gags (
+                id INT NOT NULL AUTO_INCREMENT ,
+                name VARCHAR(32) NOT NULL ,
+                sid VARCHAR(32) NOT NULL,
+                adminsid VARCHAR(32) NOT NULL ,
+                created INT NOT NULL ,
+                time INT NOT NULL ,
+                end INT NOT NULL ,
+                reason VARCHAR(255) NOT NULL,
+                Unbanned INT(1) NOT NULL DEFAULT '0',
+                UnbannedBy VARCHAR(32) NULL ,
+                server_id VARCHAR(1) NOT NULL DEFAULT '',
+                PRIMARY KEY (id)
+            );
+            ");
+            await conn.QueryAsync(@"
+            create table if not exists iks_mutes (
+                id INT NOT NULL AUTO_INCREMENT ,
+                name VARCHAR(32) NOT NULL ,
+                sid VARCHAR(32) NOT NULL,
+                adminsid VARCHAR(32) NOT NULL ,
+                created INT NOT NULL ,
+                time INT NOT NULL ,
+                end INT NOT NULL ,
+                reason VARCHAR(255) NOT NULL,
+                Unbanned INT(1) NOT NULL DEFAULT '0',
+                UnbannedBy VARCHAR(32) NULL ,
+                server_id VARCHAR(1) NOT NULL DEFAULT '',
+                PRIMARY KEY (id)
+            );
+            ");
+
+            await conn.QueryAsync(@"
+            create table if not exists iks_groups (
+                id INT NOT NULL AUTO_INCREMENT,
+                flags VARCHAR NOT NULL,
+                name VARCHAR(32) NOT NULL,
+                immunity INT NOT NULL,
+                PRIMARY KEY (id)
+            );
+            ");
+            
+        }
+        catch (MySqlException e)
+        {
+            Plugin.Logger.LogError("DB ERROR: " + e);
+        }
     }
 
     #region Admin Manage
