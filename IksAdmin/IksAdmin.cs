@@ -77,6 +77,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             var players = XHelper.GetOnlinePlayers();
             foreach (var p in players)
             {
+                if (!XHelper.IsControllerValid(p)) continue;
                 UpdatePlayerComms(p.AuthorizedSteamID!.SteamId64.ToString());
             }
         }, TimerFlags.REPEAT);

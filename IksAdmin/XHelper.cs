@@ -101,6 +101,7 @@ public class XHelper
     public static bool IsControllerValid(CCSPlayerController? controller)
     {
         if (controller == null) return false;
+        if (controller.AuthorizedSteamID == null) return false;
         if (!controller.IsValid) return false;
         if (controller.IsBot) return false;
         if (controller.Connected != PlayerConnectedState.PlayerConnected) return false;
