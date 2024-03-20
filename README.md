@@ -23,7 +23,7 @@
 ### Flag `b`
 - ```css_ban <#uid/#sid/name> <duration> <reason> <name if needed>``` -> Ban player
 - Example: ```css_ban #76561199124384855 0 "Use cheats" iks```
-- ```css_banip <#uid/#sid/name/#ip(if offline)> <duration> <reason> <name if needed>``` -> Ban player by ip
+- ```css_banip <#uid/#sid/name/#ip(if offline)> <duration> <reason> <name if needed>``` -> Ban player by ip - UNUSED
 - Example: ```css_banip #127.0.0.1 0 "Use cheats" iks```
 ### Flag `u`
 - ```css_unban sid``` -> Unban player
@@ -50,19 +50,19 @@
 - Example: ```css_switchteam iks t```
 - ```css_changeteam <#uid/#sid/name> <ct/t/spec>``` -> Change player team with killing him
 - Example: ```css_changeteam iks spec```
-- `css_hsay <color> <text>` -> Print message to center on 5sec.
+- `css_hsay <color> <text>` -> Print message to center on 5sec. - UNUSED
 - Example: ```css_hsay red Pls send me discord```
-- `css_isay "<img link>"` -> Print image to center. 100% support: `.png ; .jpg ; .gif`
+- `css_isay "<img link>"` -> Print image to center. 100% support: `.png ; .jpg ; .gif` - UNUSED
 - Example: ```css_isay "Some image link.png"```
 ### Flags `d`
 - `css_respawn <#uid/#sid/name/>` -> Respawn the player
 - `css_noclip <#uid/#sid/name/>` -> On/Off noclip to the player
 ### Server(RCON) only
-- `css_rban <sid> <ip/-(Auto)> <adminsid/CONSOLE> <duration> <reason> <BanType (0 - default / 1 - ip> <name if needed>`
+- `css_rban <sid> <ip/-(Auto)> <adminsid/CONSOLE> <duration> <reason> <BanType (0 - default / 1 - ip> <name>`
 - `css_runban <sid> <adminsid/CONSOLE>`
-- `css_rmute <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed>`
+- `css_rmute <sid> <adminsid/CONSOLE> <duration> <reason> <name>`
 - `css_runmute <sid> <adminsid/CONSOLE>`
-- `css_rgag <sid> <adminsid/CONSOLE> <duration> <reason> <name if needed>`
+- `css_rgag <sid> <adminsid/CONSOLE> <duration> <reason> <name>`
 - `css_rungag <sid> <adminsid/CONSOLE>`
 
 > [!IMPORTANT]
