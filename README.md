@@ -71,7 +71,7 @@
 > [!TIP]
 > - You can write "ABCD" in ServerID column for admin
 > - At the moment, you can add groups only directly to the database.
-> - Tested on [CS# v172](https://docs.cssharp.dev/index.html)
+> - Tested on [CS# v197](https://docs.cssharp.dev/index.html)
 
 ## To do...
 - [x] Add `css_rename`
