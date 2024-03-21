@@ -1,0 +1,35 @@
+{
+    "DISCORD_Title" : "Имя сервера",
+
+    "DISCORD_Action" : "**Действие** \nАдмин: {admin}\nКоманда: {cmd}",
+
+    "DISCORD_OnAdminAdd" : "**Добавлен новый админ!** \nНик игрока: {name} \nSteamId64: {sid}\nФлаги: {flags}\nИммунитет: {immunity}\nЗаканчивается: {end} \nИмя группы: {groupName}\nАйди группы: {groupId}\n Айди сервера: {serverId}",
+    "DISCORD_OnAdminDel" : "**Админ удалён!** \nНик игрока: {name} \nSteamId64: {sid}\nФлаги: {flags}\nИммунитет: {immunity}\nЗаканчивается: {end} \nИмя группы: {groupName}\nАйди группы: {groupId}\n Айди сервера: {serverId}",
+    "DISCORD_OnAddBan" : "**Бан добавлен** \nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}\nIP: {ip}\nПричина: {reason}\nСрок: {duration}\nЗаканчивается: {end}\nТип бана: {banType}",
+    "DISCORD_OnAddMute" : "**Мут добавлен** \nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}\nПричина: {reason}\nСрок: {duration}\nЗаканчивается: {end}",
+    "DISCORD_OnAddGag" : "**Гаг добавлен** \nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}\nПричина: {reason}\nСрок: {duration}\nЗаканчивается: {end}",
+    "DISCORD_OnUnBan" : "**Бан снят** \nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}",
+    "DISCORD_OnUnMute" : "**Мут снят** \nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}",
+    "DISCORD_OnUnGag" : "**Гаг снят** \nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}",
+    "DISCORD_OnSlay" : "**Игрок убит** \nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}",
+    "DISCORD_OnKick" : "**Игрок кикнут** \nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}\nПричина: {reason}",
+    "DISCORD_SwitchTeam" : "**Игрок перемещён**\nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}\nПрошлая команда: {oldTeam}\nНовая команда: {newTeam}",
+    "DISCORD_ChangeTeam" : "**Игроку сменили команду**\nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}\nПрошлая команда: {oldTeam}\nНовая команда: {newTeam}",
+    "DISCORD_Rename" : "**Игроку сменили ник**\nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}\nПрошлый ник: {oldName}\nНовый ник: {newName}",
+
+    "VK_Action" : "**Действие** \nАдмин: {admin}\nКоманда: {cmd}",
+
+    "VK_OnAdminAdd" : "**Добавлен новый админ!** \nНик игрока: {name} \nSteamId64: {sid}\nФлаги: {flags}\nИммунитет: {immunity}\nЗаканчивается: {end} \nИмя группы: {groupName}\nАйди группы: {groupId}\n Айди сервера: {serverId}",
+    "VK_OnAdminDel" : "**Админ удалён!** \nНик игрока: {name} \nSteamId64: {sid}\nФлаги: {flags}\nИммунитет: {immunity}\nЗаканчивается: {end} \nИмя группы: {groupName}\nАйди группы: {groupId}\n Айди сервера: {serverId}",
+    "VK_OnAddBan" : "**Бан добавлен** \nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}\nIP: {ip}\nПричина: {reason}\nСрок: {duration}\nЗаканчивается: {end}\nТип бана: {banType}",
+    "VK_OnAddMute" : "**Мут добавлен** \nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}\nПричина: {reason}\nСрок: {duration}\nЗаканчивается: {end}",
+    "VK_OnAddGag" : "**Гаг добавлен** \nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}\nПричина: {reason}\nСрок: {duration}\nЗаканчивается: {end}",
+    "VK_OnUnBan" : "**Бан снят** \nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}",
+    "VK_OnUnMute" : "**Мут снят** \nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}",
+    "VK_OnUnGag" : "**Гаг снят** \nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}",
+    "VK_OnSlay" : "**Игрок убит** \nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}",
+    "VK_OnKick" : "**Игрок кикнут** \nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}\nПричина: {reason}",
+    "VK_SwitchTeam" : "**Игрок перемещён**\nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}\nПрошлая команда: {oldTeam}\nНовая команда: {newTeam}",
+    "VK_ChangeTeam" : "**Игроку сменили команду**\nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}\nПрошлая команда: {oldTeam}\nНовая команда: {newTeam}",
+    "VK_Rename" : "**Игроку сменили ник**\nАдмин: {admin}\nНик игрока: {name}\nSteamId64: {sid}\nПрошлый ник: {oldName}\nНовый ник: {newName}"
+}

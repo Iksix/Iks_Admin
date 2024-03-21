@@ -285,6 +285,8 @@ public interface IPluginCfg
     [JsonPropertyName("Password")] public string Password { get; set; }
     [JsonPropertyName("Port")] public string Port { get; set; }
     [JsonPropertyName("UseHtmlMenu")] public bool UseHtmlMenu { get; set; } 
+    
+    [JsonPropertyName("BanOnAllServers")] public bool BanOnAllServers { get; set; }
 
     [JsonPropertyName("HasAccessIfImmunityIsEqual")]
     public bool HasAccessIfImmunityIsEqual { get; set; }  // Give access to command above the target if immunity == caller

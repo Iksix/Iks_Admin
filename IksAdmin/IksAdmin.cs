@@ -30,7 +30,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     private readonly PluginCapability<IIksAdminApi> _pluginCapability  = new("iksadmin:core");
     public PluginConfig Config { get; set; } = new();
     public static PluginConfig ConfigNow = new();
-    private static BasePlugin _plugin;
+    private static BasePlugin? _plugin;
 
     private static readonly Dictionary<SteamID, List<string>> ConvertedFlags = new();
     private static readonly Dictionary<SteamID, string> ConvertedGroups = new();
@@ -239,7 +239,6 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             CommandUsage.CLIENT_ONLY,
             BaseCommands.Admin
         );
-        
         Api.AddNewCommand(
             "ban",
             "ban the player",
@@ -537,8 +536,6 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         return HookResult.Continue;
     }
 
-
-
     [GameEventHandler]
     public HookResult OnPlayerConnected(EventPlayerConnectFull @event, GameEventInfo info)
     {
@@ -582,7 +579,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             // Устанавливаем флаги для текущих админов
             var admins = Api!.ThisServerAdmins;
             Server.ExecuteCommand("css_admins_reload");
-            _plugin.AddTimer(3, () =>
+            _plugin!.AddTimer(3, () =>
             {
                 foreach (var admin in admins)
                 {
@@ -635,7 +632,6 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         return HookResult.Continue;
     }
     
-
     private static void KickPlayer(string sid)
     {
         Server.NextFrame(() =>
@@ -668,6 +664,10 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
                     return;
                 }
                 player.VoiceFlags = VoiceFlags.Muted;
+            }
+            if (player != null && mute == null)
+            {
+                player.VoiceFlags = VoiceFlags.Normal;
             }
         });
     }
@@ -1194,6 +1194,8 @@ public class PluginApi : IIksAdminApi
             var ban = await GetBan(banInfo.Sid);
             if (ban != null)
                 return false;
+            
+            var serverId = Config.BanOnAllServers ? "" : banInfo.ServerId;
             await conn.QueryAsync("insert into iks_bans(name, sid, ip, adminsid, created, time, end, reason, BanType, server_id)" +
                                   "values (@name, @sid, @ip, @adminSid, @created, @time, @end, @reason, @banType, @serverId)",
                                   new
@@ -1207,7 +1209,7 @@ public class PluginApi : IIksAdminApi
                                       end = banInfo.End,
                                       reason = banInfo.Reason,
                                       banType = banInfo.BanType,
-                                      serverId = banInfo.ServerId
+                                      serverId
                                   });
             await ReloadInfractions(banInfo.Sid);
             OnAddBan?.Invoke(banInfo);
@@ -1228,6 +1230,9 @@ public class PluginApi : IIksAdminApi
             var ban = await GetMute(muteInfo.Sid);
             if (ban != null)
                 return false;
+
+            var serverId = Config.BanOnAllServers ? "" : muteInfo.ServerId;
+            
             await conn.QueryAsync("insert into iks_mutes(name, sid, adminsid, created, time, end, reason, server_id)" +
                                   "values (@name, @sid, @adminSid, @created, @time, @end, @reason, @serverId)",
                 new
@@ -1239,7 +1244,7 @@ public class PluginApi : IIksAdminApi
                     time = muteInfo.Time,
                     end = muteInfo.End,
                     reason = muteInfo.Reason,
-                    serverId = muteInfo.ServerId
+                    serverId
                 });
             OnAddMute?.Invoke(muteInfo);
             await ReloadInfractions(muteInfo.Sid, false);
@@ -1260,6 +1265,7 @@ public class PluginApi : IIksAdminApi
             var ban = await GetGag(gagInfo.Sid);
             if (ban != null)
                 return false;
+            var serverId = Config.BanOnAllServers ? "" : gagInfo.ServerId;
             await conn.QueryAsync("insert into iks_gags(name, sid, adminsid, created, time, end, reason, server_id)" +
                                   "values (@name, @sid, @adminSid, @created, @time, @end, @reason, @serverId)",
                 new
@@ -1271,7 +1277,7 @@ public class PluginApi : IIksAdminApi
                     time = gagInfo.Time,
                     end = gagInfo.End,
                     reason = gagInfo.Reason,
-                    serverId = gagInfo.ServerId
+                    serverId
                 });
             OnAddGag?.Invoke(gagInfo);
             await ReloadInfractions(gagInfo.Sid, false);
@@ -1379,6 +1385,15 @@ public class PluginApi : IIksAdminApi
             from iks_bans
             where (sid = @arg or (ip = @arg and BanType = 1)) and (end > @timeNow or time = 0) and Unbanned = 0
             ", new {arg, timeNow = DateTimeOffset.UtcNow.ToUnixTimeSeconds()});
+            
+            if (ban != null)
+            {
+                if (ban.ServerId.Trim() != "" && ban.ServerId != Config.ServerId)
+                {
+                    return null;
+                }
+            }
+            
             return ban;
         }
         catch (Exception e)
@@ -1411,6 +1426,15 @@ public class PluginApi : IIksAdminApi
             from iks_mutes
             where sid = @sid and (end > @timeNow or time = 0) and Unbanned = 0
             ", new {sid, timeNow = DateTimeOffset.UtcNow.ToUnixTimeSeconds()});
+
+            if (mute != null)
+            {
+                if (mute.ServerId.Trim() != "" && mute.ServerId != Config.ServerId)
+                {
+                    return null;
+                }
+            }
+            
             return mute;
         }
         catch (Exception e)
@@ -1442,6 +1466,15 @@ public class PluginApi : IIksAdminApi
             from iks_gags
             where sid = @sid and (end > @timeNow or time = 0) and Unbanned = 0 
             ", new {sid, timeNow = DateTimeOffset.UtcNow.ToUnixTimeSeconds()});
+            
+            if (gag != null)
+            {
+                if (gag.ServerId.Trim() != "" && gag.ServerId != Config.ServerId)
+                {
+                    return null;
+                }
+            }
+            
             return gag;
         }
         catch (Exception e)
@@ -1512,16 +1545,13 @@ public class PluginApi : IIksAdminApi
     {
         OnChangeTeam?.Invoke(adminSid, target, oldTeam, newTeam);
     }
-
     public void EChangeMap(string adminSid, Map newMap)
     {
         OnChangeMap?.Invoke(adminSid, newMap);
     }
-
     public void ERename(string adminSid, PlayerInfo target, string oldName, string newName)
     {
         OnRename?.Invoke(adminSid, target, oldName, newName);
     }
-
     #endregion
 }

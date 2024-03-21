@@ -14,6 +14,8 @@ public class PluginConfig : BasePluginConfig, IPluginCfg
     [JsonPropertyName("Port")] public string Port { get; set; } = "3306";
     [JsonPropertyName("UseHtmlMenu")] public bool UseHtmlMenu { get; set; } = false;
 
+    [JsonPropertyName("BanOnAllServers")] public bool BanOnAllServers { get; set; } = true;
+
     [JsonPropertyName("HasAccessIfImmunityIsEqual")]
     public bool HasAccessIfImmunityIsEqual { get; set; } = false; // Give access to command above the target if immunity == caller
     [JsonPropertyName("Flags")] public Dictionary<string, string> Flags { get; set; } = new Dictionary<string, string>()

@@ -62,7 +62,6 @@ public static class PluginMenuManager
             menu.AddMenuOption(Localizer["MENUOPTION_Maps"], (_, _) =>
             {
                 OpenMapsMenu(caller, menu);
-                
             });
         }
     }
