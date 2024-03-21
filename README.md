@@ -8,7 +8,7 @@
 
 
 ## Features
-- Admin log to **Discord** and **VK**
+- The ability to create modules
 - Flexible configuration
 - Customizable translations
 - Admin chat. Starts with @
