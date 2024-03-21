@@ -1,7 +1,11 @@
-## Iks_Admin EN
+## IksAdmin EN
 **Support the author: [DonationAlerts](https://www.donationalerts.com/r/iks__)** <br>
 **Admin system with menu**<br><br>
-![image](https://github.com/Iksix/Iks_Admin/assets/109164274/66dd6026-66c2-4031-9130-7f03563c8ce6)
+![изображение](https://github.com/Iksix/Iks_Admin/assets/109164274/b5df9e4f-aeb5-4260-81ba-1916265898a4)
+
+![изображение](https://github.com/Iksix/Iks_Admin/assets/109164274/f2e83b43-a40a-48ad-8093-5a7a1f991620) 
+
+
 
 ## Features
 - Admin log to **Discord** and **VK**
