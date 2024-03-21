@@ -30,6 +30,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     private readonly PluginCapability<IIksAdminApi> _pluginCapability  = new("iksadmin:core");
     public PluginConfig Config { get; set; } = new();
     public static PluginConfig ConfigNow = new();
+    private static BasePlugin _plugin;
 
     private static readonly Dictionary<SteamID, List<string>> ConvertedFlags = new();
     private static readonly Dictionary<SteamID, string> ConvertedGroups = new();
@@ -45,6 +46,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
 
     public override void Load(bool hotReload)
     {
+        _plugin = this;
         Api = new PluginApi(this, Config, Localizer, _dbConnectionString);
         Capabilities.RegisterPluginCapability(_pluginCapability, () => Api);
         BaseCommands.Config = Config;
@@ -180,7 +182,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         Api.AddNewCommand(
             "who", 
             "print info about admin in chat", 
-            "css_who <name>",
+            "css_who <#uid/#sid/name>",
             1,
             "who",
             "b",
@@ -579,45 +581,48 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             ConvertedGroups.Clear();
             // Устанавливаем флаги для текущих админов
             var admins = Api!.ThisServerAdmins;
-            foreach (var admin in admins)
+            Server.ExecuteCommand("css_admins_reload");
+            _plugin.AddTimer(3, () =>
             {
-                try
+                foreach (var admin in admins)
                 {
-                    var steamId = new SteamID(ulong.Parse(admin.SteamId));
-                    var finalFlags = new List<string>();
-                    foreach (var flag in ConfigNow.ConvertedFlags)
+                    try
                     {
-                        if (admin.Flags.Contains(flag.Key))
+                        var steamId = new SteamID(ulong.Parse(admin.SteamId));
+                        if (admin.GroupName.Trim() != "")
                         {
-                            foreach (var cssFlag in flag.Value)
+                            var group = $"#css/{admin.GroupName}";
+                            AdminManager.AddPlayerToGroup(steamId, new []{group});
+                            ConvertedGroups.Add(steamId, group);
+                            Console.WriteLine("Group " + group + " converted");
+                        }
+                        if (admin.Immunity > 0)
+                        {
+                            ConvertedImmunity.Add(steamId, AdminManager.GetPlayerImmunity(steamId));
+                            AdminManager.SetPlayerImmunity(steamId, (uint)admin.Immunity);
+                        }
+                        var finalFlags = new List<string>();
+                        foreach (var flag in ConfigNow.ConvertedFlags)
+                        {
+                            if (admin.Flags.Contains(flag.Key))
                             {
-                                AdminManager.AddPlayerPermissions(steamId, cssFlag);
-                                finalFlags.Add(cssFlag);
+                                foreach (var cssFlag in flag.Value)
+                                {
+                                    AdminManager.AddPlayerPermissions(steamId, cssFlag);
+                                    finalFlags.Add(cssFlag);
+                                }
                             }
                         }
+                        ConvertedFlags.Add(steamId, finalFlags);
+                        Console.WriteLine($"[IksAdmin] Admin {admin.Name} | #{admin.SteamId} -> flags, immunity and group converted!");
                     }
-                    ConvertedFlags.Add(steamId, finalFlags);
-                    if (admin.GroupName.Trim() != "")
+                    catch (Exception e)
                     {
-                        var group = $"#css/{admin.GroupName}";
-                        AdminManager.AddPlayerToGroup(steamId, group);
-                        ConvertedGroups.Add(steamId, group);
+                        Console.WriteLine($"[IksAdmin] Error cannot convert admin {admin.Name}! Error: {e}");
                     }
-                    if (admin.Immunity > 0)
-                    {
-                        ConvertedImmunity.Add(steamId, AdminManager.GetPlayerImmunity(steamId));
-                        AdminManager.SetPlayerImmunity(steamId, (uint)admin.Immunity);
-                    }
-                    Console.WriteLine($"[IksAdmin] Admin {admin.Name} | #{admin.SteamId} -> flags, immunity and group converted!");
-                    Console.WriteLine($"[IksAdmin] Admin {admin.Name} | flags: {string.Join(", ", finalFlags)}");
-                    Console.WriteLine($"[IksAdmin] Admin {admin.Name} | group: {ConvertedGroups[steamId]}");
-                    Console.WriteLine($"[IksAdmin] Admin {admin.Name} | immunity: {ConvertedImmunity[steamId]}");
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"[IksAdmin] Error cannot convert admin {admin.Name}! Error: {e}");
-                }
-            }
+            });
+            
         });
     }
     

@@ -123,12 +123,30 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
                     .Replace("{adminSid}", adminSid)
                     .Replace("{cmd}", info.GetCommandString)
                 ;
-            string vkMessage = Localizer["DISCORD_Action"].Value
+            string vkMessage = Localizer["VK_Action"].Value
                     .Replace("{admin}", AdminName(adminSid))
                     .Replace("{adminSid}", adminSid)
                     .Replace("{cmd}", info.GetCommandString)
                 ;
             Log(dMessage, vkMessage, "Action");
+        };
+        api.OnRename += (adminSid, target, oldName, newName) =>
+        {
+            string dMessage = Localizer["DISCORD_Rename"].Value
+                    .Replace("{admin}", AdminName(adminSid))
+                    .Replace("{adminSid}", adminSid)
+                    .Replace("{sid}", target.SteamId.SteamId64.ToString())
+                    .Replace("{oldName}", oldName)
+                    .Replace("{newName}", newName)
+                ;
+            string vkMessage = Localizer["VK_Rename"].Value
+                    .Replace("{admin}", AdminName(adminSid))
+                    .Replace("{adminSid}", adminSid)
+                    .Replace("{sid}", target.SteamId.SteamId64.ToString())
+                    .Replace("{oldName}", oldName)
+                    .Replace("{newName}", newName)
+                ;
+            Log(dMessage, vkMessage, "Rename");
         };
     }
     private string ReplaceTeam(string message, string adminSid, PlayerInfo playerInfo, CsTeam oldTeam, CsTeam newTeam)

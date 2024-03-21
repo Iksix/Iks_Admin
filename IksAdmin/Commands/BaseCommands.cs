@@ -1,6 +1,8 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Utils;
 using IksAdmin.Menus;
 using IksAdminApi;
@@ -437,8 +439,11 @@ public class BaseCommands
             return;
         }
 
-        var groupInfo = existingAdmin.GroupId != -1 ? $"\n Group Name: {existingAdmin.GroupName} \n GroupId: {existingAdmin.GroupId}" : "";
-        ReplyToCommand(info, $"Name: {existingAdmin.Name} \n Flags: {existingAdmin.Flags} {groupInfo} \n Immunity: {existingAdmin.Immunity} \n SteamId: {existingAdmin.SteamId} \n ServerId: {existingAdmin.ServerId}");
+        var adminData = AdminManager.GetPlayerAdminData(new SteamID(ulong.Parse(existingAdmin.SteamId)));
+
+
+        var groupInfo = existingAdmin.GroupId != -1 ? $"\n Group Name: {existingAdmin.GroupName} \n GroupId: {existingAdmin.GroupId} \n CssGroups: {string.Join(", ", adminData!.Groups)}" : "";
+        ReplyToCommand(info, $"Name: {existingAdmin.Name} \n Flags: {existingAdmin.Flags} {groupInfo} \n Immunity: {existingAdmin.Immunity} \n SteamId: {existingAdmin.SteamId} \n ServerId: {existingAdmin.ServerId} ");
     }
 
     public static void RBan(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)

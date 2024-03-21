@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IksAdmin_SocietyLogs")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8bafbb70d3782dbbbc53019c556e972f2a538444")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f59ab02268d725c5cbadec31d562b1265e7f151f")]
 [assembly: System.Reflection.AssemblyProductAttribute("IksAdmin_SocietyLogs")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IksAdmin_SocietyLogs")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,115 +1,114 @@
 {
-	// 2.0 BETA
 	"PluginTag": "{white}[{red}ADMIN{white}] >>",
 	
 	
-	// TARGET Отправляются наказаному
-	"TARGET_ChatWhenGagged" : "{darkred}Вы не можете писать в чат! У вас есть активный гаг!",
-	"TARGET_SwitchTeam" : "{darkred}Вы были перемещены в команду {red}{team}{white}! \n Админ: {red}{admin}",
-	"TARGET_ChangeTeam" : "{darkred}Вашу команды сменили на {red}{team}{white}! \n Админ: {red}{admin}",
+	// TARGET Messages sent to the punished player
+	"TARGET_ChatWhenGagged": "{darkred}You cannot chat! You have an active gag!",
+	"TARGET_SwitchTeam": "{darkred}You have been moved to team {red}{team}{white}! \n Admin: {red}{admin}",
+	"TARGET_ChangeTeam": "{darkred}Your team has been changed to {red}{team}{white}! \n Admin: {red}{admin}",
 	
-	// SERVER Отправляются на сервер (всем игрокам)
+	// SERVER Messages sent to the server (all players)
 	
-	// 		действия (выдача наказаний)
-	"SERVER_OnBan": "Игрок {red}{name}{white} был забанен админом {red}{admin} \n Причина: {red}{reason} \n Срок: {red}{duration}",
-	"SERVER_OnMute": "Игрок {red}{name}{white} был замучен админом {red}{admin} \n Причина: {red}{reason} \n Срок: {red}{duration}",
-	"SERVER_OnGag": "Игрок {red}{name}{white} был гагнут админом {red}{admin} \n Причина: {red}{reason} \n Срок: {red}{duration}",
-	"SERVER_OnKick": "Админ {red}{admin} кикнул игрока {red}{name}\n Причина: {red}{reason}",
-	"SERVER_OnSlay": "Админ {red}{admin} убил игрока {red}{name}",
-	"SERVER_SwitchTeam": "Админ {red}{admin}{white} переместил игрока {red}{name}{white} в команду {red}{newTeam}{white}!",
-	"SERVER_ChangeTeam": "Админ {red}{admin}{white} сменил команду игрока {red}{name}{white} на {red}{newTeam}{white}!",
-	"SERVER_Rename": "Админ {red}{admin}{white} сменил имя игрока {red}{oldName}{white} на {red}{newName}{white}!",
-	// 		действия (снятие наказаний)
-	"SERVER_OnUnBan": "Игрок {red}{name}{white} был разбанен админом {red}{admin}",
-	"SERVER_OnUnMute": "Игрок {red}{name}{white} был размучен админом {red}{admin}",
-	"SERVER_OnUnGag": "Игрок {red}{name}{white} был разгаган админом {red}{admin}",
+	// 		Actions (punishments)
+	"SERVER_OnBan": "Player {red}{name}{white} has been banned by admin {red}{admin} \n Reason: {red}{reason} \n Duration: {red}{duration}",
+	"SERVER_OnMute": "Player {red}{name}{white} has been muted by admin {red}{admin} \n Reason: {red}{reason} \n Duration: {red}{duration}",
+	"SERVER_OnGag": "Player {red}{name}{white} has been gagged by admin {red}{admin} \n Reason: {red}{reason} \n Duration: {red}{duration}",
+	"SERVER_OnKick": "Admin {red}{admin} kicked player {red}{name}\n Reason: {red}{reason}",
+	"SERVER_OnSlay": "Admin {red}{admin} slayed player {red}{name}",
+	"SERVER_SwitchTeam": "Admin {red}{admin}{white} moved player {red}{name}{white} to team {red}{newTeam}{white}!",
+	"SERVER_ChangeTeam": "Admin {red}{admin}{white} changed player {red}{name}{white}'s team to {red}{newTeam}{white}!",
+	"SERVER_Rename": "Admin {red}{admin}{white} renamed player {red}{oldName}{white} to {red}{newName}{white}!",
+	// 		Actions (lifting punishments)
+	"SERVER_OnUnBan": "Player {red}{name}{white} has been unbanned by admin {red}{admin}",
+	"SERVER_OnUnMute": "Player {red}{name}{white} has been unmuted by admin {red}{admin}",
+	"SERVER_OnUnGag": "Player {red}{name}{white} has been ungagged by admin {red}{admin}",
 	
-	// NOTIFY Отправляются админу:
-	"NOTIFY_HaveNotAccess": "{darkred}У вас нету доступа к этой команде!",
-	"NOTIFY_IncorrectTeam": "{darkred}Некоректная команда!",
-	"NOTIFY_IncorrectSid": "{darkred}Некоректный SteamId64!",
-	"NOTIFY_PlayerAlreadyPunished": "{darkred}Игрок уже наказан!",
-	"NOTIFY_PlayerNotPunished": "{darkred}Игрок не наказан!",
-	"NOTIFY_PlayerNotFound": "{darkred}Игрок не найден!",
-	"NOTIFY_PlayerHaveBiggerImmunity": "{darkred}У цели иммунитет выше или равен вашему!",
-	"NOTIFY_ErrorTime": "{darkred}Ошибка! Не удалось преобразовать время в число!",
-	"NOTIFY_ErrorReason": "{darkred}Ошибка! Причина не может быть пустой!",
-	"NOTIFY_WriteReason": "Введите причину в чат! {red}!<причина>",
-	"NOTIFY_WriteTime": "Введите время в чат! {red}!<время>",
-	"NOTIFY_WriteName": "Введите имя в чат! {red}!<имя>",
-	"NOTIFY_OnlyInChangeTeam": "{darkred}Переместить в эту команду можно только с помощью {white}!changeteam",
-	//		действия (выдача наказаний)
-	"NOTIFY_OnBan" : "{red}Вы{white} успешно выдали {red}бан{white} игроку {red}{name}!",
-	"NOTIFY_OnGag" : "{red}Вы{white} успешно выдали {red}гаг{white} игроку {red}{name}!",
-	"NOTIFY_OnMute" : "{red}Вы{white} успешно выдали {red}мут{white} игроку {red}{name}!",
-	//		действия (снятие наказаний)
-	"NOTIFY_OnUnBan" : "{red}Вы{white} успешно сняли {red}бан{white} с игрока {red}{name}!",
-	"NOTIFY_OnUnGag" : "{red}Вы{white} успешно сняли {red}гаг{white} с игрока {red}{name}!",
-	"NOTIFY_OnUnMute" : "{red}Вы{white} успешно сняли {red}мут{white} с игрока {red}{name}!",
+	// NOTIFY Messages sent to the admin:
+	"NOTIFY_HaveNotAccess": "{darkred}You do not have access to this command!",
+	"NOTIFY_IncorrectTeam": "{darkred}Incorrect team!",
+	"NOTIFY_IncorrectSid": "{darkred}Incorrect SteamId64!",
+	"NOTIFY_PlayerAlreadyPunished": "{darkred}Player is already punished!",
+	"NOTIFY_PlayerNotPunished": "{darkred}Player is not punished!",
+	"NOTIFY_PlayerNotFound": "{darkred}Player not found!",
+	"NOTIFY_PlayerHaveBiggerImmunity": "{darkred}Target has equal or higher immunity than yours!",
+	"NOTIFY_ErrorTime": "{darkred}Error! Failed to convert time to a number!",
+	"NOTIFY_ErrorReason": "{darkred}Error! Reason cannot be empty!",
+	"NOTIFY_WriteReason": "Enter the reason in chat! {red}!<reason>",
+	"NOTIFY_WriteTime": "Enter the time in chat! {red}!<time>",
+	"NOTIFY_WriteName": "Enter the name in chat! {red}!<name>",
+	"NOTIFY_OnlyInChangeTeam": "{darkred}You can only move to this team using {white}!changeteam",
+	//		Actions (issuing punishments)
+	"NOTIFY_OnBan" : "{red}You{white} have successfully issued a {red}ban{white} to player {red}{name}!",
+	"NOTIFY_OnGag" : "{red}You{white} have successfully issued a {red}gag{white} to player {red}{name}!",
+	"NOTIFY_OnMute" : "{red}You{white} have successfully issued a {red}mute{white} to player {red}{name}!",
+	//		Actions (lifting punishments)
+	"NOTIFY_OnUnBan" : "{red}You{white} have successfully lifted the {red}ban{white} from player {red}{name}!",
+	"NOTIFY_OnUnGag" : "{red}You{white} have successfully lifted the {red}gag{white} from player {red}{name}!",
+	"NOTIFY_OnUnMute" : "{red}You{white} have successfully lifted the {red}mute{white} from player {red}{name}!",
 	
-	// другое
+	// Other
 	"NOTIFY_OnAdminAdd" : "Admin {admin} added! \n SteamId: {sid} \n Flags: {flags} \n Server_Id: {serverId} \n GroupId: {group_id} \n GroupName: {group_name} \n Added by: {addedByName} | {addedBySid}",
 	"NOTIFY_OnAdminDel" : "Admin {admin} deleted! \n SteamId: {sid} \n Flags: {flags} \n Server_Id: {serverId} \n GroupId: {group_id} \n GroupName: {group_name} \n Added by: {deletedByName} | {deletedBySid}",
-	"NOTIFY_OnHide" : "Теперь вас {red}не видно{white} в табе!",
-	"NOTIFY_OffHide" : "Теперь вас {red}видно{white} видно в табе!",
-	"NOTIFY_MenuClosed": "Меню закрыто!",
+	"NOTIFY_OnHide" : "You are now {red}invisible{white} in the tab!",
+	"NOTIFY_OffHide" : "You are now {red}visible{white} in the tab!",
+	"NOTIFY_MenuClosed": "Menu closed!",
 	
-	// Меню названия
-	"MENUTITLE_Main" : "{red}Главная",
-	"MENUTITLE_Blocks" : "{red}Управление блокировками",
-	"MENUTITLE_Players" : "{red}Управление игроками",
-	"MENUTITLE_Server" : "{red}Управление сервером",
-	"MENUTITLE_Modules" : "{red}Модули",
+	// Menu titles
+	"MENUTITLE_Main": "{red}Main",
+	"MENUTITLE_Blocks": "{red}Block Management",
+	"MENUTITLE_Players": "{red}Player Management",
+	"MENUTITLE_Server": "{red}Server Management",
+	"MENUTITLE_Modules": "{red}Modules",
 	
-	"MENUTITLE_Rename" : "{red}Переименовать игрока",
-	"MENUTITLE_Ban" : "Выдать Бан",
-	"MENUTITLE_OfflineBan" : "Выдать Бан {red}(оффлайн)",
-	"MENUTITLE_Gag" : "Выдать Гаг",
-	"MENUTITLE_Mute" : "Выдать Мут",
-	"MENUTITLE_SelectPlayer" : "Выберите игрока",
-	"MENUTITLE_SelectTeam" : "Выберите время",
-	"MENUTITLE_Reason" : "Выберите причину",
-	"MENUTITLE_Time" : "Выберите время",
+	"MENUTITLE_Rename": "{red}Rename Player",
+	"MENUTITLE_Ban": "Issue Ban",
+	"MENUTITLE_OfflineBan": "Issue Ban {red}(offline)",
+	"MENUTITLE_Gag": "Issue Gag",
+	"MENUTITLE_Mute": "Issue Mute",
+	"MENUTITLE_SelectPlayer": "Select Player",
+	"MENUTITLE_SelectTeam": "Select Team",
+	"MENUTITLE_Reason": "Select Reason",
+	"MENUTITLE_Time": "Select Time",
 	
-	"MENUTITLE_SwitchTeam" : "Переместить игрока",
-	"MENUTITLE_ChangeTeam" : "Сменить команду игрока",
+	"MENUTITLE_SwitchTeam": "Move Player",
+	"MENUTITLE_ChangeTeam": "Change Player's Team",
 
-	"MENUTITLE_UnGag" : "Снять Гаг",
-	"MENUTITLE_UnMute" : "Снять Мут",
+	"MENUTITLE_UnGag": "Remove Gag",
+	"MENUTITLE_UnMute": "Remove Mute",
 
-	"MENUTITLE_Kick" : "Кикнуть игрока",
-	"MENUTITLE_Slay" : "Убить игрока",
-	"MENUTITLE_Maps" : "Выберите карту",
+	"MENUTITLE_Kick": "Kick Player",
+	"MENUTITLE_Slay": "Slay Player",
+	"MENUTITLE_Maps": "Change Map",
 	
-	// Меню опции
-	"MENUOPTION_Close" : "{red}Выйти",
-	"MENUOPTION_Cancel" : "{darkred}Отмена",
-	"MENUOPTION_Back" : "{gold}Назад",
-	"MENUOPTION_OwnTime" : "{green}Своё время",
-	"MENUOPTION_OwnReason" : "{green}Своя причина",
+	// Menu options
+	"MENUOPTION_Close": "{red}Exit",
+	"MENUOPTION_Cancel": "{darkred}Cancel",
+	"MENUOPTION_Back": "{gold}Back",
+	"MENUOPTION_OwnTime": "{green}Own Time",
+	"MENUOPTION_OwnReason": "{green}Own Reason",
 
-	"MENUOPTION_Blocks" : "Управление блокировками",
-	"MENUOPTION_Players" : "Управление игроками",
-	"MENUOPTION_Server" : "Управление сервером",
-	"MENUOPTION_Modules" : "Модули",
+	"MENUOPTION_Blocks": "Block Management",
+	"MENUOPTION_Players": "Player Management",
+	"MENUOPTION_Server": "Server Management",
+	"MENUOPTION_Modules": "Modules",
 
-	"MENUOPTION_Ban" : "Выдать Бан",
-	"MENUOPTION_OfflineBan" : "Выдать Бан {red}(оффлайн)",
-	"MENUOPTION_Gag" : "Выдать Гаг",
-	"MENUOPTION_Mute" : "Выдать Мут",
-	
-	"MENUOPTION_UnGag" : "Снять Гаг",
-	"MENUOPTION_UnMute" : "Снять Мут",
-	"MENUOPTION_Maps" : "Сменить карту",
+	"MENUOPTION_Ban": "Issue Ban",
+	"MENUOPTION_OfflineBan": "Issue Ban {red}(offline)",
+	"MENUOPTION_Gag": "Issue Gag",
+	"MENUOPTION_Mute": "Issue Mute",
 
-	"MENUOPTION_Kick" : "Кикнуть игрока",
-	"MENUOPTION_Slay" : "Убить игрока",
-	"MENUOPTION_SwitchTeam" : "Переместить игрока",
-	"MENUOPTION_ChangeTeam" : "Сменить команду игрока",
-	"MENUOPTION_Rename" : "Переименовать игрока",
+	"MENUOPTION_UnGag": "Remove Gag",
+	"MENUOPTION_UnMute": "Remove Mute",
+	"MENUOPTION_Maps": "Change Map",
 
-	"OTHER_ToAdmins" : "{green}Админам: {message}",
-	"OTHER_AdminsSee" : "{green}[Админам] {name}: {message}",
+	"MENUOPTION_Kick": "Kick Player",
+	"MENUOPTION_Slay": "Slay Player",
+	"MENUOPTION_SwitchTeam": "Move Player",
+	"MENUOPTION_ChangeTeam": "Change Player's Team",
+	"MENUOPTION_Rename": "Rename Player",
 
-	"HELPER_Min": " мин." // Отображается если у срока нет ключа в Times | Example: 24 -> 24 мин.
+	"OTHER_ToAdmins": "{green}To Admins: {message}",
+	"OTHER_AdminsSee": "{green}[Admins] {name}: {message}",
+
+	"HELPER_Min": " min." // Displayed if there is no key in Times | Example: 24 -> 24 min.
 }
