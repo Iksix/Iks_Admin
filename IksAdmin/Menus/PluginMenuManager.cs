@@ -485,9 +485,12 @@ public static class PluginMenuManager
             }
             if (reason.Time == null)
             {
-                SelectTime(caller, menu, time =>
+                menu.AddMenuOption(reason.Title, (_, _) =>
                 {
-                    onSelect.Invoke(reason.Title, time);
+                    SelectTime(caller, menu, time =>
+                    {
+                        onSelect.Invoke(reason.Title, time);
+                    });
                 });
             }
             if (reason.Time == -1)
