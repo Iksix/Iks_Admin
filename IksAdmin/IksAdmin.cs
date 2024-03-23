@@ -543,9 +543,11 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         if (!XHelper.IsControllerValid(player)) return HookResult.Continue;
         string sid64 = player.AuthorizedSteamID!.SteamId64.ToString();
         string ip = player.IpAddress!;
-        var disconnectedPlayer =
-            Api!.DisconnectedPlayers.FirstOrDefault(x => x.SteamId.SteamId64 == player.AuthorizedSteamID.SteamId64);
-        Api.DisconnectedPlayers.Remove(disconnectedPlayer!);
+        foreach (var disconnectedPlayer in Api!.DisconnectedPlayers.ToList())
+        {
+            if (disconnectedPlayer.SteamId.SteamId64 == player.AuthorizedSteamID!.SteamId64)
+                Api.DisconnectedPlayers.Remove(disconnectedPlayer);
+        }
         Task.Run(async () =>
         {
             await ReloadPlayerInfractions(sid64, true, ip);
