@@ -1,0 +1,105 @@
+{
+  "ServerId": "A",
+  "Host": "",
+  "Database": "",
+  "User": "",
+  "Password": "",
+  "Port": "3306",
+  "UseHtmlMenu": false,
+  "BanOnAllServers" : false,
+  "HasAccessIfImmunityIsEqual": false, // If true, the administrator can punish his equals in immunity
+  "Flags": { // Premisions settings
+    "adminManage": "z" 
+  },
+  "BanReasons": [
+    {
+      "Title": "Cheats",
+      "Time": 0
+    },
+    {
+      "Title": "AHk",
+      "Time": 1440 // If it 's time != -1 then ban it immediately
+    },
+    {
+      "Title": "Other",
+      "Time": null // If null, then select the time
+    },
+    {
+      "Title": "Own reason",
+      "Time": -1 // If -1, then its own reason and time
+    }
+  ],
+  "GagReasons": [
+    {
+      "Title": "Flood",
+      "Time": 0
+    },
+    {
+      "Title": "Ad",
+      "Time": 1440
+    },
+    {
+      "Title": "Other",
+      "Time": null
+    },
+    {
+      "Title": "Own reason",
+      "Time": -1
+    }
+  ],
+  "MuteReasons": [
+    {
+      "Title": "VoiceMod",
+      "Time": 30
+    },
+    {
+      "Title": "Music",
+      "Time": 60
+    },
+    {
+      "Title": "Other",
+      "Time": null
+    },
+    {
+      "Title": "Own reason",
+      "Time": -1
+    }
+  ],
+  "KickReasons": [
+    "Afk",
+    "$Own reason" // If start with $, then its own reason 
+  ],
+  "Times": {
+    "60 minutes": 60,
+    "30 minutes": 30,
+    "15 minutes": 15,
+    "5 minutes": 5,
+    "Infinity": 0,
+    "Own time": -1 //  If -1, then its own time
+  },
+  "ConvertedFlags": {
+    "z": [
+      "@css/root",
+      "@css/Owner"
+    ],
+    "b": [
+      "@css/ban"
+    ],
+    "6": [
+      "@css/someTag"
+    ]
+  },
+  "Maps": [
+    {
+      "Title": "Mirage",
+      "Id": "de_mirage",
+      "Workshop": false
+    },
+    {
+      "Title": "Awp Lego",
+      "Id": "3146105097",
+      "Workshop": true
+    }
+  ],
+  "ConfigVersion": 1
+}

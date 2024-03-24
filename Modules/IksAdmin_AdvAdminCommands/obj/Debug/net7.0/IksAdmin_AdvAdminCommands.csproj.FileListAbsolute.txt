@@ -1,0 +1,16 @@
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_AdvAdminCommands\bin\Debug\net7.0\IksAdmin_AdvAdminCommands.deps.json
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_AdvAdminCommands\bin\Debug\net7.0\IksAdmin_AdvAdminCommands.dll
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_AdvAdminCommands\bin\Debug\net7.0\IksAdmin_AdvAdminCommands.pdb
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_AdvAdminCommands\bin\Debug\net7.0\IksAdminApi.dll
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_AdvAdminCommands\bin\Debug\net7.0\IksAdminApi.pdb
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_AdvAdminCommands\obj\Debug\net7.0\IksAdmin_AdvAdminCommands.csproj.AssemblyReference.cache
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_AdvAdminCommands\obj\Debug\net7.0\IksAdmin_AdvAdminCommands.GeneratedMSBuildEditorConfig.editorconfig
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_AdvAdminCommands\obj\Debug\net7.0\IksAdmin_AdvAdminCommands.AssemblyInfoInputs.cache
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_AdvAdminCommands\obj\Debug\net7.0\IksAdmin_AdvAdminCommands.AssemblyInfo.cs
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_AdvAdminCommands\obj\Debug\net7.0\IksAdmin_AdvAdminCommands.csproj.CoreCompileInputs.cache
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_AdvAdminCommands\obj\Debug\net7.0\IksAdmin_AdvAdminCommands.sourcelink.json
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_AdvAdminCommands\obj\Debug\net7.0\IksAdmin.F022D3B3.Up2Date
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_AdvAdminCommands\obj\Debug\net7.0\IksAdmin_AdvAdminCommands.dll
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_AdvAdminCommands\obj\Debug\net7.0\refint\IksAdmin_AdvAdminCommands.dll
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_AdvAdminCommands\obj\Debug\net7.0\IksAdmin_AdvAdminCommands.pdb
+D:\__iksAdmin\Iks_Admin\Modules\IksAdmin_AdvAdminCommands\obj\Debug\net7.0\ref\IksAdmin_AdvAdminCommands.dll

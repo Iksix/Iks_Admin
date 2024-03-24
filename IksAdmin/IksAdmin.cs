@@ -22,7 +22,7 @@ namespace IksAdmin;
 public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
 {
     public override string ModuleName => "IksAdmin";
-    public override string ModuleVersion => "2.0.0";
+    public override string ModuleVersion => "2.0.4";
     public override string ModuleAuthor => "iks__";
 
     public static IIksAdminApi? Api;
@@ -313,7 +313,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             "slay",
             "slay the player",
             "css_slay <#uid/#sid/name>",
-            2,
+            1,
             "slay",
             "s",
             CommandUsage.CLIENT_AND_SERVER,
@@ -473,9 +473,9 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
 
     private HookResult OnSay(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null) return HookResult.Continue;
+        if (player == null || !player.IsValid || player.IsBot) return HookResult.Continue;
         if (player.AuthorizedSteamID == null) return HookResult.Continue;
-        var playerSid = player.AuthorizedSteamID!.SteamId64.ToString();
+        var playerSid = player.AuthorizedSteamID.SteamId64.ToString();
         var message = info.GetArg(1);
 
         var existingGag =
@@ -593,11 +593,13 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
                         {
                             var group = $"#css/{admin.GroupName}";
                             AdminManager.AddPlayerToGroup(steamId, new []{group});
+                            ConvertedGroups.Remove(steamId);
                             ConvertedGroups.Add(steamId, group);
                             Console.WriteLine("Group " + group + " converted");
                         }
                         if (admin.Immunity > 0)
                         {
+                            ConvertedImmunity.Remove(steamId);
                             ConvertedImmunity.Add(steamId, AdminManager.GetPlayerImmunity(steamId));
                             AdminManager.SetPlayerImmunity(steamId, (uint)admin.Immunity);
                         }
@@ -613,6 +615,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
                                 }
                             }
                         }
+                        ConvertedFlags.Remove(steamId);
                         ConvertedFlags.Add(steamId, finalFlags);
                         Console.WriteLine($"[IksAdmin] Admin {admin.Name} | #{admin.SteamId} -> flags, immunity and group converted!");
                     }
