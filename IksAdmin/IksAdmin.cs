@@ -474,6 +474,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     private HookResult OnSay(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null) return HookResult.Continue;
+        if (player.AuthorizedSteamID == null) return HookResult.Continue;
         var playerSid = player.AuthorizedSteamID!.SteamId64.ToString();
         var message = info.GetArg(1);
 
