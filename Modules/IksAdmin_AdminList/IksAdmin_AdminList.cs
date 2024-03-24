@@ -48,6 +48,7 @@ public class IksAdminAdminList : BasePlugin
 
         foreach (var player in players)
         {
+            if (player.AuthorizedSteamID == null) continue;
             var playerSid = player.AuthorizedSteamID!.SteamId64.ToString();
             if (admins.All(x => x.SteamId != playerSid)) continue;
             menu.AddMenuOption(player.PlayerName, (_, _) =>
