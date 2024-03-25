@@ -861,6 +861,22 @@
           "buildTransitive/net6.0/System.Text.Json.targets": {}
         }
       },
+      "IksAdmin/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v7.0",
+        "dependencies": {
+          "CounterStrikeSharp.Api": "1.0.197",
+          "Dapper": "2.1.35",
+          "IksAdminApi": "1.0.0",
+          "MySqlConnector": "2.3.5"
+        },
+        "compile": {
+          "bin/placeholder/IksAdmin.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/IksAdmin.dll": {}
+        }
+      },
       "IksAdminApi/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v7.0",
@@ -2314,6 +2330,11 @@
         "useSharedDesignerContext.txt"
       ]
     },
+    "IksAdmin/1.0.0": {
+      "type": "project",
+      "path": "../../IksAdmin/IksAdmin.csproj",
+      "msbuildProject": "../../IksAdmin/IksAdmin.csproj"
+    },
     "IksAdminApi/1.0.0": {
       "type": "project",
       "path": "../../IksAdminApi/IksAdminApi.csproj",
@@ -2323,6 +2344,7 @@
   "projectFileDependencyGroups": {
     "net7.0": [
       "CounterStrikeSharp.Api >= 1.0.193",
+      "IksAdmin >= 1.0.0",
       "IksAdminApi >= 1.0.0"
     ]
   },
@@ -2355,6 +2377,9 @@
           "projectReferences": {
             "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj": {
               "projectPath": "D:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj"
+            },
+            "D:\\__iksAdmin\\Iks_Admin\\IksAdmin\\IksAdmin.csproj": {
+              "projectPath": "D:\\__iksAdmin\\Iks_Admin\\IksAdmin\\IksAdmin.csproj"
             }
           }
         }
@@ -2407,5 +2432,16 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.201\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Warning As Error: Detected package downgrade: CounterStrikeSharp.Api from 1.0.197 to 1.0.193. Reference the package directly from the project to select a different version. \r\n IksAdmin_AdvAdminCommands -> IksAdmin -> CounterStrikeSharp.Api (>= 1.0.197) \r\n IksAdmin_AdvAdminCommands -> CounterStrikeSharp.API (>= 1.0.193)",
+      "libraryId": "CounterStrikeSharp.Api",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    }
+  ]
 }

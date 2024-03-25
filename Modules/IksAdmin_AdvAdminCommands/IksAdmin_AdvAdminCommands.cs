@@ -2,8 +2,8 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using CounterStrikeSharp.API.Modules.Menu;
+using IksAdmin.Menus;
 using IksAdminApi;
 using Microsoft.Extensions.Logging;
 
@@ -54,7 +54,23 @@ public class IksAdminAdvAdminCommands : BasePlugin
             CommandUsage.CLIENT_AND_SERVER,
             OnRespawn
             );
+        _api.ModulesOptions.Add(new AdminMenuOption("Respawn", "respawn", "s", "ManagePlayers", OnRespawnSelect));
     }
+
+    private void OnRespawnSelect(CCSPlayerController caller, Admin? admin, IMenu menu)
+    {
+        OpenSelectPlayersMenu(caller, menu, (playerInfo, _) =>
+        {
+            var player = XHelper.GetPlayerFromArg("#" + playerInfo.SteamId.SteamId64);
+            if (player == null)
+            {
+                _api!.SendMessageToPlayer(caller, "Player is null!");
+                return;
+            }
+            player.Respawn();
+        }, false, title: "Respawn");
+    }
+
 
     private void OnRespawn(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
     {
@@ -73,5 +89,69 @@ public class IksAdminAdvAdminCommands : BasePlugin
         }
         
         target.Respawn();
+    }
+    
+    
+    private void OpenSelectPlayersMenu(CCSPlayerController caller, IMenu backMenu, Action<PlayerInfo, IMenu> onSelect,
+        bool ignoreYourself = true, bool offline = false, string? title = null, bool aliveOnly = false, string? filter = null)
+    {
+        Menu menu = new Menu(caller, (controller, _, arg3) =>
+        {
+            ConstructSelectPlayerMenu(controller, arg3, onSelect, ignoreYourself, offline, aliveOnly, filter);
+        });
+        title = title == null ? Localizer["MENUTITLE_SelectPlayer"] : title;
+        menu.Open(caller, title, backMenu);
+    }
+
+    private void ConstructSelectPlayerMenu(CCSPlayerController caller, IMenu menu, 
+        Action<PlayerInfo, IMenu> onSelect, bool ignoreYourself = true, bool offline = false, bool aliveOnly = false, string? filter = null)
+    {
+        var players = _api!.DisconnectedPlayers;
+        if (!offline)
+        {
+            players.Clear();
+            foreach (var player in XHelper.GetOnlinePlayers())
+            {
+                if (aliveOnly && !player.PawnIsAlive) continue;
+                players.Add(XHelper.CreateInfo(player));
+            }
+        }
+        foreach (var player in players)
+        {
+            var playerInfo = new PlayerInfo(player.PlayerName, player.SteamId.SteamId64, player.IpAddress);
+            if (filter != null)
+            {
+                switch (filter)
+                {
+                    case "gag":
+                        if (_api.OnlineGaggedPlayers.Any(x => x.Sid == playerInfo.SteamId.SteamId64.ToString()))
+                            continue;
+                        break;
+                    case "mute":
+                        if (_api.OnlineMutedPlayers.Any(x => x.Sid == playerInfo.SteamId.SteamId64.ToString()))
+                            continue;
+                        break;
+                }
+            }
+            if (!_api.HasMoreImmunity(caller.AuthorizedSteamID!.SteamId64.ToString(),
+                    playerInfo.SteamId.SteamId64.ToString()))
+            {
+                if (playerInfo.SteamId.SteamId64 == caller.AuthorizedSteamID.SteamId64)
+                {
+                    if (ignoreYourself)
+                    {
+                        continue;
+                    }
+                }
+                if (playerInfo.SteamId.SteamId64 != caller.AuthorizedSteamID.SteamId64)
+                {
+                    continue;
+                }
+            }
+            menu.AddMenuOption(playerInfo.PlayerName, (_, _) =>
+            {
+                onSelect.Invoke(playerInfo, menu);
+            });
+        }
     }
 }

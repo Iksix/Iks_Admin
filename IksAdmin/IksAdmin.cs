@@ -1331,6 +1331,12 @@ public class PluginApi : IIksAdminApi
 
             await conn.QueryAsync("update iks_mutes set Unbanned = 1, UnbannedBy = @unbannedBy where id = @id",
                 new { id = mute.Id, unbannedBy = adminSid });
+            
+            var existingMute = OnlineMutedPlayers.FirstOrDefault(x => x.Sid == mute.Sid);
+            if (existingMute != null)
+            {
+                OnlineMutedPlayers.Remove(existingMute);
+            }
             OnUnMute!.Invoke(mute, adminSid);
             await ReloadInfractions(sid, false);
             return mute;
@@ -1355,6 +1361,11 @@ public class PluginApi : IIksAdminApi
 
             await conn.QueryAsync("update iks_gags set Unbanned = 1, UnbannedBy = @unbannedBy where id = @id",
                 new { id = gag.Id, unbannedBy = adminSid });
+            var existingGag = OnlineGaggedPlayers.FirstOrDefault(x => x.Sid == gag.Sid);
+            if (existingGag != null)
+            {
+                OnlineGaggedPlayers.Remove(existingGag);
+            }
             OnUnGag?.Invoke(gag, adminSid);
             await ReloadInfractions(sid, false);
             return gag;
