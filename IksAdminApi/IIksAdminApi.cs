@@ -217,7 +217,7 @@ public class PlayerComm
 
 public class AdminMenuOption
 {
-    public Action<CCSPlayerController, Admin?, IMenu>? OnSelect;
+    public Action<CCSPlayerController, Admin?, IMenu> OnSelect;
     public string FlagsAccess;
     public string FlagsDefault;
     public string Title;
@@ -231,12 +231,13 @@ public class AdminMenuOption
     ///  - Others
     /// </summary>
     public string OptionLocation;
-    public AdminMenuOption(string title, string flagsAccess, string flagsDefault, string optionLocation)
+    public AdminMenuOption(string title, string flagsAccess, string flagsDefault, string optionLocation, Action<CCSPlayerController, Admin?, IMenu> onSelect)
     {
         FlagsAccess = flagsAccess;
         FlagsDefault = flagsDefault;
         OptionLocation = optionLocation;
         Title = title;
+        OnSelect = onSelect;
     }
 }
 
