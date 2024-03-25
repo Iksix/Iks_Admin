@@ -64,6 +64,19 @@ public static class PluginMenuManager
                 OpenMapsMenu(caller, menu);
             });
         }
+        
+        // Добавляем пункты из модулей
+        var items = Api.ModulesOptions.Where(
+            x => Api.HasPermisions(adminSid, x.FlagsAccess, x.FlagsDefault )
+                 && x.OptionLocation == "ManageServer"
+        );
+        foreach (var item in items)
+        {
+            menu.AddMenuOption(item.Title, (p, _) =>
+            {
+                item.OnSelect!.Invoke(p, admin, menu);
+            });
+        }
     }
     
     public static void OpenMapsMenu(CCSPlayerController caller, IMenu backMenu)
@@ -133,6 +146,19 @@ public static class PluginMenuManager
             menu.AddMenuOption(Localizer["MENUOPTION_Rename"], (_, _) =>
             {   
                 OpenRenameMenu(caller, menu);
+            });
+        }
+        
+        // Добавляем пункты из модулей
+        var items = Api.ModulesOptions.Where(
+            x => Api.HasPermisions(adminSid, x.FlagsAccess, x.FlagsDefault )
+                 && x.OptionLocation == "ManagePlayers"
+        );
+        foreach (var item in items)
+        {
+            menu.AddMenuOption(item.Title, (p, _) =>
+            {
+                item.OnSelect!.Invoke(p, admin, menu);
             });
         }
     }
