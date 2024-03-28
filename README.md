@@ -59,7 +59,7 @@ For example:
 > [!TIP]
 > - You can write "ABCD" in ServerID column for admin
 > - At the moment, you can add groups only directly to the database.
-> - Tested on [CS# v197](https://docs.cssharp.dev/index.html)
+> - Tested on [CS# v202](https://docs.cssharp.dev/index.html)
 
 ## To do...
 - [ ] Pre hooks
