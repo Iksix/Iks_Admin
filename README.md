@@ -16,7 +16,7 @@
 
 ## Commands
 - `css_admin` | Flags access: `"admin"` Default: `bkmgstu`
-- `css_adminadd <sid> <name> <flags/-> <immunity> <group_id> <time> <server_id/ - (ALL SERVERS)>` | Flags access: `"adminManage"` Default: `z`
+- `css_adminadd <sid> <name> <flags/-(From group)> <immunity/-1(From group)> <group_id/-1(Group disabled)> <time> <server_id/ - (ALL SERVERS)>` | Flags access: `"adminManage"` Default: `z`
 - `css_admindel <sid>` | Flags access: `"adminManage"` Default: `z`
 - `css_reload_admins` | Flags access: `"adminManage"` Default: `z`
 - `css_who <name>` | Flags access: `"who"` Default: `b`
