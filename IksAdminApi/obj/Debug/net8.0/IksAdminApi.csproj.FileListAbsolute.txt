@@ -1,0 +1,13 @@
+D:\__iksAdmin\Iks_Admin\IksAdminApi\bin\Debug\net8.0\IksAdminApi.deps.json
+D:\__iksAdmin\Iks_Admin\IksAdminApi\bin\Debug\net8.0\IksAdminApi.dll
+D:\__iksAdmin\Iks_Admin\IksAdminApi\bin\Debug\net8.0\IksAdminApi.pdb
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net8.0\IksAdminApi.csproj.AssemblyReference.cache
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net8.0\IksAdminApi.GeneratedMSBuildEditorConfig.editorconfig
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net8.0\IksAdminApi.AssemblyInfoInputs.cache
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net8.0\IksAdminApi.AssemblyInfo.cs
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net8.0\IksAdminApi.csproj.CoreCompileInputs.cache
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net8.0\IksAdminApi.sourcelink.json
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net8.0\IksAdminApi.dll
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net8.0\refint\IksAdminApi.dll
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net8.0\IksAdminApi.pdb
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net8.0\ref\IksAdminApi.dll

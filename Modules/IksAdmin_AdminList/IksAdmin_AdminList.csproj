@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.193" />
+    <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.202" />
     <ProjectReference Include="..\..\IksAdminApi\IksAdminApi.csproj" />
   </ItemGroup>
 

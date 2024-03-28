@@ -372,32 +372,61 @@ public static class PluginMenuManager
         }, true, false, Localizer["MENUTITLE_Ban"]);
     }
     
-    private static void OpenOfflineBanMenu(CCSPlayerController caller, IMenu menu)
+    private static void OpenOfflineBanMenu(CCSPlayerController caller, IMenu backMenu)
     {
-        OpenSelectPlayersMenu(caller, menu, (target, _) =>
+        Menu menu = new Menu(caller, ConstructOfflineBanMenu);
+        menu.Open(caller, Localizer["MENUTITLE_OfflineBan"], backMenu);
+        // OpenSelectPlayersMenu(caller, menu, (target, _) =>
+        // {
+        //     SelectReasonAndTime(caller, menu, Config.BanReasons, (reason, time) =>
+        //     {
+        //         time = time * 60;
+        //         var newBan = new PlayerBan(
+        //             target.PlayerName,
+        //             target.SteamId.SteamId64.ToString(),
+        //             target.IpAddress,
+        //             caller.AuthorizedSteamID!.SteamId64.ToString(),
+        //             (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+        //             time,
+        //             (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
+        //             reason,
+        //             Config.ServerId
+        //         );
+        //         Task.Run(async () =>
+        //         {
+        //             await Api!.AddBan(newBan.AdminSid, newBan);
+        //         });
+        //     });
+        // }, true, true, Localizer["MENUTITLE_OfflineBan"]);
+    }
+
+    private static void ConstructOfflineBanMenu(CCSPlayerController caller, Admin? admin, IMenu menu)
+    {
+        foreach (var player in Api!.DisconnectedPlayers)
         {
-            SelectReasonAndTime(caller, menu, Config.BanReasons, (reason, time) =>
+            menu.AddMenuOption(player.PlayerName, (_, _) =>
             {
-                time = time * 60;
-                var newBan = new PlayerBan(
-                    target.PlayerName,
-                    target.SteamId.SteamId64.ToString(),
-                    target.IpAddress,
-                    caller.AuthorizedSteamID!.SteamId64.ToString(),
-                    (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-                    time,
-                    (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
-                    reason,
-                    Config.ServerId
-                );
-                Task.Run(async () =>
+                SelectReasonAndTime(caller, menu, Config.BanReasons, (reason, time) =>
                 {
-                    await Api!.AddBan(newBan.AdminSid, newBan);
+                    time = time * 60;
+                    var newBan = new PlayerBan(
+                        player.PlayerName,
+                        player.SteamId.SteamId64.ToString(),
+                        player.IpAddress,
+                        caller.AuthorizedSteamID!.SteamId64.ToString(),
+                        (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                        time,
+                        (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
+                        reason,
+                        Config.ServerId
+                    );
+                    Task.Run(async () => { await Api!.AddBan(newBan.AdminSid, newBan); });
                 });
             });
-        }, true, true, Localizer["MENUTITLE_OfflineBan"]);
+        }
     }
-    
+
+
     private static void OpenGagMenu(CCSPlayerController caller, IMenu menu)
     {
         OpenSelectPlayersMenu(caller, menu, (target, _) =>
@@ -626,6 +655,9 @@ public static class PluginMenuManager
                 players.Add(XHelper.CreateInfo(player));
             }
         }
+
+        if (offline) players.Reverse();
+        
         foreach (var player in players)
         {
             var playerInfo = new PlayerInfo(player.PlayerName, player.SteamId.SteamId64, player.IpAddress);

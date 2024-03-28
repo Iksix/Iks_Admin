@@ -546,7 +546,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         string ip = player.IpAddress!;
         foreach (var disconnectedPlayer in Api!.DisconnectedPlayers.ToList())
         {
-            if (disconnectedPlayer.SteamId.SteamId64 == player.AuthorizedSteamID!.SteamId64)
+            if (disconnectedPlayer.SteamId.SteamId64 == player.SteamID)
                 Api.DisconnectedPlayers.Remove(disconnectedPlayer);
         }
         Task.Run(async () =>
@@ -634,7 +634,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     {
         var player = @event.Userid;
         if (!XHelper.IsControllerValid(player)) return HookResult.Continue;
-        Api!.DisconnectedPlayers.Add(XHelper.CreateInfo(player));
+        Api!.DisconnectedPlayers.Add(new PlayerInfo(player.PlayerName, player.SteamID, player.IpAddress!));
         return HookResult.Continue;
     }
     
@@ -662,19 +662,17 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             {
                 Api.OnlineGaggedPlayers.Remove(gag);
             }
-            if (player != null && mute != null && mute.Time != 0)
+            if (player != null && mute != null)
             {
-                if (mute.End < timeNow)
+                if (mute.End < timeNow && mute.Time != 0)
                 {
                     Api.OnlineMutedPlayers.Remove(mute);
+                    player.VoiceFlags = VoiceFlags.Normal;
                     return;
                 }
                 player.VoiceFlags = VoiceFlags.Muted;
             }
-            if (player != null && mute == null)
-            {
-                player.VoiceFlags = VoiceFlags.Normal;
-            }
+            
         });
     }
 
@@ -1070,48 +1068,65 @@ public class PluginApi : IIksAdminApi
     {
         Plugin.AddCommand("css_" + command, description, (player, info) =>
         {
-            Admin? admin = null;
-            var adminSid = player == null ? "console" : player.AuthorizedSteamID!.SteamId64.ToString();
-            if (player != null)
-            {
-                admin = ThisServerAdmins.FirstOrDefault(x =>
-                    x.SteamId == player.AuthorizedSteamID!.SteamId64.ToString());
-            }
-            
-            if (!HasAccess(adminSid, whoCanExecute, flagAccess, flagDefault))
-            {
-                info.ReplyToCommand(player == null
-                    ? $" [IksAdmin] You haven't access to this command"
-                    : $" {Localizer["PluginTag"]} {Localizer["NOTIFY_HaveNotAccess"]}");
-                return;
-            }
-            List<string> args = GetArgsFromCommandLine(info.GetCommandString);
-            var tag = player == null ? "[IksAdmin] " : Localizer["PluginTag"];
-            if (args.Count < minArgs)
-            {
-                info.ReplyToCommand($" {tag} Command usage:");
-                foreach (var str in commandUsage.Split("\n"))
-                {
-                    info.ReplyToCommand($" {tag} {str}");
-                }
-                info.ReplyToCommand($" {tag} min args: {minArgs}");
-                return;
-            }
-
             try
             {
-                onCommandExecute.Invoke(player!, admin, args, info);
-            }
-            catch (Exception)
-            {
-                info.ReplyToCommand($" {tag} There are mistakes in your command");
-                info.ReplyToCommand($" {tag} Command usage:");
-                foreach (var str in commandUsage.Split("\n"))
+                Admin? admin = null;
+                if (player != null)
                 {
-                    info.ReplyToCommand($" {tag} {str}");
+                    if (player!.AuthorizedSteamID == null)
+                    {
+                        Plugin.Logger.LogError($"INVALID STEAM_ID {info.GetCommandString}");
+                        return;
+                    }
                 }
+                
+                var adminSid = player == null ? "console" : player.AuthorizedSteamID!.SteamId64.ToString();
+                if (player != null)
+                {
+                    admin = ThisServerAdmins.FirstOrDefault(x =>
+                        x.SteamId == player.AuthorizedSteamID!.SteamId64.ToString());
+                }
+            
+                if (!HasAccess(adminSid, whoCanExecute, flagAccess, flagDefault))
+                {
+                    info.ReplyToCommand(player == null
+                        ? $" [IksAdmin] You haven't access to this command"
+                        : $" {Localizer["PluginTag"]} {Localizer["NOTIFY_HaveNotAccess"]}");
+                    return;
+                }
+                List<string> args = GetArgsFromCommandLine(info.GetCommandString);
+                var tag = player == null ? "[IksAdmin] " : Localizer["PluginTag"];
+                if (args.Count < minArgs)
+                {
+                    info.ReplyToCommand($" {tag} Command usage:");
+                    foreach (var str in commandUsage.Split("\n"))
+                    {
+                        info.ReplyToCommand($" {tag} {str}");
+                    }
+                    info.ReplyToCommand($" {tag} min args: {minArgs}");
+                    return;
+                }
+
+                try
+                {
+                    onCommandExecute.Invoke(player!, admin, args, info);
+                }
+                catch (Exception e)
+                {
+                    Plugin.Logger.LogError(e.ToString());
+                    info.ReplyToCommand($" {tag} There are mistakes in your command");
+                    info.ReplyToCommand($" {tag} Command usage:");
+                    foreach (var str in commandUsage.Split("\n"))
+                    {
+                        info.ReplyToCommand($" {tag} {str}");
+                    }
+                }
+                OnCommandUsed?.Invoke(player, info);
             }
-            OnCommandUsed?.Invoke(player, info);
+            catch (Exception e)
+            {
+                Plugin.Logger.LogError(e.ToString());
+            }
         });
     }
     public bool HasAccess(string adminSid, CommandUsage commandUsage, string flagsAccess, string flagsDefault)

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IksAdmin_AdminList")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+59f23b996a188dbc2bb92f2b38e2d237d8176b65")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a898329d26d46999afb18ecc1337c47736bfd823")]
 [assembly: System.Reflection.AssemblyProductAttribute("IksAdmin_AdminList")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IksAdmin_AdminList")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
