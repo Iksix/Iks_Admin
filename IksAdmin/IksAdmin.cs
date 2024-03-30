@@ -25,6 +25,8 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     public override string ModuleVersion => "2.0.4";
     public override string ModuleAuthor => "iks__";
 
+    private static List<int> _kickSlots = new();
+
     public static IIksAdminApi? Api;
     private static string _dbConnectionString = "";
     private readonly PluginCapability<IIksAdminApi> _pluginCapability  = new("iksadmin:core");
@@ -46,6 +48,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
 
     public override void Load(bool hotReload)
     {
+        RegisterListener<Listeners.OnClientAuthorized>(OnAuthorized);
         _plugin = this;
         Api = new PluginApi(this, Config, Localizer, _dbConnectionString);
         Capabilities.RegisterPluginCapability(_pluginCapability, () => Api);
@@ -63,7 +66,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             return HookResult.Continue;
         });
 
-        AddTimer(3, () =>
+        AddTimer(1, () =>
         {
             var allAdmins = Api.AllAdmins;
             foreach (var admin in allAdmins)
@@ -79,10 +82,37 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             var players = XHelper.GetOnlinePlayers();
             foreach (var p in players)
             {
+                if (_kickSlots.Contains(p.Slot))
+                    Server.ExecuteCommand("kickid " + p.UserId);
                 if (!XHelper.IsControllerValid(p)) continue;
                 UpdatePlayerComms(p.AuthorizedSteamID!.SteamId64.ToString());
             }
         }, TimerFlags.REPEAT);
+    }
+
+    private void OnAuthorized(int slot, SteamID steamid)
+    {
+        var player = Utilities.GetPlayerFromSlot(slot);
+        Console.WriteLine($"{steamid.SteamId64} CLIENT AUTHORIZED");
+        string sid64 = steamid.SteamId64.ToString();
+        string ip = player.IpAddress!;
+        Console.WriteLine($"{sid64} sid64");
+        Console.WriteLine($"{ip} ip");
+
+        foreach (var disconnectedPlayer in Api!.DisconnectedPlayers.ToList())
+        {
+            if (disconnectedPlayer.SteamId.SteamId64 == player.SteamID)
+            {
+                Console.WriteLine($"{disconnectedPlayer.SteamId.SteamId64} removed from disconnected players");
+                Api.DisconnectedPlayers.Remove(disconnectedPlayer);
+            }
+                
+        }
+        Task.Run(async () =>
+        {
+            await ReloadPlayerInfractions(sid64, true, ip, slot);
+            ConvertAll();
+        });
     }
 
     private void InitializeMessages()
@@ -325,7 +355,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             "css_switchteam <#uid/#sid/name> <ct/t>",
             2,
             "switchteam",
-            "s",
+            "t",
             CommandUsage.CLIENT_AND_SERVER,
             BaseCommands.SwitchTeam
         );
@@ -335,7 +365,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             "css_changeteam <#uid/#sid/name> <ct/t/spec>",
             2,
             "changeteam",
-            "s",
+            "t",
             CommandUsage.CLIENT_AND_SERVER,
             BaseCommands.ChangeTeam
         );
@@ -424,12 +454,21 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     }
     private string ReplaceComm(string message, PlayerComm comm, string unbannedBy = "")
     {
+        var admin = AdminName(comm.AdminSid);
+        var adminSid = comm.AdminSid;
+        if (unbannedBy != "")
+        {
+            admin = AdminName(unbannedBy);
+            adminSid = unbannedBy;
+        }
         return message
             .Replace("{name}", comm.Name)
             .Replace("{reason}", comm.Reason)
             .Replace("{duration}", GetTime(comm.Time))
-            .Replace("{admin}", AdminName(comm.AdminSid))
-            .Replace("{adminSid}", comm.AdminSid)
+            .Replace("{unbannedBy}", AdminName(comm.UnbannedBy!))
+            .Replace("{unbannedBySid}", comm.UnbannedBy!)
+            .Replace("{admin}", admin)
+            .Replace("{adminSid}", adminSid)
             .Replace("{sid}", comm.Sid)
             .Replace("{unbannedBy}", AdminName(unbannedBy))
             .Replace("{unbannedBySid}", unbannedBy)
@@ -439,14 +478,21 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     }
     private string ReplaceBan(string message, PlayerBan ban, string unbannedBy = "")
     {
+        var admin = AdminName(ban.AdminSid);
+        var adminSid = ban.AdminSid;
+        if (unbannedBy != "")
+        {
+            admin = AdminName(unbannedBy);
+            adminSid = unbannedBy;
+        }
         return message
             .Replace("{name}", ban.Name)
             .Replace("{reason}", ban.Reason)
             .Replace("{unbannedBy}", AdminName(unbannedBy))
             .Replace("{unbannedBySid}", unbannedBy)
             .Replace("{duration}", GetTime(ban.Time))
-            .Replace("{admin}", AdminName(ban.AdminSid))
-            .Replace("{adminSid}", ban.AdminSid)
+            .Replace("{admin}", admin)
+            .Replace("{adminSid}", adminSid)
             .Replace("{sid}", ban.Sid)
             .Replace("{ip}", ban.Ip)
             .Replace("{serverId}", ban.ServerId)
@@ -463,10 +509,11 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         return Config.Times.First(x => x.Value == time).Key;
     }
 
-    private string AdminName(string adminSid)
+    private string AdminName(string? adminSid)
     {
+        if (adminSid == null) return "CONSOLE";
         var admin = Api!.ThisServerAdmins.FirstOrDefault(x => x.SteamId == adminSid);
-        string adminName = adminSid.ToLower() == "console" ? "CONSOLE" :
+        string adminName = adminSid!.ToLower() == "console" ? "CONSOLE" :
             admin == null ? "~Deleted Admin~" : admin.Name;
         return adminName;
     }
@@ -537,25 +584,41 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         return HookResult.Continue;
     }
 
-    [GameEventHandler]
-    public HookResult OnPlayerConnected(EventPlayerConnectFull @event, GameEventInfo info)
-    {
-        var player = @event.Userid;
-        if (!XHelper.IsControllerValid(player)) return HookResult.Continue;
-        string sid64 = player.AuthorizedSteamID!.SteamId64.ToString();
-        string ip = player.IpAddress!;
-        foreach (var disconnectedPlayer in Api!.DisconnectedPlayers.ToList())
-        {
-            if (disconnectedPlayer.SteamId.SteamId64 == player.SteamID)
-                Api.DisconnectedPlayers.Remove(disconnectedPlayer);
-        }
-        Task.Run(async () =>
-        {
-            await ReloadPlayerInfractions(sid64, true, ip);
-            ConvertAll();
-        });
-        return HookResult.Continue;
-    }
+    // [GameEventHandler]
+    // public HookResult OnPlayerConnected(EventPlayerConnectFull @event, GameEventInfo info)
+    // {
+    //     var player = @event.Userid;
+    //     if (player.IsBot) return HookResult.Continue;
+    //     Console.WriteLine($"{player.PlayerName} CLIENT Connected");
+    //     Console.WriteLine($"{player.PlayerName} CLIENT Connected");
+    //     Console.WriteLine($"{player.PlayerName} CLIENT Connected");
+    //     Console.WriteLine($"{player.PlayerName} CLIENT Connected");
+    //     string sid64 = player.AuthorizedSteamID!.SteamId64.ToString();
+    //     string ip = player.IpAddress!;
+    //     Console.WriteLine($"{sid64} sid64");
+    //     Console.WriteLine($"{ip} ip");
+    //
+    //     foreach (var disconnectedPlayer in Api!.DisconnectedPlayers.ToList())
+    //     {
+    //         if (disconnectedPlayer.SteamId.SteamId64 == player.SteamID)
+    //         {
+    //             Console.WriteLine($"{disconnectedPlayer.SteamId.SteamId64} removed from disconnected players");
+    //             Console.WriteLine($"{disconnectedPlayer.SteamId.SteamId64} removed from disconnected players");
+    //             Console.WriteLine($"{disconnectedPlayer.SteamId.SteamId64} removed from disconnected players");
+    //             Console.WriteLine($"{disconnectedPlayer.SteamId.SteamId64} removed from disconnected players");
+    //             Api.DisconnectedPlayers.Remove(disconnectedPlayer);
+    //         }
+    //             
+    //     }
+    //     Task.Run(async () =>
+    //     {
+    //         Console.WriteLine($"ban 1");
+    //         await ReloadPlayerInfractions(sid64, true, ip);
+    //         Console.WriteLine($"ban 2");
+    //         ConvertAll();
+    //     });
+    //     return HookResult.Continue;
+    // }
 
     public static void ConvertAll()
     {
@@ -617,7 +680,6 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
                         }
                         ConvertedFlags.Remove(steamId);
                         ConvertedFlags.Add(steamId, finalFlags);
-                        Console.WriteLine($"[IksAdmin] Admin {admin.Name} | #{admin.SteamId} -> flags, immunity and group converted!");
                     }
                     catch (Exception e)
                     {
@@ -633,7 +695,10 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
     {
         var player = @event.Userid;
-        if (!XHelper.IsControllerValid(player)) return HookResult.Continue;
+        if (player.IsBot || !player.IsValid) return HookResult.Continue;
+        if (_kickSlots.Contains(player.Slot))
+            _kickSlots.Remove(player.Slot);
+        Console.WriteLine($"{player.SteamID} added to disconnected players");
         Api!.DisconnectedPlayers.Add(new PlayerInfo(player.PlayerName, player.SteamID, player.IpAddress!));
         return HookResult.Continue;
     }
@@ -684,13 +749,15 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         if (existingBanIp != null) return true;
         return false;
     }
-    public static async Task ReloadPlayerInfractions(string sid64, bool checkBan = false, string ip = "127.0.0.1")
+    public static async Task ReloadPlayerInfractions(string sid64, bool checkBan = false, string ip = "127.0.0.1", int? slot = null)
     {
         if (checkBan)
         {
             if (await PlayerBanned(sid64, ip))
             {
                 KickPlayer(sid64);
+                if (slot != null)
+                    _kickSlots.Add((int)slot);
                 return;
             }
         }

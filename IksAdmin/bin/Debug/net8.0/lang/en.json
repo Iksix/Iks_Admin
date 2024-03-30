@@ -1,0 +1,114 @@
+{
+	"PluginTag": "{white}[{red}ADMIN{white}] >>",
+	
+	
+	// TARGET Messages sent to the punished player
+	"TARGET_ChatWhenGagged": "{darkred}You cannot chat! You have an active gag!",
+	"TARGET_SwitchTeam": "{darkred}You have been moved to team {red}{team}{white}! \n Admin: {red}{admin}",
+	"TARGET_ChangeTeam": "{darkred}Your team has been changed to {red}{team}{white}! \n Admin: {red}{admin}",
+	
+	// SERVER Messages sent to the server (all players)
+	
+	// 		Actions (punishments)
+	"SERVER_OnBan": "Player {red}{name}{white} has been banned by admin {red}{admin} \n Reason: {red}{reason} \n Duration: {red}{duration}",
+	"SERVER_OnMute": "Player {red}{name}{white} has been muted by admin {red}{admin} \n Reason: {red}{reason} \n Duration: {red}{duration}",
+	"SERVER_OnGag": "Player {red}{name}{white} has been gagged by admin {red}{admin} \n Reason: {red}{reason} \n Duration: {red}{duration}",
+	"SERVER_OnKick": "Admin {red}{admin} kicked player {red}{name}\n Reason: {red}{reason}",
+	"SERVER_OnSlay": "Admin {red}{admin} slayed player {red}{name}",
+	"SERVER_SwitchTeam": "Admin {red}{admin}{white} moved player {red}{name}{white} to team {red}{newTeam}{white}!",
+	"SERVER_ChangeTeam": "Admin {red}{admin}{white} changed player {red}{name}{white}'s team to {red}{newTeam}{white}!",
+	"SERVER_Rename": "Admin {red}{admin}{white} renamed player {red}{oldName}{white} to {red}{newName}{white}!",
+	// 		Actions (lifting punishments)
+	"SERVER_OnUnBan": "Player {red}{name}{white} has been unbanned by admin {red}{admin}",
+	"SERVER_OnUnMute": "Player {red}{name}{white} has been unmuted by admin {red}{admin}",
+	"SERVER_OnUnGag": "Player {red}{name}{white} has been ungagged by admin {red}{admin}",
+	
+	// NOTIFY Messages sent to the admin:
+	"NOTIFY_HaveNotAccess": "{darkred}You do not have access to this command!",
+	"NOTIFY_IncorrectTeam": "{darkred}Incorrect team!",
+	"NOTIFY_IncorrectSid": "{darkred}Incorrect SteamId64!",
+	"NOTIFY_PlayerAlreadyPunished": "{darkred}Player is already punished!",
+	"NOTIFY_PlayerNotPunished": "{darkred}Player is not punished!",
+	"NOTIFY_PlayerNotFound": "{darkred}Player not found!",
+	"NOTIFY_PlayerHaveBiggerImmunity": "{darkred}Target has equal or higher immunity than yours!",
+	"NOTIFY_ErrorTime": "{darkred}Error! Failed to convert time to a number!",
+	"NOTIFY_ErrorReason": "{darkred}Error! Reason cannot be empty!",
+	"NOTIFY_WriteReason": "Enter the reason in chat! {red}!<reason>",
+	"NOTIFY_WriteTime": "Enter the time in chat! {red}!<time>",
+	"NOTIFY_WriteName": "Enter the name in chat! {red}!<name>",
+	"NOTIFY_OnlyInChangeTeam": "{darkred}You can only move to this team using {white}!changeteam",
+	//		Actions (issuing punishments)
+	"NOTIFY_OnBan" : "{red}You{white} have successfully issued a {red}ban{white} to player {red}{name}!",
+	"NOTIFY_OnGag" : "{red}You{white} have successfully issued a {red}gag{white} to player {red}{name}!",
+	"NOTIFY_OnMute" : "{red}You{white} have successfully issued a {red}mute{white} to player {red}{name}!",
+	//		Actions (lifting punishments)
+	"NOTIFY_OnUnBan" : "{red}You{white} have successfully lifted the {red}ban{white} from player {red}{name}!",
+	"NOTIFY_OnUnGag" : "{red}You{white} have successfully lifted the {red}gag{white} from player {red}{name}!",
+	"NOTIFY_OnUnMute" : "{red}You{white} have successfully lifted the {red}mute{white} from player {red}{name}!",
+	
+	// Other
+	"NOTIFY_OnAdminAdd" : "Admin {admin} added! \n SteamId: {sid} \n Flags: {flags} \n Server_Id: {serverId} \n GroupId: {group_id} \n GroupName: {group_name} \n Added by: {addedByName} | {addedBySid}",
+	"NOTIFY_OnAdminDel" : "Admin {admin} deleted! \n SteamId: {sid} \n Flags: {flags} \n Server_Id: {serverId} \n GroupId: {group_id} \n GroupName: {group_name} \n Added by: {deletedByName} | {deletedBySid}",
+	"NOTIFY_OnHide" : "You are now {red}invisible{white} in the tab!",
+	"NOTIFY_OffHide" : "You are now {red}visible{white} in the tab!",
+	"NOTIFY_MenuClosed": "Menu closed!",
+	
+	// Menu titles
+	"MENUTITLE_Main": "{red}Main",
+	"MENUTITLE_Blocks": "{red}Block Management",
+	"MENUTITLE_Players": "{red}Player Management",
+	"MENUTITLE_Server": "{red}Server Management",
+	"MENUTITLE_Modules": "{red}Modules",
+	
+	"MENUTITLE_Rename": "{red}Rename Player",
+	"MENUTITLE_Ban": "Issue Ban",
+	"MENUTITLE_OfflineBan": "Issue Ban {red}(offline)",
+	"MENUTITLE_Gag": "Issue Gag",
+	"MENUTITLE_Mute": "Issue Mute",
+	"MENUTITLE_SelectPlayer": "Select Player",
+	"MENUTITLE_SelectTeam": "Select Team",
+	"MENUTITLE_Reason": "Select Reason",
+	"MENUTITLE_Time": "Select Time",
+	
+	"MENUTITLE_SwitchTeam": "Move Player",
+	"MENUTITLE_ChangeTeam": "Change Player's Team",
+
+	"MENUTITLE_UnGag": "Remove Gag",
+	"MENUTITLE_UnMute": "Remove Mute",
+
+	"MENUTITLE_Kick": "Kick Player",
+	"MENUTITLE_Slay": "Slay Player",
+	"MENUTITLE_Maps": "Change Map",
+	
+	// Menu options
+	"MENUOPTION_Close": "{red}Exit",
+	"MENUOPTION_Cancel": "{darkred}Cancel",
+	"MENUOPTION_Back": "{gold}Back",
+	"MENUOPTION_OwnTime": "{green}Own Time",
+	"MENUOPTION_OwnReason": "{green}Own Reason",
+
+	"MENUOPTION_Blocks": "Block Management",
+	"MENUOPTION_Players": "Player Management",
+	"MENUOPTION_Server": "Server Management",
+	"MENUOPTION_Modules": "Modules",
+
+	"MENUOPTION_Ban": "Issue Ban",
+	"MENUOPTION_OfflineBan": "Issue Ban {red}(offline)",
+	"MENUOPTION_Gag": "Issue Gag",
+	"MENUOPTION_Mute": "Issue Mute",
+
+	"MENUOPTION_UnGag": "Remove Gag",
+	"MENUOPTION_UnMute": "Remove Mute",
+	"MENUOPTION_Maps": "Change Map",
+
+	"MENUOPTION_Kick": "Kick Player",
+	"MENUOPTION_Slay": "Slay Player",
+	"MENUOPTION_SwitchTeam": "Move Player",
+	"MENUOPTION_ChangeTeam": "Change Player's Team",
+	"MENUOPTION_Rename": "Rename Player",
+
+	"OTHER_ToAdmins": "{green}To Admins: {message}",
+	"OTHER_AdminsSee": "{green}[Admins] {name}: {message}",
+
+	"HELPER_Min": " min." // Displayed if there is no key in Times | Example: 24 -> 24 min.
+}

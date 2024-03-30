@@ -127,14 +127,14 @@ public static class PluginMenuManager
                 OpenKickMenu(caller, menu);
             });
         }
-        if (Api.HasPermisions(adminSid, "switchteam", "s"))
+        if (Api.HasPermisions(adminSid, "switchteam", "t"))
         {
             menu.AddMenuOption(Localizer["MENUOPTION_SwitchTeam"], (_, _) =>
             {   
                 OpenSwitchTeamMenu(caller, menu);
             });
         }
-        if (Api.HasPermisions(adminSid, "changeteam", "s"))
+        if (Api.HasPermisions(adminSid, "changeteam", "t"))
         {
             menu.AddMenuOption(Localizer["MENUOPTION_ChangeTeam"], (_, _) =>
             {   
