@@ -15,7 +15,7 @@
 - Plugin support and development
 
 ## Commands
-- `css_admin` | Flags access: `"admin"` Default: `bkmgstu`
+- `css_admin` | Flags access: `"admin"` Default: `bkmgsut`
 - `css_adminadd <sid> <name> <flags/-(From group)> <immunity/-1(From group)> <group_id/-1(Group disabled)> <time> <server_id/ - (ALL SERVERS)>` | Flags access: `"adminManage"` Default: `z`
 - `css_admindel <sid>` | Flags access: `"adminManage"` Default: `z`
 - `css_reload_admins` | Flags access: `"adminManage"` Default: `z`
@@ -26,8 +26,8 @@
 - `css_unmute/ungag/unban <#uid/#sid/name>` | Flags access: `"unmute"/"ungag"/"unban"` Default: `m/g/u`
 - `css_kick <#uid/#sid/name> <reason>` | Flags access: `"kick"` Default: `k`
 - `css_slay <#uid/#sid/name>` | Flags access: `"slay"` Default: `s`
-- `css_switchteam <#uid/#sid/name> <ct/t>` | Flags access: `"switchteam"` Default: `s`
-- `css_changeteam <#uid/#sid/name> <ct/t/spec>` | Flags access: `"changeteam"` Default: `s`
+- `css_switchteam <#uid/#sid/name> <ct/t>` | Flags access: `"switchteam"` Default: `t`
+- `css_changeteam <#uid/#sid/name> <ct/t/spec>` | Flags access: `"changeteam"` Default: `t`
 - `css_rename <#uid/#sid/name> <new name>` | Flags access: `"rename"` Default: `s`
 - `css_hide` | Flags access: `"hide"` Default: `bkmg`
 - `css_map <id> <(Workshop Map?) true/false>` | Flags access: `"map"` Default: `z`
@@ -59,7 +59,7 @@ For example:
 > [!TIP]
 > - You can write "ABCD" in ServerID column for admin
 > - At the moment, you can add groups only directly to the database.
-> - Tested on [CS# v197](https://docs.cssharp.dev/index.html)
+> - Tested on [CS# v202](https://docs.cssharp.dev/index.html)
 
 ## To do...
 - [ ] Pre hooks
