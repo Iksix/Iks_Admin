@@ -658,7 +658,6 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
                             AdminManager.AddPlayerToGroup(steamId, new []{group});
                             ConvertedGroups.Remove(steamId);
                             ConvertedGroups.Add(steamId, group);
-                            Console.WriteLine("Group " + group + " converted");
                         }
                         if (admin.Immunity > 0)
                         {
