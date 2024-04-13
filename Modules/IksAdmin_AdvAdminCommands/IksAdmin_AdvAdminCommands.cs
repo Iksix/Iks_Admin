@@ -74,6 +74,12 @@ public class IksAdminAdvAdminCommands : BasePlugin
 
     private void OnRespawn(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
     {
+        ChatMenu backMenu = new ChatMenu("asd");
+        var menu = _api!.CreateMenu(caller!, (p, _, menu) =>
+        {
+            // у типо реализация какая то
+        });
+        menu.Open(caller, "Название меню", backMenu);
         if (caller == null && args.Count == 0) return;
         if (args.Count == 0 && caller != null)
         {

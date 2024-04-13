@@ -100,16 +100,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         Console.WriteLine($"{name} name");
         Console.WriteLine($"{sid64} sid64");
         Console.WriteLine($"{ip} ip");
-
-        foreach (var disconnectedPlayer in Api!.DisconnectedPlayers.ToList())
-        {
-            if (disconnectedPlayer.SteamId.SteamId64 == player.SteamID)
-            {
-                Console.WriteLine($"{disconnectedPlayer.SteamId.SteamId64} removed from disconnected players");
-                Api.DisconnectedPlayers.Remove(disconnectedPlayer);
-            }
-                
-        }
+        Api.DisconnectedPlayers.Remove(steamid.SteamId64.ToString());
         Task.Run(async () =>
         {
             await ReloadPlayerInfractions(sid64, true, ip, slot, name);
@@ -586,41 +577,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         return HookResult.Continue;
     }
 
-    // [GameEventHandler]
-    // public HookResult OnPlayerConnected(EventPlayerConnectFull @event, GameEventInfo info)
-    // {
-    //     var player = @event.Userid;
-    //     if (player.IsBot) return HookResult.Continue;
-    //     Console.WriteLine($"{player.PlayerName} CLIENT Connected");
-    //     Console.WriteLine($"{player.PlayerName} CLIENT Connected");
-    //     Console.WriteLine($"{player.PlayerName} CLIENT Connected");
-    //     Console.WriteLine($"{player.PlayerName} CLIENT Connected");
-    //     string sid64 = player.AuthorizedSteamID!.SteamId64.ToString();
-    //     string ip = player.IpAddress!;
-    //     Console.WriteLine($"{sid64} sid64");
-    //     Console.WriteLine($"{ip} ip");
-    //
-    //     foreach (var disconnectedPlayer in Api!.DisconnectedPlayers.ToList())
-    //     {
-    //         if (disconnectedPlayer.SteamId.SteamId64 == player.SteamID)
-    //         {
-    //             Console.WriteLine($"{disconnectedPlayer.SteamId.SteamId64} removed from disconnected players");
-    //             Console.WriteLine($"{disconnectedPlayer.SteamId.SteamId64} removed from disconnected players");
-    //             Console.WriteLine($"{disconnectedPlayer.SteamId.SteamId64} removed from disconnected players");
-    //             Console.WriteLine($"{disconnectedPlayer.SteamId.SteamId64} removed from disconnected players");
-    //             Api.DisconnectedPlayers.Remove(disconnectedPlayer);
-    //         }
-    //             
-    //     }
-    //     Task.Run(async () =>
-    //     {
-    //         Console.WriteLine($"ban 1");
-    //         await ReloadPlayerInfractions(sid64, true, ip);
-    //         Console.WriteLine($"ban 2");
-    //         ConvertAll();
-    //     });
-    //     return HookResult.Continue;
-    // }
+
 
     public static void ConvertAll()
     {
@@ -700,7 +657,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         if (_kickSlots.Contains(player.Slot))
             _kickSlots.Remove(player.Slot);
         Console.WriteLine($"{player.SteamID} added to disconnected players");
-        Api!.DisconnectedPlayers.Add(new PlayerInfo(player.PlayerName, player.SteamID, player.IpAddress!));
+        Api!.DisconnectedPlayers.Add(player.AuthorizedSteamID!.SteamId64.ToString(), XHelper.CreateInfo(player));
         return HookResult.Continue;
     }
     
@@ -820,7 +777,7 @@ public class PluginApi : IIksAdminApi
     public List<AdminMenuOption> ModulesOptions { get; set; } = new ();
     public List<PlayerComm> OnlineMutedPlayers { get; set; } = new ();
     public List<PlayerComm> OnlineGaggedPlayers { get; set; } = new();
-    public List<PlayerInfo> DisconnectedPlayers { get; set; } = new();
+    public Dictionary<string, PlayerInfo> DisconnectedPlayers { get; set; } = new();
     public Dictionary<CCSPlayerController, Action<string>> NextCommandAction { get; set; } = new();
     public IIksAdminApi.UsedMenuType MenuType { get; set; } 
 
@@ -1244,6 +1201,7 @@ public class PluginApi : IIksAdminApi
     
     public bool HasMoreImmunity(string adminSid, string targetSid)
     {
+        if (targetSid == adminSid) return true;
         if (adminSid.ToLower() == "console") return true;
         var targetAdmin = ThisServerAdmins.FirstOrDefault(x => x.SteamId == targetSid);
         if (targetAdmin == null) return true;

@@ -562,12 +562,6 @@ public class BaseCommands
             ReplyToCommand(info, _localizer["NOTIFY_PlayerHaveBiggerImmunity"], "Target have >= immunity then yours");
             return;
         }
-        var reason = string.Join(" ", args.Skip(1));
-        if (reason.Trim() == "")
-        {
-            ReplyToCommand(info, _localizer["NOTIFY_ErrorReason"], "Reason can't be void");
-            return;
-        }
         var targetInfo = XHelper.CreateInfo(target);
         target.CommitSuicide(true, true);
         _api.ESlay(adminSid, targetInfo);

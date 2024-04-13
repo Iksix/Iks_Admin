@@ -404,16 +404,16 @@ public static class PluginMenuManager
     {
         foreach (var player in Api!.DisconnectedPlayers)
         {
-            if (!Api.HasMoreImmunity(caller.GetSteamId(), player.SteamId.SteamId64.ToString())) continue;
-            menu.AddMenuOption(player.PlayerName, (_, _) =>
+            if (!Api.HasMoreImmunity(caller.GetSteamId(), player.Value.SteamId.SteamId64.ToString())) continue;
+            menu.AddMenuOption(player.Value.PlayerName, (_, _) =>
             {
                 SelectReasonAndTime(caller, menu, Config.BanReasons, (reason, time) =>
                 {
                     time = time * 60;
                     var newBan = new PlayerBan(
-                        player.PlayerName,
-                        player.SteamId.SteamId64.ToString(),
-                        player.IpAddress,
+                        player.Value.PlayerName,
+                        player.Value.SteamId.SteamId64.ToString(),
+                        player.Value.IpAddress,
                         caller.AuthorizedSteamID!.SteamId64.ToString(),
                         (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                         time,
@@ -655,7 +655,7 @@ public static class PluginMenuManager
             foreach (var player in XHelper.GetOnlinePlayers())
             {
                 if (aliveOnly && !player.PawnIsAlive) continue;
-                players.Add(XHelper.CreateInfo(player));
+                players.Add(player.AuthorizedSteamID!.SteamId64.ToString(), XHelper.CreateInfo(player));
             }
         }
 
@@ -663,7 +663,7 @@ public static class PluginMenuManager
         
         foreach (var player in players)
         {
-            var playerInfo = new PlayerInfo(player.PlayerName, player.SteamId.SteamId64, player.IpAddress);
+            var playerInfo = new PlayerInfo(player.Value.PlayerName, player.Value.SteamId.SteamId64, player.Value.IpAddress);
             if (filter != null)
             {
                 switch (filter)

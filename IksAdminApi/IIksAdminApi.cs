@@ -5,6 +5,7 @@ using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Localization;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace IksAdminApi;
 
@@ -21,7 +22,7 @@ public interface IIksAdminApi
     public List<AdminMenuOption> ModulesOptions { get; set; }
     public List<PlayerComm> OnlineMutedPlayers { get; set; }
     public List<PlayerComm> OnlineGaggedPlayers { get; set; }
-    public List<PlayerInfo> DisconnectedPlayers { get; set; }
+    public Dictionary<string, PlayerInfo> DisconnectedPlayers { get; set; } // steamid -> info
     public Dictionary<CCSPlayerController, Action<string>> NextCommandAction { get; set; }
     public UsedMenuType MenuType { get; set; }
     public string DbConnectionString { get; set; }

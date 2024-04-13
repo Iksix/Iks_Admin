@@ -26,6 +26,7 @@ public class IksAdminAdminList : BasePlugin
         catch (Exception e)
         {
             Logger.LogError("IksAdminApi.dll nety :(");
+            return;
         }
         _api!.AddNewCommand(
             "admins",
