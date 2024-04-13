@@ -9,26 +9,37 @@ using Microsoft.Extensions.Logging;
 using VkNet;
 using VkNet.Enums.Filters;
 using VkNet.Model;
+using VkNet.Utils;
+using Utilities = CounterStrikeSharp.API.Utilities;
 
 namespace IksAdmin_SocietyLogs;
 
 public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
 {
     public static PluginCapability<IIksAdminApi> AdminApiCapability = new("iksadmin:core");
-
+    private IIksAdminApi? api;
     public static bool LogToVk;
     public static bool LogToDiscord;
     public static string DiscordWebHook;
+    public static string DiscordAuthorName;
     public static string VkToken;
     public static long VkChatID;
     public static IStringLocalizer loc;
 
-    private IIksAdminApi? api;
+    
     public override string ModuleName => "IksAdmin_SocietyLogs";
     public override string ModuleVersion => "1.0.0";
     public override string ModuleAuthor => "iks";
     public override string ModuleDescription => "Logs for Iks_Admin =)";
     public PluginConfig Config { get; set; }
+
+    private string PlayerIp(string steamId)
+    {
+        var player = Utilities.GetPlayers().FirstOrDefault(x => x.AuthorizedSteamID!.SteamId64.ToString() == steamId);
+        if (player != null)
+            return player.IpAddress!;
+        return "Undefined";
+    }
 
     public void OnConfigParsed(PluginConfig config)
     {
@@ -39,6 +50,7 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
         DiscordWebHook = config.DiscordWebHook;
         VkToken = config.VkToken;
         VkChatID = config.VkChatID;
+        DiscordAuthorName = config.DiscordAuthorName;
 
         Config = config;
     }
@@ -59,9 +71,14 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
 
     public override void OnAllPluginsLoaded(bool hotReload)
     {
-        api = AdminApiCapability.Get();
-        if (api == null) Logger.LogError("api not finded :(");
-
+        try
+        {
+            api = AdminApiCapability.Get();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError("IksAdminApi.dll nety :(");
+        }
         foreach (var time in api!.Config.Times)
         {
             Console.WriteLine($"{time.Key} : {time.Value}");
@@ -69,85 +86,346 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
 
         api.OnAddAdmin += admin =>
         {
-            Log(ReplaceAdmin(Localizer["DISCORD_OnAdminAdd"], admin), ReplaceAdmin(Localizer["VK_OnAdminAdd"], admin), "OnAdminAdd");
+            if (Config.DiscordMessages.TryGetValue("adminadd", out var emb))
+            {
+                var embed = new EmbedModel(emb.Title, emb.Description, emb.Color, emb.GetFields());
+                foreach (var field in embed.Fields)
+                {
+                    var groupName = string.IsNullOrEmpty(admin.GroupName) ? "NONE" : admin.GroupName;
+                    var groupId = admin.GroupId == -1 ? "NONE" : admin.GroupId.ToString();
+                    var end = admin.End == 0 ? "NEVER" : XHelper.GetDateStringFromUtc(admin.End);
+                    field.Value = field.Value
+                            .Replace("{name}", admin.Name)
+                            .Replace("{steamId}", admin.SteamId)
+                            .Replace("{groupName}", groupName)
+                            .Replace("{groupId}", groupId)
+                            .Replace("{immunity}", admin.Immunity.ToString())
+                            .Replace("{flags}", admin.Flags)
+                            .Replace("{end}", end)
+                            .Replace("{serverId}", admin.ServerId)
+                        ;
+                }
+                SocietyLogger.SendToDiscord(embed);
+            }
+            Log(ReplaceAdmin(Localizer["VK_OnAdminAdd"], admin));
         };
         api.OnDelAdmin += admin =>
         {
-            Log(ReplaceAdmin(Localizer["DISCORD_OnAdminDel"], admin), ReplaceAdmin(Localizer["VK_OnAdminDel"], admin), "OnAdminDel");
+            if (Config.DiscordMessages.TryGetValue("admindel", out var emb))
+            {
+                var embed = new EmbedModel(emb.Title, emb.Description, emb.Color, emb.GetFields());
+                foreach (var field in embed.Fields)
+                {
+                    var groupName = string.IsNullOrEmpty(admin.GroupName) ? "NONE" : admin.GroupName;
+                    var groupId = admin.GroupId == -1 ? "NONE" : admin.GroupId.ToString();
+                    var end = admin.End == 0 ? "NEVER" : XHelper.GetDateStringFromUtc(admin.End);
+                    field.Value = field.Value
+                            .Replace("{name}", admin.Name)
+                            .Replace("{steamId}", admin.SteamId)
+                            .Replace("{groupName}", groupName)
+                            .Replace("{groupId}", groupId)
+                            .Replace("{immunity}", admin.Immunity.ToString())
+                            .Replace("{flags}", admin.Flags)
+                            .Replace("{end}", end)
+                            .Replace("{serverId}", admin.ServerId)
+                        ;
+                }
+                SocietyLogger.SendToDiscord(embed);
+            }
+            Log(ReplaceAdmin(Localizer["VK_OnAdminDel"], admin));
         };
         api.OnAddBan += ban =>
         {
-            Log(ReplaceBan(Localizer["DISCORD_OnAddBan"], ban), ReplaceBan(Localizer["VK_OnAddBan"], ban), "OnAddBan");
+            if (Config.DiscordMessages.TryGetValue("ban", out var emb))
+            {
+                var end = ban.Time == 0 ? "NEVER" : XHelper.GetDateStringFromUtc(ban.End);
+                var banType = ban.BanType == 1 ? "IP" : "SteamId";
+                var embed = new EmbedModel(emb.Title, emb.Description, emb.Color, emb.GetFields());
+                foreach (var field in embed.Fields)
+                {
+                    field.Value = field.Value
+                            .Replace("{name}", ban.Name)
+                            .Replace("{steamId}", ban.Sid)
+                            .Replace("{ip}", ban.Ip)
+                            .Replace("{adminSid}", ban.AdminSid)
+                            .Replace("{admin}", AdminName(ban.AdminSid))
+                            .Replace("{reason}", ban.Reason)
+                            .Replace("{banType}", banType)
+                            .Replace("{end}", end)
+                            .Replace("{created}", XHelper.GetDateStringFromUtc(ban.Created))
+                            .Replace("{time}", GetTime(ban.Time))
+                        ;
+                }
+                SocietyLogger.SendToDiscord(embed);
+            }
+            Log(ReplaceBan(Localizer["VK_OnAddBan"], ban));
         };
         api.OnUnBan += (ban, unbannedBy) =>
         {
-            Log(ReplaceBan(Localizer["DISCORD_OnUnBan"], ban, unbannedBy), ReplaceBan(Localizer["VK_OnUnBan"], ban, unbannedBy), "OnUnBan");
+            if (Config.DiscordMessages.TryGetValue("unban", out var emb))
+            {
+                var end = ban.Time == 0 ? "NEVER" : XHelper.GetDateStringFromUtc(ban.End);
+                var embed = new EmbedModel(emb.Title, emb.Description, emb.Color, emb.GetFields());
+                var banType = ban.BanType == 1 ? "IP" : "SteamId";
+                foreach (var field in embed.Fields)
+                {
+                    field.Value = field.Value
+                            .Replace("{name}", ban.Name)
+                            .Replace("{steamId}", ban.Sid)
+                            .Replace("{ip}", ban.Ip)
+                            .Replace("{banType}", banType)
+                            .Replace("{adminSid}", unbannedBy)
+                            .Replace("{admin}", AdminName(unbannedBy))
+                            .Replace("{reason}", ban.Reason)
+                            .Replace("{end}", end)
+                            .Replace("{created}", XHelper.GetDateStringFromUtc(ban.Created))
+                            .Replace("{time}", GetTime(ban.Time))
+                        ;
+                }
+                SocietyLogger.SendToDiscord(embed);
+            }
+            Log(ReplaceBan(Localizer["VK_OnUnBan"], ban, unbannedBy));
         };
         api.OnAddGag += ban =>
         {
-            Log(ReplaceComm(Localizer["DISCORD_OnAddGag"], ban), ReplaceComm(Localizer["VK_OnAddGag"], ban), "OnAddGag");
+            if (Config.DiscordMessages.TryGetValue("gag", out var emb))
+            {
+                var end = ban.Time == 0 ? "NEVER" : XHelper.GetDateStringFromUtc(ban.End);
+                var embed = new EmbedModel(emb.Title, emb.Description, emb.Color, emb.GetFields());
+                foreach (var field in embed.Fields)
+                {
+                    field.Value = field.Value
+                            .Replace("{name}", ban.Name)
+                            .Replace("{steamId}", ban.Sid)
+                            .Replace("{adminSid}", ban.AdminSid)
+                            .Replace("{admin}", AdminName(ban.AdminSid))
+                            .Replace("{ip}", PlayerIp(ban.Sid))
+                            .Replace("{reason}", ban.Reason)
+                            .Replace("{end}", end)
+                            .Replace("{created}", XHelper.GetDateStringFromUtc(ban.Created))
+                            .Replace("{time}", GetTime(ban.Time))
+                        ;
+                }
+                SocietyLogger.SendToDiscord(embed);
+            }
+            Log(ReplaceComm(Localizer["VK_OnAddGag"], ban));
         };
         api.OnUnGag += (ban, unbannedBy) =>
         {
-            Log(ReplaceComm(Localizer["DISCORD_OnUnGag"], ban, unbannedBy), ReplaceComm(Localizer["VK_OnUnGag"], ban, unbannedBy), "OnUnGag");
+            if (Config.DiscordMessages.TryGetValue("ungag", out var emb))
+            {
+                var end = ban.Time == 0 ? "NEVER" : XHelper.GetDateStringFromUtc(ban.End);
+                var embed = new EmbedModel(emb.Title, emb.Description, emb.Color, emb.GetFields());
+                foreach (var field in embed.Fields)
+                {
+                    field.Value = field.Value
+                            .Replace("{name}", ban.Name)
+                            .Replace("{steamId}", ban.Sid)
+                            .Replace("{adminSid}", unbannedBy)
+                            .Replace("{ip}", PlayerIp(ban.Sid))
+                            .Replace("{admin}", AdminName(unbannedBy))
+                            .Replace("{reason}", ban.Reason)
+                            .Replace("{end}", end)
+                            .Replace("{created}", XHelper.GetDateStringFromUtc(ban.Created))
+                            .Replace("{time}", GetTime(ban.Time))
+                        ;
+                }
+                SocietyLogger.SendToDiscord(embed);
+            }
+            Log(ReplaceComm(Localizer["VK_OnUnGag"], ban, unbannedBy));
         };
         api.OnAddMute += ban =>
         {
-            Log(ReplaceComm(Localizer["DISCORD_OnAddMute"], ban), ReplaceComm(Localizer["VK_OnAddMute"], ban), "OnAddMute");
+            if (Config.DiscordMessages.TryGetValue("mute", out var emb))
+            {
+                var end = ban.Time == 0 ? "NEVER" : XHelper.GetDateStringFromUtc(ban.End);
+                var embed = new EmbedModel(emb.Title, emb.Description, emb.Color, emb.GetFields());
+                foreach (var field in embed.Fields)
+                {
+                    field.Value = field.Value
+                            .Replace("{name}", ban.Name)
+                            .Replace("{steamId}", ban.Sid)
+                            .Replace("{adminSid}", ban.AdminSid)
+                            .Replace("{ip}", PlayerIp(ban.Sid))
+                            .Replace("{admin}", AdminName(ban.AdminSid))
+                            .Replace("{reason}", ban.Reason)
+                            .Replace("{end}", end)
+                            .Replace("{created}", XHelper.GetDateStringFromUtc(ban.Created))
+                            .Replace("{time}", GetTime(ban.Time))
+                        ;
+                }
+                SocietyLogger.SendToDiscord(embed);
+            }
+            Log(ReplaceComm(Localizer["VK_OnAddMute"], ban));
         };
         api.OnUnMute += (ban, unbannedBy) =>
         {
-            Log(ReplaceComm(Localizer["DISCORD_OnUnMute"], ban, unbannedBy), ReplaceComm(Localizer["VK_OnUnMute"], ban, unbannedBy), "OnUnMute");
+            if (Config.DiscordMessages.TryGetValue("unmute", out var emb))
+            {
+                var end = ban.Time == 0 ? "NEVER" : XHelper.GetDateStringFromUtc(ban.End);
+                var embed = new EmbedModel(emb.Title, emb.Description, emb.Color, emb.GetFields());
+                foreach (var field in embed.Fields)
+                {
+                    field.Value = field.Value
+                            .Replace("{name}", ban.Name)
+                            .Replace("{steamId}", ban.Sid)
+                            .Replace("{ip}", PlayerIp(ban.Sid))
+                            .Replace("{adminSid}", unbannedBy)
+                            .Replace("{admin}", AdminName(unbannedBy))
+                            .Replace("{reason}", ban.Reason)
+                            .Replace("{end}", end)
+                            .Replace("{created}", XHelper.GetDateStringFromUtc(ban.Created))
+                            .Replace("{time}", GetTime(ban.Time))
+                        ;
+                }
+                SocietyLogger.SendToDiscord(embed);
+            }
+            Log(ReplaceComm(Localizer["VK_OnUnMute"], ban, unbannedBy));
         };
         api.OnSlay += (adminSid, playerInfo) =>
         {
-            Log(ReplaceSlay(Localizer["DISCORD_OnSlay"], adminSid, playerInfo), ReplaceSlay(Localizer["VK_OnSlay"], adminSid, playerInfo), "OnSlay");
+            if (Config.DiscordMessages.TryGetValue("slay", out var emb))
+            {
+                var embed = new EmbedModel(emb.Title, emb.Description, emb.Color, emb.GetFields());
+                foreach (var field in embed.Fields)
+                {
+                    field.Value = field.Value
+                            .Replace("{name}", playerInfo.PlayerName)
+                            .Replace("{steamId}", playerInfo.SteamId.SteamId64.ToString())
+                            .Replace("{ip}", playerInfo.IpAddress)
+                            .Replace("{admin}", AdminName(adminSid))
+                            .Replace("{adminSid}", adminSid)
+                        ;
+                }
+                SocietyLogger.SendToDiscord(embed);
+            }
+            Log(ReplaceSlay(Localizer["VK_OnSlay"], adminSid, playerInfo));
         };
         api.OnKick += (adminSid, playerInfo, reason) =>
         {
-            Log(ReplaceKick(Localizer["DISCORD_OnKick"], adminSid, playerInfo, reason), ReplaceKick(Localizer["VK_OnKick"], adminSid, playerInfo, reason), "OnKick");
+            if (Config.DiscordMessages.TryGetValue("kick", out var emb))
+            {
+                var embed = new EmbedModel(emb.Title, emb.Description, emb.Color, emb.GetFields());
+                foreach (var field in embed.Fields)
+                {
+                    field.Value = field.Value
+                            .Replace("{name}", playerInfo.PlayerName)
+                            .Replace("{steamId}", playerInfo.SteamId.SteamId64.ToString())
+                            .Replace("{ip}", playerInfo.IpAddress)
+                            .Replace("{admin}", AdminName(adminSid))
+                            .Replace("{adminSid}", adminSid)
+                            .Replace("{reason}", reason)
+                        ;
+                }
+                SocietyLogger.SendToDiscord(embed);
+            }
+            Log(ReplaceKick(Localizer["VK_OnKick"], adminSid, playerInfo, reason));
         };
         api.OnChangeTeam += (adminSid, playerInfo, oldTeam, newTeam) =>
         {
-            Log(ReplaceTeam(Localizer["DISCORD_ChangeTeam"], adminSid, playerInfo, oldTeam, newTeam), ReplaceTeam(Localizer["VK_ChangeTeam"], adminSid, playerInfo, oldTeam, newTeam), "ChangeTeam");
+            if (Config.DiscordMessages.TryGetValue("changeTeam", out var emb))
+            {
+                var embed = new EmbedModel(emb.Title, emb.Description, emb.Color, emb.GetFields());
+                foreach (var field in embed.Fields)
+                {
+                    field.Value = field.Value
+                            .Replace("{name}", playerInfo.PlayerName)
+                            .Replace("{steamId}", playerInfo.SteamId.SteamId64.ToString())
+                            .Replace("{ip}", playerInfo.IpAddress)
+                            .Replace("{admin}", AdminName(adminSid))
+                            .Replace("{adminSid}", adminSid)
+                            .Replace("{oldTeam}", GetTeam(oldTeam))
+                            .Replace("{newTeam}", GetTeam(newTeam))
+                        ;
+                }
+                SocietyLogger.SendToDiscord(embed);
+            }
+            Log(ReplaceTeam(Localizer["VK_ChangeTeam"], adminSid, playerInfo, oldTeam, newTeam));
         };
         api.OnSwitchTeam += (adminSid, playerInfo, oldTeam, newTeam) =>
         {
-            Log(ReplaceTeam(Localizer["DISCORD_SwitchTeam"], adminSid, playerInfo, oldTeam, newTeam), ReplaceTeam(Localizer["VK_SwitchTeam"], adminSid, playerInfo, oldTeam, newTeam), "SwitchTeam");
+            if (Config.DiscordMessages.TryGetValue("switchTeam", out var emb))
+            {
+                var embed = new EmbedModel(emb.Title, emb.Description, emb.Color, emb.GetFields());
+                foreach (var field in embed.Fields)
+                {
+                    field.Value = field.Value
+                            .Replace("{name}", playerInfo.PlayerName)
+                            .Replace("{steamId}", playerInfo.SteamId.SteamId64.ToString())
+                            .Replace("{ip}", playerInfo.IpAddress)
+                            .Replace("{admin}", AdminName(adminSid))
+                            .Replace("{adminSid}", adminSid)
+                            .Replace("{oldTeam}", GetTeam(oldTeam))
+                            .Replace("{newTeam}", GetTeam(newTeam))
+                        ;
+                }
+                SocietyLogger.SendToDiscord(embed);
+            }
+            Log(ReplaceTeam(Localizer["VK_SwitchTeam"], adminSid, playerInfo, oldTeam, newTeam));
         };
         api.OnCommandUsed += (controller, info) =>
         {
             var adminSid = controller == null ? "CONSOLE" : controller.AuthorizedSteamID!.SteamId64.ToString();
-            string dMessage = Localizer["DISCORD_Action"].Value
-                    .Replace("{admin}", AdminName(adminSid))
-                    .Replace("{adminSid}", adminSid)
-                    .Replace("{cmd}", info.GetCommandString)
-                ;
+            if (Config.DiscordMessages.TryGetValue("commandUsed", out var emb))
+            {
+                var embed = new EmbedModel(emb.Title, emb.Description, emb.Color, emb.GetFields());
+                foreach (var field in embed.Fields)
+                {
+                    field.Value = field.Value
+                            .Replace("{admin}", AdminName(adminSid))
+                            .Replace("{adminSid}", adminSid)
+                            .Replace("{cmd}", info.GetCommandString)
+                        ;
+                }
+                SocietyLogger.SendToDiscord(embed);
+            }
             string vkMessage = Localizer["VK_Action"].Value
                     .Replace("{admin}", AdminName(adminSid))
                     .Replace("{adminSid}", adminSid)
                     .Replace("{cmd}", info.GetCommandString)
                 ;
-            Log(dMessage, vkMessage, "Action");
+            Log(vkMessage);
         };
         api.OnRename += (adminSid, target, oldName, newName) =>
         {
-            string dMessage = Localizer["DISCORD_Rename"].Value
-                    .Replace("{admin}", AdminName(adminSid))
-                    .Replace("{adminSid}", adminSid)
-                    .Replace("{sid}", target.SteamId.SteamId64.ToString())
-                    .Replace("{oldName}", oldName)
-                    .Replace("{newName}", newName)
-                ;
+            if (Config.DiscordMessages.TryGetValue("rename", out var emb))
+            {
+                var embed = new EmbedModel(emb.Title, emb.Description, emb.Color, emb.GetFields());
+                foreach (var field in embed.Fields)
+                {
+                    field.Value = field.Value
+                            .Replace("{admin}", AdminName(adminSid))
+                            .Replace("{adminSid}", adminSid)
+                            .Replace("{ip}", target.IpAddress)
+                            .Replace("{sid}", target.SteamId.SteamId64.ToString())
+                            .Replace("{oldName}", oldName)
+                            .Replace("{newName}", newName)
+                        ;
+                }
+                SocietyLogger.SendToDiscord(embed);
+            }
             string vkMessage = Localizer["VK_Rename"].Value
                     .Replace("{admin}", AdminName(adminSid))
                     .Replace("{adminSid}", adminSid)
+                    .Replace("{ip}", target.IpAddress)
                     .Replace("{sid}", target.SteamId.SteamId64.ToString())
                     .Replace("{oldName}", oldName)
                     .Replace("{newName}", newName)
                 ;
-            Log(dMessage, vkMessage, "Rename");
+            Log(vkMessage);
         };
+    }
+
+    private string GetTeam(CsTeam team)
+    {
+        string teamString = team switch
+        {
+            CsTeam.Spectator => "SPEC",
+            CsTeam.Terrorist => "T",
+            CsTeam.CounterTerrorist => "CT",
+            _ => "NONE"
+        };
+        return teamString;
     }
     private string ReplaceTeam(string message, string adminSid, PlayerInfo playerInfo, CsTeam oldTeam, CsTeam newTeam)
     {
@@ -251,12 +529,8 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
             .Replace("{created}", XHelper.GetDateStringFromUtc(comm.Created));
     }
 
-    private void Log(string discordMessage, string vkMessage, string key)
+    private void Log(string vkMessage)
     {
-        // лог в дс
-        if (LogToDiscord && discordMessage != "")
-            SocietyLogger.SendToDiscord(discordMessage);
-        
         // лог в вк
         if (LogToVk && vkMessage != "")
             SocietyLogger.SendToVk(vkMessage);
@@ -268,9 +542,8 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
 
 public static class SocietyLogger
 {
-    public static void SendToDiscord(string message, DColor? color = null)
+    public static void SendToDiscord(EmbedModel embed)
     {
-        color = color == null ? new DColor(255, 255, 255) : color;
         Task.Run(async () =>
         {
             var webhookObject = new WebhookObject();
@@ -278,8 +551,14 @@ public static class SocietyLogger
             webhookObject.AddEmbed(builder =>
             {
                 builder.WithTitle(IksAdmin_SocietyLogs.loc["DISCORD_Title"])
-                    .WithColor(color)
-                    .WithDescription(message);
+                    .WithColor(new DColor(embed.Color.R, embed.Color.G, embed.Color.B))
+                    .WithTitle(embed.Title)
+                    .WithAuthor(IksAdmin_SocietyLogs.DiscordAuthorName)
+                    .WithDescription(embed.Description);
+                foreach (var field in embed.Fields)
+                {
+                    builder.AddField(field.Name, field.Value, field.InLine);
+                }
             });
             await new Webhook(IksAdmin_SocietyLogs.DiscordWebHook).SendAsync(webhookObject);
         });

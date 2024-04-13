@@ -96,6 +96,8 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         Console.WriteLine($"{steamid.SteamId64} CLIENT AUTHORIZED");
         string sid64 = steamid.SteamId64.ToString();
         string ip = player.IpAddress!;
+        string name = player.PlayerName;
+        Console.WriteLine($"{name} name");
         Console.WriteLine($"{sid64} sid64");
         Console.WriteLine($"{ip} ip");
 
@@ -110,7 +112,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         }
         Task.Run(async () =>
         {
-            await ReloadPlayerInfractions(sid64, true, ip, slot);
+            await ReloadPlayerInfractions(sid64, true, ip, slot, name);
             ConvertAll();
         });
     }
@@ -527,7 +529,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
 
         var existingGag =
             Api!.OnlineGaggedPlayers.FirstOrDefault(x => x.Sid == playerSid);
-        if (message.StartsWith("!"))
+        if (message.StartsWith("!") || message.StartsWith("/"))
         {
             var command = message.Remove(0, 1);
             if (Api.NextCommandAction.ContainsKey(player))
@@ -748,7 +750,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         if (existingBanIp != null) return true;
         return false;
     }
-    public static async Task ReloadPlayerInfractions(string sid64, bool checkBan = false, string ip = "127.0.0.1", int? slot = null)
+    public static async Task ReloadPlayerInfractions(string sid64, bool checkBan = false, string ip = "127.0.0.1", int? slot = null, string? name = null)
     {
         if (checkBan)
         {
@@ -790,6 +792,14 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             var adminInThisServerAdmins = Api.ThisServerAdmins.FirstOrDefault(x => x.SteamId == sid64);
             if (adminInAllAdmins != null) Api.AllAdmins.Remove(adminInAllAdmins);
             if (adminInThisServerAdmins != null) Api.ThisServerAdmins.Remove(adminInThisServerAdmins);
+            if (!string.IsNullOrEmpty(name))
+            {
+                existingAdmin.Name = name;
+                await using var conn = new MySqlConnection(_dbConnectionString);
+                await conn.OpenAsync();
+                await conn.QueryAsync("update iks_admins set name = @name where sid = @sid;",
+                    new {name, sid = sid64});
+            }
             Api.AllAdmins.Add(existingAdmin);
             var serverId = existingAdmin.ServerId;
             if (serverId.Contains(ConfigNow.ServerId)  || serverId.Trim() == ""){
@@ -1481,8 +1491,8 @@ public class PluginApi : IIksAdminApi
             UnbannedBy as unbannedBy,
             id as id
             from iks_bans
-            where (sid = @arg or (ip = @arg and BanType = 1)) and (end > @timeNow or time = 0) and Unbanned = 0
-            ", new {arg, timeNow = DateTimeOffset.UtcNow.ToUnixTimeSeconds()});
+            where (sid = @arg or (ip = @arg and BanType = 1)) and (end > @timeNow or time = 0) and Unbanned = 0 and (server_id = @server_id or server_id = '')
+            ", new {arg, timeNow = DateTimeOffset.UtcNow.ToUnixTimeSeconds(), server_id = Config.ServerId});
             
             if (ban != null)
             {
@@ -1522,8 +1532,8 @@ public class PluginApi : IIksAdminApi
             UnbannedBy as unbannedBy,
             id as id
             from iks_mutes
-            where sid = @sid and (end > @timeNow or time = 0) and Unbanned = 0
-            ", new {sid, timeNow = DateTimeOffset.UtcNow.ToUnixTimeSeconds()});
+            where sid = @sid and (end > @timeNow or time = 0) and Unbanned = 0 and (server_id = @server_id or server_id = '')
+            ", new {sid, timeNow = DateTimeOffset.UtcNow.ToUnixTimeSeconds(), server_id = Config.ServerId});
 
             if (mute != null)
             {
@@ -1562,8 +1572,8 @@ public class PluginApi : IIksAdminApi
             UnbannedBy as unbannedBy,
             id as id
             from iks_gags
-            where sid = @sid and (end > @timeNow or time = 0) and Unbanned = 0 
-            ", new {sid, timeNow = DateTimeOffset.UtcNow.ToUnixTimeSeconds()});
+            where sid = @sid and (end > @timeNow or time = 0) and Unbanned = 0 and (server_id = @server_id or server_id = '')
+            ", new {sid, timeNow = DateTimeOffset.UtcNow.ToUnixTimeSeconds(), server_id = Config.ServerId});
             
             if (gag != null)
             {

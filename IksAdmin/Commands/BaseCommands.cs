@@ -16,6 +16,65 @@ public class BaseCommands
     private static IStringLocalizer _localizer = _api!.Localizer;
     public static PluginConfig? Config;
     public static List<CCSPlayerController> HidenPlayers = new();
+
+
+    private static void ActionWithCt(Action<CCSPlayerController> action)
+    {
+        var players = Utilities.GetPlayers().Where(x => x is { TeamNum: 3, IsValid: true, IsBot: false });
+        foreach (var p in players)
+        {
+            action.Invoke(p);
+        }
+    }
+    private static void ActionWithT(Action<CCSPlayerController> action)
+    {
+        var players = Utilities.GetPlayers().Where(x => x is { TeamNum: 2, IsValid: true, IsBot: false });
+        foreach (var p in players)
+        {
+            action.Invoke(p);
+        }
+    }
+    private static void ActionWithSpec(Action<CCSPlayerController> action)
+    {
+        var players = Utilities.GetPlayers().Where(x => x is { TeamNum: 1, IsValid: true, IsBot: false });
+        foreach (var p in players)
+        {
+            action.Invoke(p);
+        }
+    }
+    private static void ActionWithAll(Action<CCSPlayerController> action)
+    {
+        var players = Utilities.GetPlayers().Where(x => x is { IsValid: true, IsBot: false });
+        foreach (var p in players)
+        {
+            action.Invoke(p);
+        }
+    }
+
+    private static void DoAction(string key, string arg, Action<CCSPlayerController> action)
+    {
+        if (Config!.BlockMassTargets.Contains(key))
+        {
+            throw new Exception("Mass targets blocked for this command!");
+        }
+        switch (arg)
+        {
+            case "@all":
+                ActionWithAll(action);
+            break;
+            case "@ct":
+                ActionWithCt(action);
+            break;
+            case "@t":
+                ActionWithT(action);
+            break;
+            case "@spec":
+                ActionWithSpec(action);
+            break;
+            default:
+                throw new Exception("Mass targets identity's: @all, @ct, @t, @spec");
+        }
+    }
     
 
     public static void ReplyToCommand(CommandInfo info, string reply, string? replyToConsole = null)
@@ -127,6 +186,39 @@ public class BaseCommands
     {
         // css_ban <#uid/#sid/name> <duration> <reason> <name if needed>
         string identity = args[0];
+        int duration = int.Parse(args[1])*60;
+        string reason = args[2];
+        string adminSid = caller.GetSteamId();
+        if (identity.StartsWith("@"))
+        {
+            DoAction("ban", identity, target =>
+            {
+                if (!_api!.HasMoreImmunity(caller.GetSteamId(), target.GetSteamId()))
+                {
+                    return;
+                }
+                var name = target.PlayerName;
+                var newBan = new PlayerBan(
+                    target.PlayerName,
+                    target.AuthorizedSteamID!.SteamId64.ToString(),
+                    target.IpAddress!,
+                    caller.GetSteamId(),
+                    (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                    duration,
+                    (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + duration,
+                    reason,
+                    Config!.ServerId
+                );
+                Task.Run(async () =>
+                {
+                    var banStatus = await _api.AddBan(adminSid, newBan);
+                    if (banStatus)
+                        ReplyToCommand(info, _localizer["NOTIFY_OnBan"].Value.Replace("{name}", name), $"Ban added to player!");
+                    else ReplyToCommand(info, _localizer["NOTIFY_PlayerAlreadyPunished"], $"The player has already been punished!");
+                });
+            });
+            return;
+        }
         var target = XHelper.GetPlayerFromArg(identity);
         if (XHelper.GetIdentityType(identity) != "sid" && target == null)
         {
@@ -134,15 +226,12 @@ public class BaseCommands
             return;
         }
         string sid = target != null ? target.AuthorizedSteamID!.SteamId64.ToString() : identity.Replace("#", "");
-        string adminSid = caller == null ? "CONSOLE" : caller.AuthorizedSteamID!.SteamId64.ToString();
         if (!_api!.HasMoreImmunity(adminSid, sid))
         {
             ReplyToCommand(info, _localizer["NOTIFY_PlayerHaveBiggerImmunity"], "Target have >= immunity then yours");
             return;
         }
         string ip = target != null ? target.IpAddress! : "Undefined";
-        int duration = int.Parse(args[1])*60;
-        string reason = args[2];
         string name = args.Count > 3 ? string.Join(" ", args.Skip(3)) :
             target == null ? "Undefined" : target.PlayerName;
         var newBan = new PlayerBan(
@@ -169,6 +258,38 @@ public class BaseCommands
     {
         // css_gag <#uid/#sid/name> <duration> <reason> <name if needed>
         string identity = args[0];
+        string adminSid = caller.GetSteamId();
+        int duration = int.Parse(args[1])*60;
+        string reason = args[2];
+        if (identity.StartsWith("@"))
+        {
+            DoAction("gag", identity, target =>
+            {
+                if (!_api!.HasMoreImmunity(caller.GetSteamId(), target.GetSteamId()))
+                {
+                    return;
+                }
+                var name = target.PlayerName;
+                var newGag = new PlayerComm(
+                    target.PlayerName,
+                    target.AuthorizedSteamID!.SteamId64.ToString(),
+                    caller.GetSteamId(),
+                    (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                    duration,
+                    (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + duration,
+                    reason,
+                    Config!.ServerId
+                );
+                Task.Run(async () =>
+                {
+                    var banStatus = await _api.AddGag(adminSid, newGag);
+                    if (banStatus)
+                        ReplyToCommand(info, _localizer["NOTIFY_OnGag"].Value.Replace("{name}", name), $"Gag added to player!");
+                    else ReplyToCommand(info, _localizer["NOTIFY_PlayerAlreadyPunished"], $"The player has already been punished!");
+                });
+            });
+            return;
+        }
         var target = XHelper.GetPlayerFromArg(identity);
         if (XHelper.GetIdentityType(identity) != "sid" && target == null)
         {
@@ -176,14 +297,11 @@ public class BaseCommands
             return;
         }
         string sid = target != null ? target.AuthorizedSteamID!.SteamId64.ToString() : identity.Replace("#", "");
-        string adminSid = caller == null ? "CONSOLE" : caller.AuthorizedSteamID!.SteamId64.ToString();
         if (!_api!.HasMoreImmunity(adminSid, sid))
         {
             ReplyToCommand(info, _localizer["NOTIFY_PlayerHaveBiggerImmunity"], "Target have >= immunity then yours");
             return;
         }
-        int duration = int.Parse(args[1])*60;
-        string reason = args[2];
         string name = args.Count > 3 ? string.Join(" ", args.Skip(3)) :
             target == null ? "Undefined" : target.PlayerName;
         var newGag = new PlayerComm(
@@ -208,6 +326,38 @@ public class BaseCommands
     {
         // css_gag <#uid/#sid/name> <duration> <reason> <name if needed>
         string identity = args[0];
+        string adminSid = caller.GetSteamId();
+        int duration = int.Parse(args[1])*60;
+        string reason = args[2];
+        if (identity.StartsWith("@"))
+        {
+            DoAction("mute", identity, target =>
+            {
+                if (!_api!.HasMoreImmunity(caller.GetSteamId(), target.GetSteamId()))
+                {
+                    return;
+                }
+                var name = target.PlayerName;
+                var newMute = new PlayerComm(
+                    target.PlayerName,
+                    target.AuthorizedSteamID!.SteamId64.ToString(),
+                    caller.GetSteamId(),
+                    (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                    duration,
+                    (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + duration,
+                    reason,
+                    Config!.ServerId
+                );
+                Task.Run(async () =>
+                {
+                    var banStatus = await _api.AddMute(adminSid, newMute);
+                    if (banStatus)
+                        ReplyToCommand(info, _localizer["NOTIFY_OnGag"].Value.Replace("{name}", name), $"Mute added to player!");
+                    else ReplyToCommand(info, _localizer["NOTIFY_PlayerAlreadyPunished"], $"The player has already been punished!");
+                });
+            });
+            return;
+        }
         var target = XHelper.GetPlayerFromArg(identity);
         if (XHelper.GetIdentityType(identity) != "sid" && target == null)
         {
@@ -215,14 +365,11 @@ public class BaseCommands
             return;
         }
         string sid = target != null ? target.AuthorizedSteamID!.SteamId64.ToString() : identity.Replace("#", "");
-        string adminSid = caller == null ? "CONSOLE" : caller.AuthorizedSteamID!.SteamId64.ToString();
         if (!_api!.HasMoreImmunity(adminSid, sid))
         {
             ReplyToCommand(info, _localizer["NOTIFY_PlayerHaveBiggerImmunity"], "Target have >= immunity then yours");
             return;
         }
-        int duration = int.Parse(args[1])*60;
-        string reason = args[2];
         string name = args.Count > 3 ? string.Join(" ", args.Skip(3)) :
             target == null ? "Undefined" : target.PlayerName;
         var newGag = new PlayerComm(
@@ -248,6 +395,25 @@ public class BaseCommands
     {
         // css_unmute <#uid/#sid/name>
         var identity = args[0];
+        var adminSid = caller.GetSteamId();
+        if (identity.StartsWith("@"))
+        {
+            DoAction("unmute", identity, target =>
+            {
+                var sid = target.GetSteamId();
+                var name = target.PlayerName;
+                Task.Run(async () =>
+                {
+                    var oldPunishment = await _api!.UnMute(sid, adminSid);
+                    if (oldPunishment == null)
+                    {
+                        return;
+                    }
+                    ReplyToCommand(info, _localizer["NOTIFY_OnUnGag"].Value.Replace("{name}", name), "Player unmuted!");
+                });
+            });
+            return;
+        }
         var target = XHelper.GetPlayerFromArg(identity);
         if (target == null && XHelper.GetIdentityType(identity) != "sid")
         {
@@ -256,7 +422,6 @@ public class BaseCommands
         }
 
         var sid = target != null ? target.AuthorizedSteamID!.SteamId64.ToString() : identity.Remove(0, 1);
-        var adminSid = caller == null ? "CONSOLE" : caller.AuthorizedSteamID!.SteamId64.ToString();
 
         Task.Run(async () =>
         {
@@ -273,16 +438,32 @@ public class BaseCommands
     {
         // css_ungag <#uid/#sid/name>
         var identity = args[0];
+        var adminSid = caller.GetSteamId();
+
+        if (identity.StartsWith("@"))
+        {
+            DoAction("ungag", identity, target =>
+            {
+                var sid = target.GetSteamId();
+                Task.Run(async () =>
+                {
+                    var oldPunishment = await _api!.UnGag(sid, adminSid);
+                    if (oldPunishment == null)
+                    {
+                        return;
+                    }
+                    ReplyToCommand(info, _localizer["NOTIFY_OnUnGag"].Value.Replace("{name}", oldPunishment.Name), "Player ungagged!");
+                });
+            });
+            return;
+        }
         var target = XHelper.GetPlayerFromArg(identity);
         if (target == null && XHelper.GetIdentityType(identity) != "sid")
         {
             ReplyToCommand(info, _localizer["NOTIFY_PlayerNotFound"], "Target not found!");
             return;
         }
-
         var sid = target != null ? target.AuthorizedSteamID!.SteamId64.ToString() : identity.Remove(0, 1);
-        var adminSid = caller == null ? "CONSOLE" : caller.AuthorizedSteamID!.SteamId64.ToString();
-
         Task.Run(async () =>
         {
             var oldPunishment = await _api!.UnGag(sid, adminSid);
@@ -303,7 +484,7 @@ public class BaseCommands
             ReplyToCommand(info, _localizer["NOTIFY_IncorrectSid"], "Incorrect SteamId64!");
             return;
         }
-        var adminSid = caller == null ? "CONSOLE" : caller.AuthorizedSteamID!.SteamId64.ToString();
+        var adminSid = caller.GetSteamId();
 
         Task.Run(async () =>
         {
@@ -319,7 +500,26 @@ public class BaseCommands
 
     public static void Kick(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
     {
-        string adminSid = caller == null ? "CONSOLE" : caller.AuthorizedSteamID!.SteamId64.ToString();
+        string adminSid = caller.GetSteamId();
+        var identity = args[0];
+        var reason = string.Join(" ", args.Skip(1));
+        if (reason.Trim() == "")
+        {
+            ReplyToCommand(info, _localizer["NOTIFY_ErrorReason"], "Reason can't be void");
+            return;
+        }
+        if (identity.StartsWith("@"))
+        {
+            DoAction("kick", identity, target =>
+            {
+                if (!_api!.HasMoreImmunity(caller.GetSteamId(), target.GetSteamId()))
+                    return;
+                var targetInfo = XHelper.CreateInfo(target);
+                target.Kick();
+                _api!.EKick(adminSid, targetInfo, reason);
+            });
+            return;
+        }
         var target = XHelper.GetPlayerFromArg(args[0]);
         if (target == null)
         {
@@ -331,19 +531,26 @@ public class BaseCommands
             ReplyToCommand(info, _localizer["NOTIFY_PlayerHaveBiggerImmunity"], "Target have >= immunity then yours");
             return;
         }
-        var reason = string.Join(" ", args.Skip(1));
-        if (reason.Trim() == "")
-        {
-            ReplyToCommand(info, _localizer["NOTIFY_ErrorReason"], "Reason can't be void");
-            return;
-        }
         var targetInfo = XHelper.CreateInfo(target);
-        Server.ExecuteCommand("kickid " + target.UserId);
+        target.Kick();
         _api.EKick(adminSid, targetInfo, reason);
     }
     public static void Slay(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
     {
-        string adminSid = caller == null ? "CONSOLE" : caller.AuthorizedSteamID!.SteamId64.ToString();
+        string adminSid = caller.GetSteamId();
+        var identity = args[0];
+        if (identity.StartsWith("@"))
+        {
+            DoAction("slay", identity, target =>
+            {
+                if (!_api!.HasMoreImmunity(caller.GetSteamId(), target.GetSteamId()))
+                    return;
+                var targetInfo = XHelper.CreateInfo(target);
+                target.CommitSuicide(true, true);
+                _api!.ESlay(adminSid, targetInfo);
+            });
+            return;
+        }
         var target = XHelper.GetPlayerFromArg(args[0]);
         if (target == null)
         {
@@ -368,7 +575,32 @@ public class BaseCommands
 
     public static void SwitchTeam(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
     {
-        string adminSid = caller == null ? "CONSOLE" : caller.AuthorizedSteamID!.SteamId64.ToString();
+        string adminSid = caller.GetSteamId();
+        var identity = args[0];
+        var team = args[1];
+        if (identity.StartsWith("@"))
+        {
+            DoAction("switchteam", identity, target =>
+            {
+                if (!_api!.HasMoreImmunity(caller.GetSteamId(), target.GetSteamId()))
+                    return;
+                var oldTeam = XHelper.GetTeamFromNum(target.TeamNum);
+                var newTeam = XHelper.GetTeamFromString(team);
+                if (newTeam == CsTeam.Spectator)
+                {
+                    ReplyToCommand(info, _localizer["NOTIFY_OnlyInChangeTeam"], "You can change team to this only with css_changeteam");
+                    return;
+                }
+                if (newTeam == CsTeam.None)
+                {
+                    ReplyToCommand(info, _localizer["NOTIFY_IncorrectTeam"], "You can use only <t/ct> for team");
+                    return;
+                }
+                target.SwitchTeam(newTeam);
+                _api.ESwitchTeam(adminSid, XHelper.CreateInfo(target), oldTeam, newTeam);
+            });
+            return;
+        }
         var target = XHelper.GetPlayerFromArg(args[0]);
         if (target == null)
         {
@@ -380,7 +612,6 @@ public class BaseCommands
             ReplyToCommand(info, _localizer["NOTIFY_PlayerHaveBiggerImmunity"], "Target have >= immunity then yours");
             return;
         }
-        var team = args[1];
         var oldTeam = XHelper.GetTeamFromNum(target.TeamNum);
         var newTeam = XHelper.GetTeamFromString(team);
         if (newTeam == CsTeam.Spectator)
@@ -398,7 +629,27 @@ public class BaseCommands
     }
     public static void ChangeTeam(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
     {
-        string adminSid = caller == null ? "CONSOLE" : caller.AuthorizedSteamID!.SteamId64.ToString();
+        string adminSid = caller.GetSteamId();
+        var identity = args[0];
+        var team = args[1];
+        if (identity.StartsWith("@"))
+        {
+            DoAction("switchteam", identity, target =>
+            {
+                if (!_api!.HasMoreImmunity(caller.GetSteamId(), target.GetSteamId()))
+                    return;
+                var oldTeam = XHelper.GetTeamFromNum(target.TeamNum);
+                var newTeam = XHelper.GetTeamFromString(team);
+                if (newTeam == CsTeam.None)
+                {
+                    ReplyToCommand(info, _localizer["NOTIFY_IncorrectTeam"], "You can use only <t/ct/spec> for team");
+                    return;
+                }
+                target.ChangeTeam(newTeam);
+                _api.EChangeTeam(adminSid, XHelper.CreateInfo(target), oldTeam, newTeam);
+            });
+            return;
+        }
         var target = XHelper.GetPlayerFromArg(args[0]);
         if (target == null)
         {
@@ -410,7 +661,6 @@ public class BaseCommands
             ReplyToCommand(info, _localizer["NOTIFY_PlayerHaveBiggerImmunity"], "Target have >= immunity then yours");
             return;
         }
-        var team = args[1];
         var oldTeam = XHelper.GetTeamFromNum(target.TeamNum);
         var newTeam = XHelper.GetTeamFromString(team);
         if (newTeam == CsTeam.None)
@@ -623,21 +873,34 @@ public class BaseCommands
     public static void Rename(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
     {
         var identity = args[0];
+        var newName = string.Join(" ", args.Skip(1));
+        if (newName.Trim() == "") return;
+        var adminSid = caller.GetSteamId();
+        if (identity.StartsWith("@"))
+        {
+            DoAction("rename", identity, target =>
+            {
+                if (!_api!.HasMoreImmunity(caller.GetSteamId(), target.GetSteamId()))
+                    return;
+                var oldName = target.PlayerName;
+                target.PlayerName = newName;
+                Utilities.SetStateChanged(target, "CBasePlayerController", "m_iszPlayerName");
+                _api.ERename(adminSid, XHelper.CreateInfo(target), oldName, newName);
+            });
+            return;
+        }
         var target = XHelper.GetPlayerFromArg(identity);
         if (target == null)
         {
             ReplyToCommand(info, _localizer["NOTIFY_PlayerNotFound"], "Target not found!");
             return;
         }
-        var adminSid = caller == null ? "CONSOLE" : caller.AuthorizedSteamID!.SteamId64.ToString();
         if (!_api!.HasMoreImmunity(adminSid, target.AuthorizedSteamID!.SteamId64.ToString()))
         {
             ReplyToCommand(info, _localizer["NOTIFY_PlayerHaveBiggerImmunity"], "Target have >= immunity then yours");
             return;
         }
-        var newName = string.Join(" ", args.Skip(1));
         var oldName = target.PlayerName;
-        if (newName.Trim() == "") return;
         target.PlayerName = newName;
         Utilities.SetStateChanged(target, "CBasePlayerController", "m_iszPlayerName");
         _api.ERename(adminSid, XHelper.CreateInfo(target), oldName, newName);
@@ -672,7 +935,7 @@ public class BaseCommands
 
     public static void Map(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
     {
-        var adminSid = caller == null ? "CONSOLE" : caller.AuthorizedSteamID!.SteamId64.ToString();
+        var adminSid = caller.GetSteamId();
         var map = args[0];
         var isWorkshop = args.Count > 1 ? args[1] : "false";
         if (isWorkshop == "true")

@@ -292,7 +292,7 @@ public interface IPluginCfg
     [JsonPropertyName("HasAccessIfImmunityIsEqual")]
     public bool HasAccessIfImmunityIsEqual { get; set; }  // Give access to command above the target if immunity == caller
     [JsonPropertyName("Flags")] public Dictionary<string, string> Flags { get; set; }
- 
+    public List<string> BlockMassTargets { get; set; }
 
 
     [JsonPropertyName("BanReasons")]

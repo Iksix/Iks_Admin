@@ -13,15 +13,20 @@ public class IksAdminAdminList : BasePlugin
     public override string ModuleName => "IksAdmin_AdminList";
     public override string ModuleVersion => "1.0.0";
     public override string ModuleAuthor => "iks__";
-
-    private readonly PluginCapability<IIksAdminApi> _adminCapability = new("iksadmin:core");
+    public static PluginCapability<IIksAdminApi> _adminCapability = new("iksadmin:core");
 
     private IIksAdminApi? _api;
 
     public override void OnAllPluginsLoaded(bool hotReload)
     {
-        _api = _adminCapability.Get();
-        if (_api == null) Logger.LogError("Gde API cyka?");
+        try
+        {
+            _api = _adminCapability.Get();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError("IksAdminApi.dll nety :(");
+        }
         _api!.AddNewCommand(
             "admins",
             "view admins online list",

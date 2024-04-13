@@ -1,0 +1,366 @@
+{
+    "content": "",
+    "tts": false,
+    "embeds": [
+      {
+        "id": 89934808,
+        "title": "🚨 Игровая блокировка",
+        "description": "```Добавлен новый бан```",
+        "color": 16726586,
+        "author": {
+          "name": "IksAdmin plugin",
+          "url": "https://github.com/Iksix/Iks_Admin"
+        },
+        "fields": [
+          {
+            "id": 813353641,
+            "name": "👮 Админ",
+            "value": "[**SLAME**](https://steamcommunity.com/id/slame_official/) ",
+            "inline": true
+          },
+          {
+            "id": 217500319,
+            "name": "🎮 Игрок ",
+            "value": "[**Чертила**](https://steamcommunity.com/id/slame_official/) ",
+            "inline": true
+          },
+          {
+            "id": 984296789,
+            "name": "🌐 IP игрока",
+            "value": "83.222.81.30:62446",
+            "inline": true
+          },
+          {
+            "id": 732914110,
+            "name": "📕 Причина",
+            "value": "*```Использование читов```*"
+          },
+          {
+            "id": 969584671,
+            "name": "⏰ Срок",
+            "value": "*```Навсегда```*",
+            "inline": true
+          },
+          {
+            "id": 914640779,
+            "name": "🏁 Заканчивается",
+            "value": "*```29.03.2024 22:19:24```*",
+            "inline": true
+          },
+          {
+            "id": 653371904,
+            "name": "ℹ️ Тип бана",
+            "value": "*```По SteamID```*",
+            "inline": true
+          }
+        ]
+      },
+      {
+        "id": 429473874,
+        "title": "🎙️ Блокировка общения",
+        "description": "```Добавлен новый мут```",
+        "color": 16750907,
+        "author": {
+          "name": "IksAdmin plugin",
+          "url": "https://github.com/Iksix/Iks_Admin"
+        },
+        "fields": [
+          {
+            "id": 813353641,
+            "name": "👮 Админ",
+            "value": "[**SLAME**](https://steamcommunity.com/id/slame_official/) ",
+            "inline": true
+          },
+          {
+            "id": 217500319,
+            "name": "🎮 Игрок ",
+            "value": "[**Чертила**](https://steamcommunity.com/id/slame_official/) ",
+            "inline": true
+          },
+          {
+            "id": 984296789,
+            "name": "🌐 IP игрока",
+            "value": "83.222.81.30:62446",
+            "inline": true
+          },
+          {
+            "id": 732914110,
+            "name": "📕 Причина",
+            "value": "*```Оскорбление игроков```*"
+          },
+          {
+            "id": 969584671,
+            "name": "⏰ Срок",
+            "value": "*```5 минут```*",
+            "inline": true
+          },
+          {
+            "id": 914640779,
+            "name": "🏁 Заканчивается",
+            "value": "*```29.03.2024 22:19:24```*",
+            "inline": true
+          }
+        ]
+      },
+      {
+        "id": 327011106,
+        "title": "💬 Блокировка общения",
+        "description": "```Добавлен новый гаг```",
+        "color": 16750907,
+        "author": {
+          "name": "IksAdmin plugin",
+          "url": "https://github.com/Iksix/Iks_Admin"
+        },
+        "fields": [
+          {
+            "id": 813353641,
+            "name": "👮 Админ",
+            "value": "[**SLAME**](https://steamcommunity.com/id/slame_official/) ",
+            "inline": true
+          },
+          {
+            "id": 217500319,
+            "name": "🎮 Игрок ",
+            "value": "[**Чертила**](https://steamcommunity.com/id/slame_official/) ",
+            "inline": true
+          },
+          {
+            "id": 984296789,
+            "name": "🌐 IP игрока",
+            "value": "83.222.81.30:62446",
+            "inline": true
+          },
+          {
+            "id": 732914110,
+            "name": "📕 Причина",
+            "value": "*```Оскорбление игроков```*",
+            "inline": false
+          },
+          {
+            "id": 969584671,
+            "name": "⏰ Срок",
+            "value": "*```5 минут```*",
+            "inline": true
+          },
+          {
+            "id": 914640779,
+            "name": "🏁 Заканчивается",
+            "value": "*```29.03.2024 22:19:24```*",
+            "inline": true
+          }
+        ]
+      },
+      {
+        "id": 592281673,
+        "title": "✅ Успешное снятие игровой блокировки для игрока",
+        "description": "```Бан снят```",
+        "color": 3932006,
+        "author": {
+          "name": "IksAdmin plugin",
+          "url": "https://github.com/Iksix/Iks_Admin"
+        },
+        "fields": [
+          {
+            "id": 813353641,
+            "name": "👮 Админ",
+            "value": "```SLAME```",
+            "inline": true
+          },
+          {
+            "id": 217500319,
+            "name": "🎮 Игрок ",
+            "value": "```Чертила```",
+            "inline": true
+          },
+          {
+            "id": 668171100,
+            "name": "🆔 SteamID",
+            "value": "```76561198995346679``` ",
+            "inline": true
+          }
+        ]
+      },
+      {
+        "id": 428399719,
+        "title": "✅ Успешное снятие блокировки общения для игрока",
+        "description": "```Мут/гаг снят```",
+        "color": 3932006,
+        "author": {
+          "name": "IksAdmin plugin",
+          "url": "https://github.com/Iksix/Iks_Admin"
+        },
+        "fields": [
+          {
+            "id": 813353641,
+            "name": "👮 Админ",
+            "value": "```SLAME```",
+            "inline": true
+          },
+          {
+            "id": 217500319,
+            "name": "🎮 Игрок ",
+            "value": "```Чертила```",
+            "inline": true
+          },
+          {
+            "id": 668171100,
+            "name": "🆔 SteamID",
+            "value": "```76561198995346679``` ",
+            "inline": true
+          }
+        ]
+      },
+      {
+        "id": 604132016,
+        "title": "🎭 Действие, совершенное над игроком",
+        "description": "```Игрок убит``` ",
+        "color": 16773435,
+        "author": {
+          "name": "IksAdmin plugin",
+          "url": "https://github.com/Iksix/Iks_Admin"
+        },
+        "fields": [
+          {
+            "id": 813353641,
+            "name": "👮 Админ",
+            "value": "[**SLAME**](https://steamcommunity.com/id/slame_official/) ",
+            "inline": true
+          },
+          {
+            "id": 217500319,
+            "name": "🎮 Игрок ",
+            "value": "[**Игрок**](https://steamcommunity.com/id/slame_official/) ",
+            "inline": true
+          },
+          {
+            "id": 668171100,
+            "name": "🆔 SteamID",
+            "value": "76561198995346679",
+            "inline": true
+          }
+        ]
+      },
+      {
+        "id": 687081273,
+        "title": "🎭 Действие, совершенное над игроком",
+        "description": "```Игрок кикнут``` ",
+        "color": 16773435,
+        "author": {
+          "name": "IksAdmin plugin",
+          "url": "https://github.com/Iksix/Iks_Admin"
+        },
+        "fields": [
+          {
+            "id": 813353641,
+            "name": "👮 Админ",
+            "value": "[**SLAME**](https://steamcommunity.com/id/slame_official/) ",
+            "inline": true
+          },
+          {
+            "id": 217500319,
+            "name": "🎮 Игрок ",
+            "value": "[**Игрок**](https://steamcommunity.com/id/slame_official/) ",
+            "inline": true
+          },
+          {
+            "id": 668171100,
+            "name": "🆔 SteamID",
+            "value": "76561198995346679",
+            "inline": true
+          },
+          {
+            "id": 156953712,
+            "name": "👊 Причина",
+            "value": "```АФК```"
+          }
+        ]
+      },
+      {
+        "id": 725859530,
+        "title": "🎭 Действие, совершенное над игроком",
+        "description": "```Игроку сменили команду``` ",
+        "color": 16773435,
+        "author": {
+          "name": "IksAdmin plugin",
+          "url": "https://github.com/Iksix/Iks_Admin"
+        },
+        "fields": [
+          {
+            "id": 813353641,
+            "name": "👮 Админ",
+            "value": "[**SLAME**](https://steamcommunity.com/id/slame_official/) ",
+            "inline": true
+          },
+          {
+            "id": 217500319,
+            "name": "🎮 Игрок ",
+            "value": "[**Игрок**](https://steamcommunity.com/id/slame_official/) ",
+            "inline": true
+          },
+          {
+            "id": 668171100,
+            "name": "🆔 SteamID",
+            "value": "76561198995346679",
+            "inline": true
+          },
+          {
+            "id": 156953712,
+            "name": "🔁 Прошлая команда",
+            "value": "```Террористы``` ",
+            "inline": false
+          },
+          {
+            "id": 163345305,
+            "name": "🔁 Новая команда",
+            "value": "```Спецназ```",
+            "inline": false
+          }
+        ]
+      },
+      {
+        "id": 225410470,
+        "title": "🎭 Действие, совершенное над игроком",
+        "description": "```Игроку сменили ник``` ",
+        "color": 16773435,
+        "author": {
+          "name": "IksAdmin plugin",
+          "url": "https://github.com/Iksix/Iks_Admin"
+        },
+        "fields": [
+          {
+            "id": 813353641,
+            "name": "👮 Админ",
+            "value": "[**SLAME**](https://steamcommunity.com/id/slame_official/) ",
+            "inline": true
+          },
+          {
+            "id": 217500319,
+            "name": "🎮 Игрок ",
+            "value": "[**Игрок**](https://steamcommunity.com/id/slame_official/) ",
+            "inline": true
+          },
+          {
+            "id": 668171100,
+            "name": "🆔 SteamID",
+            "value": "76561198995346679",
+            "inline": true
+          },
+          {
+            "id": 156953712,
+            "name": "🤮 Старый ник",
+            "value": "```Какашка``` ",
+            "inline": false
+          },
+          {
+            "id": 163345305,
+            "name": "😇 Новый ник",
+            "value": "```Спецназ```",
+            "inline": false
+          }
+        ]
+      }
+    ],
+    "components": [],
+    "actions": {},
+    "username": "Логи действий админов"
+  }

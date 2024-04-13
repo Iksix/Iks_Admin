@@ -23,6 +23,11 @@ public class PluginConfig : BasePluginConfig, IPluginCfg
         {"adminManage", "z"}
     };
 
+    public List<string> BlockMassTargets { get; set; } = new()
+    {
+        "ban", "mute", "gag" 
+    };
+
 
     [JsonPropertyName("BanReasons")]
     public List<Reason> BanReasons { get; set; } = new()

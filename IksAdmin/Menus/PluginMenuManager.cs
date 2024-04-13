@@ -404,6 +404,7 @@ public static class PluginMenuManager
     {
         foreach (var player in Api!.DisconnectedPlayers)
         {
+            if (!Api.HasMoreImmunity(caller.GetSteamId(), player.SteamId.SteamId64.ToString())) continue;
             menu.AddMenuOption(player.PlayerName, (_, _) =>
             {
                 SelectReasonAndTime(caller, menu, Config.BanReasons, (reason, time) =>
@@ -465,6 +466,7 @@ public static class PluginMenuManager
                 {
                     Task.Run(async () =>
                     {
+                        MenuManager.CloseActiveMenu(caller);
                         await Api.UnGag(playerSid, adminSid);
                     });
                 });
@@ -485,6 +487,7 @@ public static class PluginMenuManager
                 {
                     Task.Run(async () =>
                     {
+                        MenuManager.CloseActiveMenu(caller);
                         await Api.UnMute(playerSid, adminSid);
                     });
                 });
