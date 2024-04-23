@@ -20,8 +20,8 @@
 - `css_admindel <sid>` | Flags access: `"adminManage"` Default: `z`
 - `css_reload_admins` | Flags access: `"adminManage"` Default: `z`
 - `css_group_add <name> <flags> <immunity>` | FlagAccess: `"groupManage"`, default: `"z"`
-- `css_group_del <name>` | FlagAccess: `"groupManage"`, default: `"z"`
-- `css_group_list` | FlagAccess: `"groupManage"`, default: `"z"`
+- `css_group_del <name>` | Flag access: `"groupManage"`, default: `"z"`
+- `css_group_list` | Flag access: `"groupManage"`, default: `"z"`
 - `css_who <name>` | Flags access: `"who"` Default: `b`
 - `css_ban <#uid/#sid/name> <duration> <reason> <name if needed>` | Flags access: `"ban"` Default: `b`
 - `css_banip <$ip/#uid/#sid/name> <duration> <reason> <name if needed>` | FlagAccess: `"banip"`, default: `"b"`
