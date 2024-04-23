@@ -6,13 +6,14 @@ namespace IksAdmin;
 
 public class PluginConfig : BasePluginConfig, IPluginCfg
 {
-    [JsonPropertyName("ServerId")] public string ServerId { get; set; } = "A";
+    [JsonPropertyName("ServerId")] public string ServerId { get; set; } = "1";
     [JsonPropertyName("Host")] public string Host { get; set; } = "host";
     [JsonPropertyName("Database")] public string Database { get; set; } = "Database";
     [JsonPropertyName("User")] public string User { get; set; } = "User";
     [JsonPropertyName("Password")] public string Password { get; set; } = "Password";
     [JsonPropertyName("Port")] public string Port { get; set; } = "3306";
     [JsonPropertyName("UseHtmlMenu")] public bool UseHtmlMenu { get; set; } = false;
+    public bool UpdateNames { get; set; } = false; 
 
     [JsonPropertyName("BanOnAllServers")] public bool BanOnAllServers { get; set; } = true;
 

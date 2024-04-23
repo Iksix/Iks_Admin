@@ -28,10 +28,18 @@ public interface IIksAdminApi
     public string DbConnectionString { get; set; }
     public List<Admin> AllAdmins { get; set; }
     public List<Admin> ThisServerAdmins { get; set; }
+    public Dictionary<CCSPlayerController, Admin> TimeAdmins { get; set; }
     public IStringLocalizer Localizer { get; set; }
     public BasePlugin Plugin { get; }
     
     // Functions
+    public Task AddGroup(Group group);
+    public Task<Group?> GetGroup(string name);
+    public Task DeleteGroup(string name);
+    public Admin? GetAdminBySid(string steamId);
+    public List<Admin> GetThisServerAdmins();
+    public Admin? GetAdmin(CCSPlayerController player);
+    public Admin? GetAdmin(ulong steamId);
     public IBaseMenu CreateMenu(CCSPlayerController caller, Action<CCSPlayerController, Admin?, IMenu> onOpen);
     public void SendMessageToPlayer(CCSPlayerController? controller, string message);
     public void SendMessageToAll(string message);
@@ -65,6 +73,8 @@ public interface IIksAdminApi
     public bool HasMoreImmunity(string adminSid, string targetSid);
     
     // Events
+    public void EOnMenuOpen(string index, IMenu menu, CCSPlayerController player);
+    event Action<string, IMenu, CCSPlayerController> OnMenuOpen; // menu index -> menu -> player
     event Action<Admin> OnAddAdmin;
     event Action<Admin> OnDelAdmin;
     event Action<PlayerBan> OnAddBan;
@@ -152,6 +162,7 @@ public class PlayerBan
     public string Sid { get; set; }
     public string Ip { get; set; }
     public string AdminSid { get; set; }
+    public string AdminName { get; set; }
     public int Created { get; set; }
     public int Time { get; set; }
     public int End { get; set; }
@@ -163,13 +174,14 @@ public class PlayerBan
 
     public PlayerBan(
         string name, string sid, string ip, 
-        string adminSid, int created, int time, int end, 
+        string adminSid, string adminName, int created, int time, int end, 
         string reason, string serverId, int banType = 0, int unbanned = 0, string? unbannedBy = null, int? id = null)
     {
         Name = name;
         Sid = sid;
         Ip = ip;
         AdminSid = adminSid;
+        AdminName = adminName;
         Created = created;
         Time = time;
         End = end;
@@ -188,6 +200,7 @@ public class PlayerComm
     public string Name { get; set; }
     public string Sid { get; set; }
     public string AdminSid { get; set; }
+    public string AdminName { get; set; }
     public int Created { get; set; }
     public int Time { get; set; }
     public int End { get; set; }
@@ -197,13 +210,14 @@ public class PlayerComm
     public string ServerId { get; set; }
 
     public PlayerComm(
-        string name, string sid, string adminSid,
+        string name, string sid, string adminSid, string adminName,
         int created, int time, int end, 
         string reason, string serverId, int unbanned = 0, string? unbannedBy = null, int? id = null)
     {
         Name = name;
         Sid = sid;
         AdminSid = adminSid;
+        AdminName = adminName;
         Created = created;
         Time = time;
         End = end;
@@ -289,6 +303,7 @@ public interface IPluginCfg
     [JsonPropertyName("UseHtmlMenu")] public bool UseHtmlMenu { get; set; } 
     
     [JsonPropertyName("BanOnAllServers")] public bool BanOnAllServers { get; set; }
+    public bool UpdateNames { get; set; }
 
     [JsonPropertyName("HasAccessIfImmunityIsEqual")]
     public bool HasAccessIfImmunityIsEqual { get; set; }  // Give access to command above the target if immunity == caller

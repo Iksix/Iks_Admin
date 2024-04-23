@@ -4,9 +4,11 @@ using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Utils;
+using Dapper;
 using IksAdmin.Menus;
 using IksAdminApi;
 using Microsoft.Extensions.Localization;
+using MySqlConnector;
 
 namespace IksAdmin.Commands;
 
@@ -203,6 +205,7 @@ public class BaseCommands
                     target.AuthorizedSteamID!.SteamId64.ToString(),
                     target.IpAddress!,
                     caller.GetSteamId(),
+                    caller.GetName(),
                     (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                     duration,
                     (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + duration,
@@ -239,6 +242,7 @@ public class BaseCommands
             sid,
             ip,
             adminSid,
+            caller.GetName(),
             (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             duration,
             (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + duration,
@@ -274,6 +278,7 @@ public class BaseCommands
                     target.PlayerName,
                     target.AuthorizedSteamID!.SteamId64.ToString(),
                     caller.GetSteamId(),
+                    caller.GetName(),
                     (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                     duration,
                     (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + duration,
@@ -308,6 +313,7 @@ public class BaseCommands
             name,
             sid,
             adminSid,
+            caller.GetName(),
             (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             duration,
             (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + duration,
@@ -342,6 +348,7 @@ public class BaseCommands
                     target.PlayerName,
                     target.AuthorizedSteamID!.SteamId64.ToString(),
                     caller.GetSteamId(),
+                    caller.GetName(),
                     (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                     duration,
                     (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + duration,
@@ -376,6 +383,7 @@ public class BaseCommands
             name,
             sid,
             adminSid,
+            caller.GetName(),
             (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             duration,
             (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + duration,
@@ -477,9 +485,9 @@ public class BaseCommands
     }
     public static void UnBan(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
     {
-        // css_unban <sid>
+        // css_unban <sid/ip>
         var sid = args[0];
-        if (!IsSteamId(sid))
+        if (!IsSteamId(sid) && !sid.Contains("."))
         {
             ReplyToCommand(info, _localizer["NOTIFY_IncorrectSid"], "Incorrect SteamId64!");
             return;
@@ -675,8 +683,9 @@ public class BaseCommands
             ReplyToCommand(info, _localizer["NOTIFY_PlayerNotFound"], "Target not found!");
             return;
         }
+
         var existingAdmin =
-            _api!.ThisServerAdmins.FirstOrDefault(x => x.SteamId == target.AuthorizedSteamID!.SteamId64.ToString());
+            _api!.GetAdmin(target);
         if (existingAdmin == null)
         {
             ReplyToCommand(info, $"Zero permissions! \n Name: {target.PlayerName} \n SteamId: {target.AuthorizedSteamID!.SteamId64}");
@@ -718,6 +727,7 @@ public class BaseCommands
         sid,
         ip,
         adminSid,
+        caller.GetName(),
         (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
         time,
         (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
@@ -755,6 +765,7 @@ public class BaseCommands
             name,
             sid,
             adminSid,
+            caller.GetName(),
             (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             time,
             (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
@@ -791,6 +802,7 @@ public class BaseCommands
             name,
             sid,
             adminSid,
+            caller.GetName(),
             (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             time,
             (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
@@ -944,5 +956,131 @@ public class BaseCommands
             var newMap = new Map(map, map, false);
             _api!.EChangeMap(adminSid, newMap);
         }
+    }
+
+    public static void DbUpdate(CCSPlayerController arg1, Admin? arg2, List<string> arg3, CommandInfo info)
+    {
+        Task.Run(async () =>
+        {
+            try
+            {
+                await using var conn = new MySqlConnection(_api!.DbConnectionString);
+                await conn.OpenAsync();
+                await conn.QueryAsync(@"
+                ALTER TABLE `iks_bans` ADD `adminName` VARCHAR(64) NOT NULL AFTER `adminsid`;
+                ALTER TABLE `iks_bans` CHANGE `server_id` `server_id` VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT ''; 
+                ALTER TABLE `iks_gags` ADD `adminName` VARCHAR(64) NOT NULL AFTER `adminsid`;
+                ALTER TABLE `iks_gags` CHANGE `server_id` `server_id` VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT ''; 
+                ALTER TABLE `iks_mutes` ADD `adminName` VARCHAR(64) NOT NULL AFTER `adminsid`;
+                ALTER TABLE `iks_mutes` CHANGE `server_id` `server_id` VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT ''; 
+                ALTER TABLE `iks_admins` CHANGE `server_id` `server_id` VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '1'; 
+                ");
+                foreach (var admin in _api.AllAdmins)
+                {
+                    await conn.QueryAsync("""
+                    update iks_bans set adminName = @name where adminsid = @sid;
+                    update iks_gags set adminName = @name where adminsid = @sid;
+                    update iks_mutes set adminName = @name where adminsid = @sid;
+                    """, new {name = admin.Name, sid = admin.SteamId});
+                }
+                await conn.QueryAsync("""
+                                      update iks_bans set adminName = @name where adminsid = @sid;
+                                      update iks_gags set adminName = @name where adminsid = @sid;
+                                      update iks_mutes set adminName = @name where adminsid = @sid;
+                                      """, new {name = "CONSOLE", sid = "CONSOLE"});
+                ReplyToCommand(info, "DB UPDATED TO VER 2.1.1");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        });
+    }
+
+    public static void GroupAdd(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
+    {
+        var name = args[0];
+        var flags = args[1];
+        var immunity = args[2];
+        var group = new Group(name, flags, int.Parse(immunity));
+        Task.Run(async () =>
+        {
+            await _api!.AddGroup(group);
+            var newGroup = await _api.GetGroup(group.Name);
+            ReplyToCommand(info, $"New group added! \nName: {newGroup.Name}\nFlags: {newGroup.Flags}\nImmunity: {newGroup.Immunity}\nId: {newGroup.Id}");
+        });
+    }
+    public static void GroupDel(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
+    {
+        var name = args[0];
+        Task.Run(async () =>
+        {
+            await _api!.DeleteGroup(name);
+            ReplyToCommand(info, $"Group {name} deleted");
+        });
+    }
+    public static void GroupList(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
+    {
+        Task.Run(async () =>
+        {
+            var groups = await _api!.GetAllGroups();
+            ReplyToCommand(info, $"Id | Name | Flags | Immunity");
+            foreach (var group in groups.ToList())
+            {
+                ReplyToCommand(info, $"{group.Id} | {group.Name} | {group.Flags} | {group.Immunity}");
+            }
+        });
+    }
+
+    public static void BanIp(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
+    {
+        // css_banip <$ip/#uid/#sid/name> <duration> <reason> <name if needed>
+        var identity = args[0];
+        var duration = int.Parse(args[1]);
+        var reason = args[2];
+        var name = args.Count() < 4 ? "Undefined" : string.Join(" ", args.Skip(3));
+        var target = XHelper.GetPlayerFromArg(identity);
+        var ip = "0.0.0.0";
+        var sid = "00000000000000000";
+        if (identity.StartsWith("$"))
+        {
+            ip = identity.Remove(0, 1);
+        }
+        else
+        {
+            if (target == null)
+            {
+                ReplyToCommand(info, _localizer["NOTIFY_PlayerNotFound"], "Target not found!");
+                return;
+            }
+            ip = target.GetIp();
+            sid = target.GetSteamId();
+        }
+
+        if (name == "Undefined" && target != null)
+        {
+            name = target.PlayerName;
+        }
+            
+        var ban = new PlayerBan(
+            name,
+            sid,
+            ip,
+            caller.GetSteamId(),
+            caller.GetName(),
+            (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            duration*60,
+            (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + duration*60,
+            reason,
+            _api!.Config.ServerId,
+            1
+        );
+        Task.Run(async () =>
+        {
+            var banStatus = await _api.AddBan(ban.AdminSid, ban);
+            if (banStatus)
+                ReplyToCommand(info, _localizer["NOTIFY_OnBan"].Value.Replace("{name}", name), $"Ban added to player!");
+            else ReplyToCommand(info, _localizer["NOTIFY_PlayerAlreadyPunished"], $"The player has already been punished!");
+        });
     }
 }

@@ -27,6 +27,18 @@ public class EmbedModel
 
         return fields.ToArray();
     }
+    public string GetTitle()
+    {
+        string title = Title.ToString();
+
+        return title;
+    }
+    public string GetDescription()
+    {
+        string title = Description.ToString();
+
+        return title;
+    }
 }
 
 public class FieldModel

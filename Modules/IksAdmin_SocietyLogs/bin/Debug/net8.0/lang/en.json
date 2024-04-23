@@ -1,0 +1,20 @@
+{
+    "VK_Action": "**Action** \nAdmin: {admin}\nCommand: {cmd}",
+
+    "VK_OnAdminAdd": "**New admin added!** \nPlayer Nickname: {name} \nSteamId64: {steamId}\nFlags: {flags}\nImmunity: {immunity}\nExpires: {end} \nGroup Name: {groupName}\nGroup ID: {groupId}\n Server ID: {serverId}",
+    "VK_OnAdminDel": "**Admin deleted!** \nPlayer Nickname: {name} \nSteamId64: {steamId}\nFlags: {flags}\nImmunity: {immunity}\nExpires: {end} \nGroup Name: {groupName}\nGroup ID: {groupId}\n Server ID: {serverId}",
+    "VK_OnAddBan": "**Ban added** \nAdmin: {admin}\nPlayer Nickname: {name}\nSteamId64: {steamId}\nIP: {ip}\nReason: {reason}\nDuration: {duration}\nExpires: {end}\nBan Type: {banType}",
+    "VK_OnAddMute": "**Mute added** \nAdmin: {admin}\nPlayer Nickname: {name}\nSteamId64: {steamId}\nReason: {reason}\nDuration: {duration}\nExpires: {end}",
+    "VK_OnAddGag": "**Gag added** \nAdmin: {admin}\nPlayer Nickname: {name}\nSteamId64: {steamId}\nReason: {reason}\nDuration: {duration}\nExpires: {end}",
+    "VK_OnUnBan": "**Ban lifted** \nAdmin: {admin}\nPlayer Nickname: {name}\nSteamId64: {steamId}",
+    "VK_OnUnMute": "**Mute lifted** \nAdmin: {admin}\nPlayer Nickname: {name}\nSteamId64: {steamId}",
+    "VK_OnUnGag": "**Gag lifted** \nAdmin: {admin}\nPlayer Nickname: {name}\nSteamId64: {steamId}",
+    "VK_OnSlay": "**Player slain** \nAdmin: {admin}\nPlayer Nickname: {name}\nSteamId64: {steamId}",
+    "VK_OnKick": "**Player kicked** \nAdmin: {admin}\nPlayer Nickname: {name}\nSteamId64: {steamId}\nReason: {reason}",
+    "VK_SwitchTeam": "**Player moved**\nAdmin: {admin}\nPlayer Nickname: {name}\nSteamId64: {steamId}\nPrevious Team: {oldTeam}\nNew Team: {newTeam}",
+    "VK_ChangeTeam": "**Player's team changed**\nAdmin: {admin}\nPlayer Nickname: {name}\nSteamId64: {steamId}\nPrevious Team: {oldTeam}\nNew Team: {newTeam}",
+    "VK_Rename": "**Player's nickname changed**\nAdmin: {admin}\nPlayer Nickname: {name}\nSteamId64: {steamId}\nPrevious Nickname: {oldName}\nNew Nickname: {newName}",
+    
+    "NEVER" : "NEVER",
+    "NONE" : "NONE"
+}

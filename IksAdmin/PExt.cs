@@ -13,6 +13,10 @@ public static class PExt
     {
         return controller == null ? "CONSOLE" : controller.PlayerName;
     }
+    public static string GetIp(this CCSPlayerController? controller)
+    {
+        return controller == null ? "0.0.0.0" : controller.IpAddress!.Split(":")[0] ?? "0.0.0.0";
+    }
     public static void Kick(this CCSPlayerController? controller)
     {
         if (controller == null) return;

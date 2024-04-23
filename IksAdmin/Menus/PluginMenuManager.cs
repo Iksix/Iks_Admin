@@ -40,6 +40,7 @@ public static class PluginMenuManager
                 item.OnSelect!.Invoke(p, admin, menu);
             });
         }
+        Api.EOnMenuOpen("Main", menu, caller);
     }
 
     public static void OpenBlocksMenu(CCSPlayerController caller, IMenu backMenu)
@@ -77,6 +78,7 @@ public static class PluginMenuManager
                 item.OnSelect!.Invoke(p, admin, menu);
             });
         }
+        Api.EOnMenuOpen("ManageServer", menu, caller);
     }
     
     public static void OpenMapsMenu(CCSPlayerController caller, IMenu backMenu)
@@ -161,6 +163,7 @@ public static class PluginMenuManager
                 item.OnSelect!.Invoke(p, admin, menu);
             });
         }
+        Api.EOnMenuOpen("ManagePlayers", menu, caller);
     }
     
     private static void OpenRenameMenu(CCSPlayerController caller, IMenu menu)
@@ -343,6 +346,7 @@ public static class PluginMenuManager
                 item.OnSelect!.Invoke(p, admin, menu);
             });
         }
+        Api.EOnMenuOpen("ManageBlocks", menu, caller);
     }
 
     private static void OpenBanMenu(CCSPlayerController caller, IMenu menu)
@@ -358,6 +362,7 @@ public static class PluginMenuManager
                     target.SteamId.SteamId64.ToString(),
                     target.IpAddress,
                     caller.AuthorizedSteamID!.SteamId64.ToString(),
+                    caller.PlayerName,
                     (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                     time,
                     (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
@@ -415,6 +420,7 @@ public static class PluginMenuManager
                         player.Value.SteamId.SteamId64.ToString(),
                         player.Value.IpAddress,
                         caller.AuthorizedSteamID!.SteamId64.ToString(),
+                        caller.PlayerName,
                         (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                         time,
                         (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
@@ -440,6 +446,7 @@ public static class PluginMenuManager
                     target.PlayerName,
                     target.SteamId.SteamId64.ToString(),
                     caller.AuthorizedSteamID!.SteamId64.ToString(),
+                    caller.PlayerName,
                     (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                     time,
                     (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
@@ -507,6 +514,7 @@ public static class PluginMenuManager
                     target.PlayerName,
                     target.SteamId.SteamId64.ToString(),
                     caller.AuthorizedSteamID!.SteamId64.ToString(),
+                    caller.PlayerName,
                     (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                     time,
                     (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
