@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "dgSpecHash": "yr3o9iQ2BKCJZ6ATlgVSob2+U+BmQ3dGRLpOtzaeL4cvdkKNEOtJ4tJRR5wsMLuyJmuMoNs+7bvUhWQATD7ZeA==",
-  "success": true,
+  "dgSpecHash": "o9PUAXE/DY4j0+FsyRPen46M1PfhQsceD0SLAxcUN/vMfgszBGRuRz2M9qMktYCVBQ/D4NdcTHhlicBxBa3Tbg==",
+  "success": false,
   "projectFilePath": "D:\\__iksAdmin\\Iks_Admin\\Modules\\IksAdmin_SocietyLogs\\IksAdmin_SocietyLogs.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Iks\\.nuget\\packages\\counterstrikesharp.api\\1.0.202\\counterstrikesharp.api.1.0.202.nupkg.sha512",
@@ -59,5 +59,15 @@
     "C:\\Users\\Iks\\.nuget\\packages\\system.text.json\\8.0.0\\system.text.json.8.0.0.nupkg.sha512",
     "C:\\Users\\Iks\\.nuget\\packages\\vknet\\1.78.0-alpha-99\\vknet.1.78.0-alpha-99.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Warning As Error: Detected package downgrade: CounterStrikeSharp.Api from 1.0.215 to 1.0.202. Reference the package directly from the project to select a different version. \r\n IksAdmin_SocietyLogs -> IksAdminApi -> CounterStrikeSharp.Api (>= 1.0.215) \r\n IksAdmin_SocietyLogs -> CounterStrikeSharp.API (>= 1.0.202)",
+      "libraryId": "CounterStrikeSharp.Api",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
 }

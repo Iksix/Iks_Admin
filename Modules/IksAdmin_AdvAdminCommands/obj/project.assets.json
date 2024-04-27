@@ -703,7 +703,7 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
-      "MySqlConnector/2.3.5": {
+      "MySqlConnector/2.3.7": {
         "type": "package",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "7.0.1"
@@ -928,10 +928,10 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
-          "CounterStrikeSharp.Api": "1.0.202",
+          "CounterStrikeSharp.Api": "1.0.215",
           "Dapper": "2.1.35",
           "IksAdminApi": "1.0.0",
-          "MySqlConnector": "2.3.5"
+          "MySqlConnector": "2.3.7"
         },
         "compile": {
           "bin/placeholder/IksAdmin.dll": {}
@@ -944,7 +944,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
-          "CounterStrikeSharp.Api": "1.0.202",
+          "CounterStrikeSharp.Api": "1.0.215",
           "Dapper": "2.1.35",
           "MySqlConnector": "2.3.5"
         },
@@ -2195,10 +2195,10 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "MySqlConnector/2.3.5": {
-      "sha512": "AmEfUPkFl+Ev6jJ8Dhns3CYHBfD12RHzGYWuLt6DfG6/af6YvOMyPz74ZPPjBYQGRJkumD2Z48Kqm8s5DJuhLA==",
+    "MySqlConnector/2.3.7": {
+      "sha512": "YiVOxvJ+vAYW8NT9gHv8RxKCDFCSXAObF3z0Ou/8WRv8Lsn2QsxaPW5xEwPE+xCcAq6BGkrI8GTOC09Xg09blQ==",
       "type": "package",
-      "path": "mysqlconnector/2.3.5",
+      "path": "mysqlconnector/2.3.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2220,7 +2220,7 @@
         "lib/netstandard2.1/MySqlConnector.dll",
         "lib/netstandard2.1/MySqlConnector.xml",
         "logo.png",
-        "mysqlconnector.2.3.5.nupkg.sha512",
+        "mysqlconnector.2.3.7.nupkg.sha512",
         "mysqlconnector.nuspec"
       ]
     },
@@ -2715,5 +2715,25 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.201/PortableRuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Warning As Error: Detected package downgrade: CounterStrikeSharp.Api from 1.0.215 to 1.0.202. Reference the package directly from the project to select a different version. \r\n IksAdmin_AdvAdminCommands -> IksAdminApi -> CounterStrikeSharp.Api (>= 1.0.215) \r\n IksAdmin_AdvAdminCommands -> CounterStrikeSharp.API (>= 1.0.202)",
+      "libraryId": "CounterStrikeSharp.Api",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
+    {
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Warning As Error: Detected package downgrade: CounterStrikeSharp.Api from 1.0.215 to 1.0.202. Reference the package directly from the project to select a different version. \r\n IksAdmin_AdvAdminCommands -> IksAdmin -> CounterStrikeSharp.Api (>= 1.0.215) \r\n IksAdmin_AdvAdminCommands -> CounterStrikeSharp.API (>= 1.0.202)",
+      "libraryId": "CounterStrikeSharp.Api",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
 }

@@ -34,11 +34,6 @@
           "warnAsError": [
             "NU1605"
           ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -47,7 +42,7 @@
           "dependencies": {
             "CounterStrikeSharp.Api": {
               "target": "Package",
-              "version": "[1.0.202, )"
+              "version": "[1.0.215, )"
             },
             "Dapper": {
               "target": "Package",

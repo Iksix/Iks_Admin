@@ -1009,7 +1009,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
-          "CounterStrikeSharp.Api": "1.0.202",
+          "CounterStrikeSharp.Api": "1.0.215",
           "Dapper": "2.1.35",
           "MySqlConnector": "2.3.5"
         },
@@ -2893,11 +2893,6 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -2936,5 +2931,16 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.201/PortableRuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Warning As Error: Detected package downgrade: CounterStrikeSharp.Api from 1.0.215 to 1.0.202. Reference the package directly from the project to select a different version. \r\n IksAdmin_SocietyLogs -> IksAdminApi -> CounterStrikeSharp.Api (>= 1.0.215) \r\n IksAdmin_SocietyLogs -> CounterStrikeSharp.API (>= 1.0.202)",
+      "libraryId": "CounterStrikeSharp.Api",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
 }

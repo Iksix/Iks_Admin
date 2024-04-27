@@ -1432,7 +1432,7 @@ public class PluginApi : IIksAdminApi
                                   {
                                       name = banInfo.Name,
                                       sid = banInfo.Sid,
-                                      ip = banInfo.Ip,
+                                      ip = banInfo.Ip.Split(":")[0],
                                       adminSid = banInfo.AdminSid,
                                       adminName = banInfo.AdminName,
                                       created = banInfo.Created,

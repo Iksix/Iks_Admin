@@ -8,9 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.202" />
+    <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.215" />
     <PackageReference Include="Dapper" Version="2.1.35" />
-    <PackageReference Include="MySqlConnector" Version="2.3.5" />
+    <PackageReference Include="MySqlConnector" Version="2.3.7" />
     <ProjectReference Include="..\IksAdminApi\IksAdminApi.csproj" />
   </ItemGroup>
 

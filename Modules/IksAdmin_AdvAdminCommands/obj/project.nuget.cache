@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "dgSpecHash": "FrSGgALv1S/afCRatXbBEIq59ZXPWW26Iex2XcOqaGAVTSTfemr3Gg5WMUFKl4bPBGboAdXBQUoKUJE1pEao7g==",
-  "success": true,
+  "dgSpecHash": "PboGzO3VghD6h9D3KMKNibWTbWTkxBgY4H5Do54rx8V0cjvtQppTP3sdEt3nQhy7thYG1MCDeH1AV80R0/O0mw==",
+  "success": false,
   "projectFilePath": "D:\\__iksAdmin\\Iks_Admin\\Modules\\IksAdmin_AdvAdminCommands\\IksAdmin_AdvAdminCommands.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Iks\\.nuget\\packages\\counterstrikesharp.api\\1.0.202\\counterstrikesharp.api.1.0.202.nupkg.sha512",
@@ -39,7 +39,7 @@
     "C:\\Users\\Iks\\.nuget\\packages\\microsoft.extensions.options\\8.0.0\\microsoft.extensions.options.8.0.0.nupkg.sha512",
     "C:\\Users\\Iks\\.nuget\\packages\\microsoft.extensions.options.configurationextensions\\8.0.0\\microsoft.extensions.options.configurationextensions.8.0.0.nupkg.sha512",
     "C:\\Users\\Iks\\.nuget\\packages\\microsoft.extensions.primitives\\8.0.0\\microsoft.extensions.primitives.8.0.0.nupkg.sha512",
-    "C:\\Users\\Iks\\.nuget\\packages\\mysqlconnector\\2.3.5\\mysqlconnector.2.3.5.nupkg.sha512",
+    "C:\\Users\\Iks\\.nuget\\packages\\mysqlconnector\\2.3.7\\mysqlconnector.2.3.7.nupkg.sha512",
     "C:\\Users\\Iks\\.nuget\\packages\\scrutor\\4.2.2\\scrutor.4.2.2.nupkg.sha512",
     "C:\\Users\\Iks\\.nuget\\packages\\serilog\\3.1.1\\serilog.3.1.1.nupkg.sha512",
     "C:\\Users\\Iks\\.nuget\\packages\\serilog.extensions.logging\\8.0.0\\serilog.extensions.logging.8.0.0.nupkg.sha512",
@@ -54,5 +54,24 @@
     "C:\\Users\\Iks\\.nuget\\packages\\system.text.encodings.web\\8.0.0\\system.text.encodings.web.8.0.0.nupkg.sha512",
     "C:\\Users\\Iks\\.nuget\\packages\\system.text.json\\8.0.0\\system.text.json.8.0.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Warning As Error: Detected package downgrade: CounterStrikeSharp.Api from 1.0.215 to 1.0.202. Reference the package directly from the project to select a different version. \r\n IksAdmin_AdvAdminCommands -> IksAdminApi -> CounterStrikeSharp.Api (>= 1.0.215) \r\n IksAdmin_AdvAdminCommands -> CounterStrikeSharp.API (>= 1.0.202)",
+      "libraryId": "CounterStrikeSharp.Api",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
+    {
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Warning As Error: Detected package downgrade: CounterStrikeSharp.Api from 1.0.215 to 1.0.202. Reference the package directly from the project to select a different version. \r\n IksAdmin_AdvAdminCommands -> IksAdmin -> CounterStrikeSharp.Api (>= 1.0.215) \r\n IksAdmin_AdvAdminCommands -> CounterStrikeSharp.API (>= 1.0.202)",
+      "libraryId": "CounterStrikeSharp.Api",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
 }

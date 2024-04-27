@@ -42,7 +42,7 @@
           "dependencies": {
             "CounterStrikeSharp.Api": {
               "target": "Package",
-              "version": "[1.0.202, )"
+              "version": "[1.0.215, )"
             },
             "Dapper": {
               "target": "Package",

@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Entities;
@@ -290,6 +291,36 @@ public class Map
         Title = title;
         Id = id;
         Workshop = workshop;
+    }
+}
+
+public static class PlayerExtensions
+{
+    public static PlayerInfo GetInfo(this CCSPlayerController controller)
+    {
+        return new PlayerInfo(
+            controller.PlayerName,
+            controller.AuthorizedSteamID!.SteamId64,
+            controller.IpAddress!
+        );
+    }
+
+    public static string GetSteamId(this CCSPlayerController? controller)
+    {
+        return controller == null ? "CONSOLE" : controller.AuthorizedSteamID!.SteamId64.ToString();
+    }
+    public static string GetName(this CCSPlayerController? controller)
+    {
+        return controller == null ? "CONSOLE" : controller.PlayerName;
+    }
+    public static string GetIp(this CCSPlayerController? controller)
+    {
+        return controller == null ? "0.0.0.0" : controller.IpAddress!.Split(":")[0] ?? "0.0.0.0";
+    }
+    public static void Kick(this CCSPlayerController? controller)
+    {
+        if (controller == null) return;
+        Server.ExecuteCommand("kickid " + controller.UserId);
     }
 }
 
