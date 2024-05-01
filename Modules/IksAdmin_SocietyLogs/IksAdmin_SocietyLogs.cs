@@ -1004,7 +1004,6 @@ public static class SocietyLogger
         {
             Console.WriteLine(e);
         }
-        
     }
 
     public static void SendToVk(string message)

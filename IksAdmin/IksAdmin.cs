@@ -22,12 +22,12 @@ namespace IksAdmin;
 public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
 {
     public override string ModuleName => "IksAdmin";
-    public override string ModuleVersion => "2.1.4";
+    public override string ModuleVersion => "2.1.6";
     public override string ModuleAuthor => "iks__";
 
     private static List<int> _kickSlots = new();
 
-    public static IIksAdminApi? Api;
+    public static PluginApi? Api;
     private static string _dbConnectionString = "";
     private readonly PluginCapability<IIksAdminApi> _pluginCapability  = new("iksadmin:core");
     public PluginConfig Config { get; set; } = new();
@@ -104,7 +104,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         Api!.DisconnectedPlayers.Remove(sid64);
         Task.Run(async () =>
         {
-            await ReloadPlayerInfractions(sid64, true, ip, slot, name);
+            await ReloadPlayerInfractions(sid64, true, ip, slot, name, true);
             ConvertAll();
         });
     }
@@ -749,31 +749,27 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
                 }
                 player.VoiceFlags = VoiceFlags.Muted;
             }
+
+            if (player != null && mute == null)
+            {
+                player.VoiceFlags = VoiceFlags.Normal;
+            }
             
         });
     }
 
-    private static async Task<bool> PlayerBanned(string sid, string ip)
+    private static async Task<PlayerBan?> GetPlayerBan(string sid, string ip)
     {
         var existingBan = await Api!.GetBan(sid);
-        if (existingBan != null) return true;
+        if (existingBan != null) return existingBan;
         var existingBanIp = await Api.GetBan(ip.Split(":")[0]);
-        if (existingBanIp != null) return true;
-        return false;
+        if (existingBanIp != null) return existingBanIp;
+        return null;
     }
-    public static async Task ReloadPlayerInfractions(string sid64, bool checkBan = false, string ip = "127.0.0.1", int? slot = null, string? name = null)
+
+    public static async Task ReloadPlayerInfractions(string sid64, bool checkBan = false, string ip = "127.0.0.1", int? slot = null, string? name = null, bool onConnected = false)
+
     {
-        if (checkBan)
-        {
-            if (await PlayerBanned(sid64, ip))
-            {
-                KickPlayer(sid64);
-                if (slot != null)
-                    _kickSlots.Add((int)slot);
-                return;
-            }
-        }
-        
         var existingMute = await Api!.GetMute(sid64);
         if (existingMute != null)
         {
@@ -784,6 +780,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             var muteOnServer = Api.OnlineMutedPlayers.FirstOrDefault(x => x.Sid == sid64);
             Api.OnlineMutedPlayers.Remove(muteOnServer!);
         }
+
         var existingGag = await Api.GetGag(sid64);
         if (existingGag != null)
         {
@@ -794,8 +791,9 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             var gagOnServer = Api.OnlineGaggedPlayers.FirstOrDefault(x => x.Sid == sid64);
             Api.OnlineGaggedPlayers.Remove(gagOnServer!);
         }
+
         UpdatePlayerComms(sid64);
-        
+
         var existingAdmin = await Api.GetAdmin(sid64);
         if (existingAdmin != null)
         {
@@ -811,15 +809,37 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
                 if (ConfigNow.UpdateNames)
                 {
                     await conn.QueryAsync("update iks_admins set name = @name where sid = @sid;",
-                        new {name, sid = sid64});
+                        new { name, sid = sid64 });
                 }
             }
+
             Api.AllAdmins.Add(existingAdmin);
             var serverId = existingAdmin.ServerId.Split(";");
-            if (serverId.Contains(ConfigNow.ServerId)  || existingAdmin.ServerId.Trim() == ""){
+            if (serverId.Contains(ConfigNow.ServerId) || existingAdmin.ServerId.Trim() == "")
+            {
                 Api.ThisServerAdmins.Add(existingAdmin);
             }
         }
+
+        PlayerBan? existingBan = null;
+        if (checkBan)
+        {
+            existingBan = await GetPlayerBan(sid64, ip);
+            if (existingBan != null)
+            {
+                KickPlayer(sid64);
+                if (slot != null)
+                    _kickSlots.Add((int)slot);
+            }
+        }
+
+        if (onConnected)
+            Api.EOnPlayerConnected(
+                new PlayerInfo(name!, ulong.Parse(sid64), ip),
+                existingAdmin, 
+                existingBan,
+                existingMute, 
+                existingGag);
     }
 }
 
@@ -868,6 +888,21 @@ public class PluginApi : IIksAdminApi
             return exsistingAdmin;
         return null;
     }
+
+    public Dictionary<CCSPlayerController, Admin> GetOnlineAdmins()
+    {
+        var admins = new Dictionary<CCSPlayerController, Admin>();
+        var players = XHelper.GetOnlinePlayers();
+        foreach (var player in players)
+        {
+            var admin = GetAdmin(player);
+            if (admin == null) continue;
+            admins.Add(player, admin);
+        }
+
+        return admins;
+    }
+
     public Admin? GetAdminBySid(string steamId)
     {
         var exsistingAdmin =
@@ -1260,6 +1295,13 @@ public class PluginApi : IIksAdminApi
     public event Action<List<Admin>>? OnReloadAdmins;
     public event Action<CCSPlayerController?, CommandInfo>? OnCommandUsed;
 
+    public void EOnPlayerConnected(PlayerInfo info, Admin? admin, PlayerBan? ban, PlayerComm? mute, PlayerComm? gag)
+    {
+        Console.WriteLine("Event invoked");
+        OnPlayerConnected?.Invoke(info, admin, ban, mute, gag);
+    }
+    public event Action<PlayerInfo, Admin?, PlayerBan?, PlayerComm?, PlayerComm?>? OnPlayerConnected;
+
     #endregion
 
     #region Commands helpers
@@ -1426,6 +1468,10 @@ public class PluginApi : IIksAdminApi
                 return false;
             
             var serverId = Config.BanOnAllServers ? "" : banInfo.ServerId;
+            if (banInfo.ServerId == "-")
+            {
+                serverId = Config.ServerId;
+            }
             await conn.QueryAsync("insert into iks_bans(name, sid, ip, adminsid, adminName, created, time, end, reason, BanType, server_id)" +
                                   "values (@name, @sid, @ip, @adminSid, @adminName, @created, @time, @end, @reason, @banType, @serverId)",
                                   new
@@ -1461,9 +1507,12 @@ public class PluginApi : IIksAdminApi
             var ban = await GetMute(muteInfo.Sid);
             if (ban != null)
                 return false;
-
-            var serverId = Config.BanOnAllServers ? "" : muteInfo.ServerId;
             
+            var serverId = Config.BanOnAllServers ? "" : muteInfo.ServerId;
+            if (muteInfo.ServerId == "-")
+            {
+                serverId = Config.ServerId;
+            }
             await conn.QueryAsync("insert into iks_mutes(name, sid, adminsid, adminName, created, time, end, reason, server_id)" +
                                   "values (@name, @sid, @adminSid, @adminName, @created, @time, @end, @reason, @serverId)",
                 new
@@ -1498,6 +1547,10 @@ public class PluginApi : IIksAdminApi
             if (ban != null)
                 return false;
             var serverId = Config.BanOnAllServers ? "" : gagInfo.ServerId;
+            if (gagInfo.ServerId == "-")
+            {
+                serverId = Config.ServerId;
+            }
             await conn.QueryAsync("insert into iks_gags(name, sid, adminsid, adminName, created, time, end, reason, server_id)" +
                                   "values (@name, @sid, @adminSid, @adminName, @created, @time, @end, @reason, @serverId)",
                 new
@@ -1736,9 +1789,14 @@ public class PluginApi : IIksAdminApi
 
     #region Other
 
+    [Obsolete]
     public IBaseMenu CreateMenu(CCSPlayerController caller, Action<CCSPlayerController, Admin?, IMenu> onOpen)
     {
         return new Menu(caller, onOpen);
+    }
+    public IBaseMenu CreateMenu(Action<CCSPlayerController, Admin?, IMenu> onOpen)
+    {
+        return new Menu(onOpen);
     }
 
     public void SendMessageToPlayer(CCSPlayerController? controller, string message)

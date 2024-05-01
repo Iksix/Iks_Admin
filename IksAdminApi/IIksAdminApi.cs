@@ -41,7 +41,10 @@ public interface IIksAdminApi
     public List<Admin> GetThisServerAdmins();
     public Admin? GetAdmin(CCSPlayerController player);
     public Admin? GetAdmin(ulong steamId);
+    public Dictionary<CCSPlayerController, Admin> GetOnlineAdmins();
+    [Obsolete]
     public IBaseMenu CreateMenu(CCSPlayerController caller, Action<CCSPlayerController, Admin?, IMenu> onOpen);
+    public IBaseMenu CreateMenu(Action<CCSPlayerController, Admin?, IMenu> onOpen);
     public void SendMessageToPlayer(CCSPlayerController? controller, string message);
     public void SendMessageToAll(string message);
     public Task ReloadInfractions(string sid, bool checkBan = true);
@@ -93,6 +96,11 @@ public interface IIksAdminApi
     event Action<string, Map> OnChangeMap;
     event Action<List<Admin>> OnReloadAdmins;
     event Action<CCSPlayerController?, CommandInfo> OnCommandUsed;
+    
+    /// <summary>
+    /// Player, Ban, Mute, Gag
+    /// </summary>
+    event Action<PlayerInfo, Admin?, PlayerBan?, PlayerComm?, PlayerComm?> OnPlayerConnected; // info -> ban -> mute -> gag
     
     // events callers
     public void EKick(string adminSid, PlayerInfo target, string reason);
@@ -322,6 +330,12 @@ public static class PlayerExtensions
         if (controller == null) return;
         Server.ExecuteCommand("kickid " + controller.UserId);
     }
+    
+    public static int GetTime(int time)
+    {
+        return (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+    }
+    
 }
 
 public interface IPluginCfg

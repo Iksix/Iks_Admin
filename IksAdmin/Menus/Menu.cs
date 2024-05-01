@@ -7,7 +7,13 @@ namespace IksAdmin.Menus;
 
 public class Menu : BaseMenu
 {
+    [Obsolete]
     public Menu(CCSPlayerController caller,Action<CCSPlayerController, Admin?, IMenu> onOpen)
+    {
+        OnOpen += onOpen;
+    }
+    
+    public Menu(Action<CCSPlayerController, Admin?, IMenu> onOpen)
     {
         OnOpen += onOpen;
     }
