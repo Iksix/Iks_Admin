@@ -22,10 +22,13 @@
 - `css_group_add <name> <flags> <immunity>` | FlagAccess: `"groupManage"`, default: `"z"`
 - `css_group_del <name>` | Flag access: `"groupManage"`, default: `"z"`
 - `css_group_list` | Flag access: `"groupManage"`, default: `"z"`
+- `css_admin_reload_cfg` | `Flags Access: "reload_cfg", Default: "z"`
 - `css_who <name>` | Flags access: `"who"` Default: `b`
 - `css_ban <#uid/#sid/name> <duration> <reason> <name if needed>` | Flags access: `"ban"` Default: `b`
 - `css_banip <$ip/#uid/#sid/name> <duration> <reason> <name if needed>` | FlagAccess: `"banip"`, default: `"b"`
 - `css_gag <#uid/#sid/name> <duration> <reason> <name if needed>` | Flags access: `"gag"` Default: `g`
+- `css_silence <#uid/#sid/name> <duration> <reason> <name if needed>` | `Flags Access: "silence", Default: "gm"`
+- `css_unsilence <#uid/#sid/name>` | `Flags Access: "unsilence", Default: "gm"`
 - `css_mute <#uid/#sid/name> <duration> <reason> <name if needed>` | Flags access: `"mute"` Default: `m`
 - `css_unban <sid/ip>` | Flags access: `"unban"` Default: `u`
 - `css_unmute/ungag <#uid/#sid/namep>` | Flags access: `"unmute"/"ungag"` Default: `m/g`
