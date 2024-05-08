@@ -14,7 +14,7 @@ public static class PluginMenuManager
     private static readonly PluginConfig Config = IksAdmin.ConfigNow;
     public static void OpenAdminMenu(CCSPlayerController caller)
     {
-        var menu = new Menu(caller, ConstructAdminMenu);
+        var menu = new Menu(ConstructAdminMenu);
         menu.Open(caller, Localizer["MENUTITLE_Main"]);
     }
 
@@ -37,7 +37,7 @@ public static class PluginMenuManager
         {
             menu.AddMenuOption(item.Title, (p, _) =>
             {
-                item.OnSelect!.Invoke(p, admin, menu);
+                item.OnSelect.Invoke(p, admin, menu);
             });
         }
         Api.EOnMenuOpen("Main", menu, caller);
@@ -45,13 +45,13 @@ public static class PluginMenuManager
 
     public static void OpenBlocksMenu(CCSPlayerController caller, IMenu backMenu)
     {
-        var menu = new Menu(caller, ConstructBlocksMenu);
+        var menu = new Menu(ConstructBlocksMenu);
         menu.Open(caller, Localizer["MENUTITLE_Blocks"], backMenu);
     }
     
     public static void OpenServerMenu(CCSPlayerController caller, IMenu backMenu)
     {
-        var menu = new Menu(caller, ConstructServerMenu);
+        var menu = new Menu(ConstructServerMenu);
         menu.Open(caller, Localizer["MENUTITLE_Server"], backMenu);
     }
 
@@ -75,7 +75,7 @@ public static class PluginMenuManager
         {
             menu.AddMenuOption(item.Title, (p, _) =>
             {
-                item.OnSelect!.Invoke(p, admin, menu);
+                item.OnSelect.Invoke(p, admin, menu);
             });
         }
         Api.EOnMenuOpen("ManageServer", menu, caller);
@@ -83,7 +83,7 @@ public static class PluginMenuManager
     
     public static void OpenMapsMenu(CCSPlayerController caller, IMenu backMenu)
     {
-        var menu = new Menu(caller, ConstructMapsMenu);
+        var menu = new Menu(ConstructMapsMenu);
         menu.Open(caller, Localizer["MENUTITLE_Maps"], backMenu);
     }
 
@@ -108,7 +108,7 @@ public static class PluginMenuManager
 
     public static void OpenPlayersMenu(CCSPlayerController caller, IMenu backMenu)
     {
-        var menu = new Menu(caller, ConstructPlayersMenu);
+        var menu = new Menu(ConstructPlayersMenu);
         menu.Open(caller, Localizer["MENUTITLE_Players"], backMenu);
     }
 
@@ -160,7 +160,7 @@ public static class PluginMenuManager
         {
             menu.AddMenuOption(item.Title, (p, _) =>
             {
-                item.OnSelect!.Invoke(p, admin, menu);
+                item.OnSelect.Invoke(p, admin, menu);
             });
         }
         Api.EOnMenuOpen("ManagePlayers", menu, caller);
@@ -203,7 +203,7 @@ public static class PluginMenuManager
 
     private static void OpenTeamsMenu(CCSPlayerController caller, PlayerInfo target, IMenu backMenu, bool changeTeam = false)
     {
-        Menu menu = new Menu(caller, (_, _, menu) =>
+        Menu menu = new Menu((_, _, menu) =>
         {
             TeamsMenuConstructor(menu, caller, target, changeTeam);
         });
@@ -317,11 +317,18 @@ public static class PluginMenuManager
                 OpenMuteMenu(caller, menu);
             });
         }
+        if (Api.HasPermisions(adminSid, "silence", "gm"))
+        {
+            menu.AddMenuOption(Localizer["MENUOPTION_Silence"], (_, _) =>
+            {
+                OpenSilenceMenu(caller, menu);
+            });
+        }
         if (Api.HasPermisions(adminSid, "ungag", "g"))
         {
             menu.AddMenuOption(Localizer["MENUOPTION_UnGag"], (_, _) =>
             {
-                var gagMenu = new Menu(caller, ConstructUnGagMenu);
+                var gagMenu = new Menu(ConstructUnGagMenu);
                 gagMenu.Open(caller, Localizer["MENUTITLE_UnGag"], menu);
             });
         }
@@ -329,8 +336,16 @@ public static class PluginMenuManager
         {
             menu.AddMenuOption(Localizer["MENUOPTION_UnMute"], (_, _) =>
             {
-                var gagMenu = new Menu(caller, ConstructUnMuteMenu);
+                var gagMenu = new Menu(ConstructUnMuteMenu);
                 gagMenu.Open(caller, Localizer["MENUTITLE_UnMute"], menu);
+            });
+        }
+        if (Api.HasPermisions(adminSid, "unsilence", "gm"))
+        {
+            menu.AddMenuOption(Localizer["MENUOPTION_UnSilence"], (_, _) =>
+            {
+                var unsilenceMenu = new Menu(ConstructUnSilenceMenu);
+                unsilenceMenu.Open(caller, Localizer["MENUTITLE_UnSilence"], menu);
             });
         }
         
@@ -343,7 +358,7 @@ public static class PluginMenuManager
         {
             menu.AddMenuOption(item.Title, (p, _) =>
             {
-                item.OnSelect!.Invoke(p, admin, menu);
+                item.OnSelect.Invoke(p, admin, menu);
             });
         }
         Api.EOnMenuOpen("ManageBlocks", menu, caller);
@@ -379,7 +394,7 @@ public static class PluginMenuManager
     
     private static void OpenOfflineBanMenu(CCSPlayerController caller, IMenu backMenu)
     {
-        Menu menu = new Menu(caller, ConstructOfflineBanMenu);
+        Menu menu = new Menu(ConstructOfflineBanMenu);
         menu.Open(caller, Localizer["MENUTITLE_OfflineBan"], backMenu);
         // OpenSelectPlayersMenu(caller, menu, (target, _) =>
         // {
@@ -427,7 +442,7 @@ public static class PluginMenuManager
                         reason,
                         Config.ServerId
                     );
-                    Task.Run(async () => { await Api!.AddBan(newBan.AdminSid, newBan); });
+                    Task.Run(async () => { await Api.AddBan(newBan.AdminSid, newBan); });
                 });
             });
         }
@@ -480,6 +495,33 @@ public static class PluginMenuManager
             }
         }
     }
+    private static void OpenSilenceMenu(CCSPlayerController caller, IMenu menu)
+    {
+        OpenSelectPlayersMenu(caller, menu, (target, _) =>
+        {
+            SelectReasonAndTime(caller, menu, Config.GagReasons, (reason, time) =>
+            {
+                MenuManager.CloseActiveMenu(caller);
+                time = time * 60;
+                var newBan = new PlayerComm(
+                    target.PlayerName,
+                    target.SteamId.SteamId64.ToString(),
+                    caller.AuthorizedSteamID!.SteamId64.ToString(),
+                    caller.PlayerName,
+                    (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                    time,
+                    (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + time,
+                    reason,
+                    Config.ServerId
+                );
+                Task.Run(async () =>
+                {
+                    if (Api!.HasPermisions(newBan.AdminSid, "gag", "g")) await Api.AddGag(newBan.AdminSid, newBan);
+                    if (Api.HasPermisions(newBan.AdminSid, "mute", "m")) await Api.AddMute(newBan.AdminSid, newBan);
+                });
+            });
+        }, true, false, Localizer["MENUTITLE_Silence"]);
+    }
     
     private static void ConstructUnMuteMenu(CCSPlayerController caller, Admin? admin, IMenu menu)
     {
@@ -499,6 +541,25 @@ public static class PluginMenuManager
                     });
                 });
             }
+        }
+    }
+    private static void ConstructUnSilenceMenu(CCSPlayerController caller, Admin? admin, IMenu menu)
+    {
+        var players = XHelper.GetOnlinePlayers();
+        foreach (var player in players)
+        {
+            var playerSid = player.AuthorizedSteamID!.SteamId64.ToString();
+            var adminSid = caller.AuthorizedSteamID!.SteamId64.ToString();
+            menu.AddMenuOption(player.PlayerName, (_, _) =>
+            {
+                Task.Run(async () =>
+                {
+                    MenuManager.CloseActiveMenu(caller);
+                    if (Api!.HasPermisions(adminSid, "ungag", "g")) await Api.UnGag(playerSid, adminSid);
+                    if (Api.HasPermisions(adminSid, "unmute", "m")) await Api.UnMute(playerSid, adminSid);
+                    
+                });
+            });
         }
     }
     
@@ -531,7 +592,7 @@ public static class PluginMenuManager
     
     private static void SelectReasonAndTime(CCSPlayerController caller, IMenu backMenu ,List<Reason> reasons, Action<string, int> onSelect)
     {
-        Menu menu = new Menu(caller, (controller, _, arg3) => 
+        Menu menu = new Menu((controller, _, arg3) => 
             SelectReasonAndTimeConstructor(controller, arg3, reasons, onSelect));
         menu.Open(caller, Localizer["MENUTITLE_Reason"], backMenu);
     }
@@ -578,7 +639,7 @@ public static class PluginMenuManager
 
     private static void SelectTime(CCSPlayerController caller, IMenu backMenu, Action<int> onSelect)
     {
-        Menu menu = new Menu(caller, (controller, _, arg3) =>
+        Menu menu = new Menu((controller, _, arg3) =>
         {
             SelectTimeConstructor(controller, arg3, onSelect);
         });
@@ -616,7 +677,7 @@ public static class PluginMenuManager
 
     private static void SelectReason(CCSPlayerController caller, IMenu backMenu ,List<string> reasons, Action<string> onSelect)
     {
-        Menu menu = new Menu(caller, (controller, _, arg3) => 
+        Menu menu = new Menu((controller, _, arg3) => 
             SelectReasonConstructor(controller, arg3, reasons, onSelect));
         menu.Open(caller, Localizer["MENUTITLE_Reason"], backMenu);
     }
@@ -645,7 +706,7 @@ public static class PluginMenuManager
     private static void OpenSelectPlayersMenu(CCSPlayerController caller, IMenu backMenu, Action<PlayerInfo, IMenu> onSelect,
         bool ignoreYourself = true, bool offline = false, string? title = null, bool aliveOnly = false, string? filter = null)
     {
-        Menu menu = new Menu(caller, (controller, _, arg3) =>
+        Menu menu = new Menu((controller, _, arg3) =>
         {
             ConstructSelectPlayerMenu(controller, arg3, onSelect, ignoreYourself, offline, aliveOnly, filter);
         });

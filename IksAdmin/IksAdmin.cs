@@ -5,6 +5,7 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Config;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Timers;
@@ -40,6 +41,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     
     public void OnConfigParsed(PluginConfig config)
     {
+        config = ConfigManager.Load<PluginConfig>(ModuleName);
         _dbConnectionString = "Server=" + config.Host + ";Database=" + config.Database
                              + ";port=" + config.Port + ";User Id=" + config.User + ";password=" + config.Password;
         Config = config;
@@ -48,11 +50,11 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
 
     public override void Load(bool hotReload)
     {
-        RegisterListener<Listeners.OnClientAuthorized>(OnAuthorized);
-        _plugin = this;
         Api = new PluginApi(this, Config, Localizer, _dbConnectionString);
         Capabilities.RegisterPluginCapability(_pluginCapability, () => Api);
         BaseCommands.Config = Config;
+        RegisterListener<Listeners.OnClientAuthorized>(OnAuthorized);
+        _plugin = this;
         InitializeCommands();
         InitializeMessages();
         AddCommandListener("say", OnSay);
@@ -68,7 +70,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
 
         AddTimer(1, () =>
         {
-            var allAdmins = Api.AllAdmins;
+            var allAdmins = Api!.AllAdmins;
             foreach (var admin in allAdmins)
             {
                 if (admin.End != 0 && admin.End < DateTimeOffset.UtcNow.ToUnixTimeSeconds())
@@ -203,6 +205,16 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             CommandUsage.CLIENT_AND_SERVER,
             BaseCommands.DbUpdate
         );
+        Api!.AddNewCommand(
+            "admin_reload_cfg",
+            "reloads admin cfg",
+            "admin_reload_cfg",
+            0,
+            "reload_cfg",
+            "z",
+            CommandUsage.CLIENT_AND_SERVER,
+            ReloadConfig
+        );
         Api.AddNewCommand(
             "group_add",
             "add group",
@@ -332,6 +344,26 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             "g",
             CommandUsage.CLIENT_AND_SERVER,
             BaseCommands.Gag
+        );
+        Api.AddNewCommand(
+            "silence",
+            "silence the player",
+            "css_silence <#uid/#sid/name> <duration> <reason> <name if needed>",
+            3,
+            "silence",
+            "gm",
+            CommandUsage.CLIENT_AND_SERVER,
+            BaseCommands.Silence
+        );
+        Api.AddNewCommand(
+            "unsilence",
+            "unsilence the player",
+            "css_unsilence <#uid/#sid/name>",
+            1,
+            "unsilence",
+            "gm",
+            CommandUsage.CLIENT_AND_SERVER,
+            BaseCommands.UnSilence
         );
         Api.AddNewCommand(
             "mute",
@@ -496,6 +528,15 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             BaseCommands.RUnBan
         );
     }
+
+    private void ReloadConfig(CCSPlayerController arg1, Admin? arg2, List<string> arg3, CommandInfo info)
+    {
+        OnConfigParsed(Config);
+        Api!.Config = Config;
+        BaseCommands.Config = Config;
+        info.ReplyToCommand("Config reloaded");
+    }
+
     private string ReplaceComm(string message, PlayerComm comm, string unbannedBy = "")
     {
         var admin = AdminName(comm.AdminSid);
@@ -567,6 +608,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         if (player == null || !player.IsValid || player.IsBot) return HookResult.Continue;
         if (player.AuthorizedSteamID == null) return HookResult.Continue;
         var playerSid = player.AuthorizedSteamID.SteamId64.ToString();
+        bool toTeam = info.GetArg(0) == "say_team";
         var message = info.GetArg(1);
 
         var existingGag =
@@ -602,6 +644,17 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             }
             var existingAdmin = Api.GetAdminBySid(playerSid);
             var players = XHelper.GetOnlinePlayers();
+            if (existingAdmin != null)
+            {
+                if (!toTeam)
+                {
+                    Server.PrintToChatAll(Localizer["OTHER_FromAdminToAll"].ToString()
+                        .Replace("{message}", messageToAdmins)
+                        .Replace("{name}", player.PlayerName)
+                    );
+                    return HookResult.Handled;
+                }
+            }
             if (existingAdmin == null)
             {
                 player.PrintToChat(Localizer["OTHER_ToAdmins"].ToString()
@@ -637,7 +690,10 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             // Удаляем все установленные флаги
             foreach (var target in ConvertedFlags)
             {
-                AdminManager.RemovePlayerPermissions(target.Key, target.Value.ToArray());
+                foreach (var flag in target.Value)
+                {
+                    AdminManager.RemovePlayerPermissions(target.Key, new []{ flag });
+                }
             }
             ConvertedFlags.Clear();
             // Устанавливаем иммунитет на прошлый
@@ -654,7 +710,6 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             ConvertedGroups.Clear();
             // Устанавливаем флаги для текущих админов
             var admins = Api!.GetThisServerAdmins();
-            Server.ExecuteCommand("css_admins_reload");
             _plugin!.AddTimer(3, () =>
             {
                 foreach (var admin in admins)
@@ -662,10 +717,12 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
                     try
                     {
                         var steamId = new SteamID(ulong.Parse(admin.SteamId));
+                        var adminData = AdminManager.GetPlayerAdminData(steamId);
                         if (admin.GroupName.Trim() != "")
                         {
                             var group = $"#css/{admin.GroupName}";
                             AdminManager.AddPlayerToGroup(steamId, new []{group});
+                            adminData!.Groups.Add(group);
                             ConvertedGroups.Remove(steamId);
                             ConvertedGroups.Add(steamId, group);
                         }
@@ -690,9 +747,9 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
                         ConvertedFlags.Remove(steamId);
                         ConvertedFlags.Add(steamId, finalFlags);
                     }
-                    catch (Exception e)
+                    catch (Exception _)
                     {
-                        Console.WriteLine($"[IksAdmin] Error cannot convert admin {admin.Name}! Error: {e}");
+                        // ignored
                     }
                 }
             });

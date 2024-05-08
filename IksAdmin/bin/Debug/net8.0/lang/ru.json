@@ -42,10 +42,13 @@
 	"NOTIFY_OnBan" : "{red}Вы{white} успешно выдали {red}бан{white} игроку {red}{name}!",
 	"NOTIFY_OnGag" : "{red}Вы{white} успешно выдали {red}гаг{white} игроку {red}{name}!",
 	"NOTIFY_OnMute" : "{red}Вы{white} успешно выдали {red}мут{white} игроку {red}{name}!",
+	"NOTIFY_OnSilence" : "{red}Вы{white} успешно {red}заглушили{white} игрока {red}{name}!", // [2.1.7]
 	//		действия (снятие наказаний)
 	"NOTIFY_OnUnBan" : "{red}Вы{white} успешно сняли {red}бан{white} с игрока {red}{name}!",
 	"NOTIFY_OnUnGag" : "{red}Вы{white} успешно сняли {red}гаг{white} с игрока {red}{name}!",
 	"NOTIFY_OnUnMute" : "{red}Вы{white} успешно сняли {red}мут{white} с игрока {red}{name}!",
+	"NOTIFY_OnUnSilence" : "{red}Вы{white} успешно сняли {red}мут и гаг{white} с игрока!", // [2.1.7]
+	
 	
 	// другое
 	"NOTIFY_OnAdminAdd" : "Admin {admin} added! \n SteamId: {sid} \n Flags: {flags} \n Server_Id: {serverId} \n GroupId: {group_id} \n GroupName: {group_name} \n Added by: {addedByName} | {addedBySid}",
@@ -66,6 +69,7 @@
 	"MENUTITLE_OfflineBan" : "Выдать Бан {red}(оффлайн)",
 	"MENUTITLE_Gag" : "Выдать Гаг",
 	"MENUTITLE_Mute" : "Выдать Мут",
+	"MENUTITLE_Silence" : "Заглушить", // [2.1.7]
 	"MENUTITLE_SelectPlayer" : "Выберите игрока",
 	"MENUTITLE_SelectTeam" : "Выберите время",
 	"MENUTITLE_Reason" : "Выберите причину",
@@ -76,6 +80,7 @@
 
 	"MENUTITLE_UnGag" : "Снять Гаг",
 	"MENUTITLE_UnMute" : "Снять Мут",
+	"MENUTITLE_UnSilence" : "Снять Мут и Гаг", // [2.1.7]
 
 	"MENUTITLE_Kick" : "Кикнуть игрока",
 	"MENUTITLE_Slay" : "Убить игрока",
@@ -96,10 +101,12 @@
 	"MENUOPTION_Ban" : "Выдать Бан",
 	"MENUOPTION_OfflineBan" : "Выдать Бан {red}(оффлайн)",
 	"MENUOPTION_Gag" : "Выдать Гаг",
+	"MENUOPTION_Silence" : "Заглушить", // [2.1.7]
 	"MENUOPTION_Mute" : "Выдать Мут",
 	
 	"MENUOPTION_UnGag" : "Снять Гаг",
 	"MENUOPTION_UnMute" : "Снять Мут",
+	"MENUOPTION_UnSilence" : "Снять Мут и Гаг", // [2.1.7]
 	"MENUOPTION_Maps" : "Сменить карту",
 
 	"MENUOPTION_Kick" : "Кикнуть игрока",
@@ -109,6 +116,7 @@
 	"MENUOPTION_Rename" : "Переименовать игрока",
 
 	"OTHER_ToAdmins" : "{green}Админам: {message}",
+	"OTHER_FromAdminToAll" : "{green}[ВСЕМ ОТ АДМИНА]: {message}",
 	"OTHER_AdminsSee" : "{green}[Админам] {name}: {message}",
 
 	"HELPER_Min": " мин." // Отображается если у срока нет ключа в Times | Example: 24 -> 24 мин.

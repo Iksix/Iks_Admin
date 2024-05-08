@@ -417,7 +417,7 @@ public class BaseCommands
                     {
                         return;
                     }
-                    ReplyToCommand(info, _localizer["NOTIFY_OnUnGag"].Value.Replace("{name}", name), "Player unmuted!");
+                    ReplyToCommand(info, _localizer["NOTIFY_OnUnMute"].Value.Replace("{name}", name), "Player unmuted!");
                 });
             });
             return;
@@ -696,7 +696,7 @@ public class BaseCommands
 
 
         var groupInfo = existingAdmin.GroupId != -1 ? $"\n Group Name: {existingAdmin.GroupName} \n GroupId: {existingAdmin.GroupId} \n CssGroups: {string.Join(", ", adminData!.Groups)}" : "";
-        ReplyToCommand(info, $"Name: {existingAdmin.Name} \n Flags: {existingAdmin.Flags} {groupInfo} \n Immunity: {existingAdmin.Immunity} \n SteamId: {existingAdmin.SteamId} \n ServerId: {existingAdmin.ServerId} ");
+        ReplyToCommand(info, $"Name: {existingAdmin.Name}\n Flags: {existingAdmin.Flags} {groupInfo} \n Immunity: {existingAdmin.Immunity}\nCS# immunity: {AdminManager.GetPlayerImmunity(new SteamID(ulong.Parse(existingAdmin.SteamId)))} \n SteamId: {existingAdmin.SteamId} \n ServerId: {existingAdmin.ServerId} ");
     }
 
     public static void RBan(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
@@ -1081,6 +1081,111 @@ public class BaseCommands
             if (banStatus)
                 ReplyToCommand(info, _localizer["NOTIFY_OnBan"].Value.Replace("{name}", name), $"Ban added to player!");
             else ReplyToCommand(info, _localizer["NOTIFY_PlayerAlreadyPunished"], $"The player has already been punished!");
+        });
+    }
+
+    public static void Silence(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
+    {
+        // css_silence <#uid/#sid/name> <duration> <reason> <name if needed>
+        string identity = args[0];
+        string adminSid = caller.GetSteamId();
+        int duration = int.Parse(args[1])*60;
+        string reason = args[2];
+        if (identity.StartsWith("@"))
+        {
+            DoAction("silence", identity, target =>
+            {
+                if (!_api!.HasMoreImmunity(caller.GetSteamId(), target.GetSteamId()))
+                {
+                    return;
+                }
+                var name = target.PlayerName;
+                var newGag = new PlayerComm(
+                    target.PlayerName,
+                    target.AuthorizedSteamID!.SteamId64.ToString(),
+                    caller.GetSteamId(),
+                    caller.GetName(),
+                    (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                    duration,
+                    (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + duration,
+                    reason,
+                    Config!.ServerId
+                );
+                Task.Run(async () =>
+                {
+                    ReplyToCommand(info, _localizer["NOTIFY_OnSilence"].Value.Replace("{name}", name), $"Silence added to player");
+                    await _api.AddGag(adminSid, newGag);
+                    await _api.AddMute(adminSid, newGag);
+                });
+            });
+            return;
+        }
+        var target = XHelper.GetPlayerFromArg(identity);
+        if (XHelper.GetIdentityType(identity) != "sid" && target == null)
+        {
+            ReplyToCommand(info, _localizer["NOTIFY_PlayerNotFound"], "Target not found!");
+            return;
+        }
+        string sid = target != null ? target.AuthorizedSteamID!.SteamId64.ToString() : identity.Replace("#", "");
+        if (!_api!.HasMoreImmunity(adminSid, sid))
+        {
+            ReplyToCommand(info, _localizer["NOTIFY_PlayerHaveBiggerImmunity"], "Target have >= immunity then yours");
+            return;
+        }
+        string name = args.Count > 3 ? string.Join(" ", args.Skip(3)) :
+            target == null ? "Undefined" : target.PlayerName;
+        var newGag = new PlayerComm(
+            name,
+            sid,
+            adminSid,
+            caller.GetName(),
+            (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            duration,
+            (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + duration,
+            reason,
+            Config!.ServerId
+        );
+        Task.Run(async () =>
+        {
+            ReplyToCommand(info, _localizer["NOTIFY_OnSilence"].Value.Replace("{name}", name), $"Silence added to player");
+            if (_api.HasPermisions(adminSid, "gag", "g")) await _api.AddGag(adminSid, newGag);
+            if (_api.HasPermisions(adminSid, "mute", "m")) await _api.AddMute(adminSid, newGag);
+        });
+    }
+    public static void UnSilence(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)
+    {
+        // css_unsilence <#uid/#sid/name>
+        var identity = args[0];
+        var adminSid = caller.GetSteamId();
+
+        if (identity.StartsWith("@"))
+        {
+            DoAction("unsilence", identity, target =>
+            {
+                var sid = target.GetSteamId();
+                Task.Run(async () =>
+                {
+                    if (_api.HasPermisions(adminSid, "ungag", "g")) await _api!.UnGag(sid, adminSid);
+                    if (_api.HasPermisions(adminSid, "unmute", "m")) await _api!.UnMute(sid, adminSid);
+               
+                    ReplyToCommand(info, _localizer["NOTIFY_OnUnSilence"], "Player unsilenced!");
+                });
+            });
+            return;
+        }
+        var target = XHelper.GetPlayerFromArg(identity);
+        if (target == null && XHelper.GetIdentityType(identity) != "sid")
+        {
+            ReplyToCommand(info, _localizer["NOTIFY_PlayerNotFound"], "Target not found!");
+            return;
+        }
+        var sid = target != null ? target.AuthorizedSteamID!.SteamId64.ToString() : identity.Remove(0, 1);
+        Task.Run(async () =>
+        {
+            if (_api!.HasPermisions(adminSid, "ungag", "g")) await _api!.UnGag(sid, adminSid);
+            if (_api.HasPermisions(adminSid, "unmute", "m")) await _api!.UnMute(sid, adminSid);
+               
+            ReplyToCommand(info, _localizer["NOTIFY_OnUnSilence"], "Player unsilenced!");
         });
     }
 }
