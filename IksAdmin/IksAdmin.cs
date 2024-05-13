@@ -208,7 +208,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         Api!.AddNewCommand(
             "admin_reload_cfg",
             "reloads admin cfg",
-            "admin_reload_cfg",
+            "css_admin_reload_cfg",
             0,
             "reload_cfg",
             "z",
