@@ -12,10 +12,7 @@
     <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="MySqlConnector" Version="2.3.7" />
     <ProjectReference Include="..\IksAdminApi\IksAdminApi.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Menus\" />
+    <Reference Include="C:\Users\Iks\Desktop\MenuManagerApi.dll" />
   </ItemGroup>
 
 </Project>

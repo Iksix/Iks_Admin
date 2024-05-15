@@ -12,12 +12,13 @@ using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using Dapper;
 using IksAdmin.Commands;
-using IksAdmin.Menus;
 using IksAdminApi;
+using MenuManager;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using MySqlConnector;
 using Group = IksAdminApi.Group;
+
 namespace IksAdmin;
 
 public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
@@ -38,14 +39,27 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     private static readonly Dictionary<SteamID, List<string>> ConvertedFlags = new();
     private static readonly Dictionary<SteamID, string> ConvertedGroups = new();
     private static readonly Dictionary<SteamID, uint> ConvertedImmunity = new();
+    public static IMenuApi? MenuManager;
+    private static readonly PluginCapability<IMenuApi?> PluginMenuCapability = new("menu:nfcore");   
     
     public void OnConfigParsed(PluginConfig config)
     {
         config = ConfigManager.Load<PluginConfig>(ModuleName);
-        _dbConnectionString = "Server=" + config.Host + ";Database=" + config.Database
-                             + ";port=" + config.Port + ";User Id=" + config.User + ";password=" + config.Password;
+        var dbConnectionBuilder = new MySqlConnectionStringBuilder();
+        dbConnectionBuilder.Password = config.Password;
+        dbConnectionBuilder.Server = config.Host;
+        dbConnectionBuilder.Database = config.Database;
+        dbConnectionBuilder.UserID = config.User;
+        dbConnectionBuilder.Port = uint.Parse(config.Port);
+
+        _dbConnectionString = dbConnectionBuilder.ConnectionString;
         Config = config;
         ConfigNow = config;
+    }
+
+    public override void OnAllPluginsLoaded(bool hotReload)
+    {
+        MenuManager = PluginMenuCapability.Get();
     }
 
     public override void Load(bool hotReload)
@@ -71,7 +85,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         AddTimer(1, () =>
         {
             var allAdmins = Api!.AllAdmins;
-            foreach (var admin in allAdmins)
+            foreach (var admin in allAdmins.ToList())
             {
                 if (admin.End != 0 && admin.End < DateTimeOffset.UtcNow.ToUnixTimeSeconds())
                 {
@@ -205,7 +219,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             CommandUsage.CLIENT_AND_SERVER,
             BaseCommands.DbUpdate
         );
-        Api!.AddNewCommand(
+        Api.AddNewCommand(
             "admin_reload_cfg",
             "reloads admin cfg",
             "css_admin_reload_cfg",
@@ -534,6 +548,13 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         OnConfigParsed(Config);
         Api!.Config = Config;
         BaseCommands.Config = Config;
+        Api.MenuType = Config.MenuType switch
+        {
+            "html" => MenuType.CenterMenu,
+            "chat" => MenuType.ChatMenu,
+            "button" => MenuType.ButtonMenu,
+            _ => MenuType.Default
+        };
         info.ReplyToCommand("Config reloaded");
     }
 
@@ -913,7 +934,7 @@ public class PluginApi : IIksAdminApi
     public List<PlayerComm> OnlineGaggedPlayers { get; set; } = new();
     public Dictionary<string, PlayerInfo> DisconnectedPlayers { get; set; } = new();
     public Dictionary<CCSPlayerController, Action<string>> NextCommandAction { get; set; } = new();
-    public IIksAdminApi.UsedMenuType MenuType { get; set; } 
+    public MenuType MenuType { get; set; } 
 
     public BasePlugin Plugin { get; }
     public List<Admin> GetThisServerAdmins()
@@ -980,7 +1001,13 @@ public class PluginApi : IIksAdminApi
         DbConnectionString = dbConnectionString;
         Config = config;
         Plugin = plugin;
-        MenuType = Config.UseHtmlMenu ? IIksAdminApi.UsedMenuType.Html : IIksAdminApi.UsedMenuType.Chat;
+        MenuType = config.MenuType switch
+        {
+            "html" => MenuType.CenterMenu,
+            "chat" => MenuType.ChatMenu,
+            "button" => MenuType.ButtonMenu,
+            _ => MenuType.Default
+        };
         Task.Run(async () =>
         {
             await CreateTables();
@@ -1338,8 +1365,11 @@ public class PluginApi : IIksAdminApi
     public event Action<Admin>? OnAddAdmin;
     public event Action<Admin>? OnDelAdmin;
     public event Action<PlayerBan>? OnAddBan;
+    public event Action<PlayerBan, bool>? PreAddBan;
     public event Action<PlayerComm>? OnAddMute;
+    public event Action<PlayerComm, bool>? PreAddMute;
     public event Action<PlayerComm>? OnAddGag;
+    public event Action<PlayerComm, bool>? PreAddGag;
     public event Action<PlayerBan, string>? OnUnBan;
     public event Action<PlayerComm, string>? OnUnMute;
     public event Action<PlayerComm, string>? OnUnGag;
@@ -1354,7 +1384,6 @@ public class PluginApi : IIksAdminApi
 
     public void EOnPlayerConnected(PlayerInfo info, Admin? admin, PlayerBan? ban, PlayerComm? mute, PlayerComm? gag)
     {
-        Console.WriteLine("Event invoked");
         OnPlayerConnected?.Invoke(info, admin, ban, mute, gag);
     }
     public event Action<PlayerInfo, Admin?, PlayerBan?, PlayerComm?, PlayerComm?>? OnPlayerConnected;
@@ -1480,6 +1509,11 @@ public class PluginApi : IIksAdminApi
         return true;
     }
 
+    public void ConvertAll()
+    {
+        IksAdmin.ConvertAll();
+    }
+
     public void EOnMenuOpen(string index, IMenu menu, CCSPlayerController player)
     {
         OnMenuOpen?.Invoke(index, menu, player);
@@ -1529,6 +1563,11 @@ public class PluginApi : IIksAdminApi
             {
                 serverId = Config.ServerId;
             }
+            banInfo.ServerId = serverId;
+            bool isContinue = true;
+            PreAddBan?.Invoke(banInfo, isContinue);
+            if (!isContinue) return false;
+            
             await conn.QueryAsync("insert into iks_bans(name, sid, ip, adminsid, adminName, created, time, end, reason, BanType, server_id)" +
                                   "values (@name, @sid, @ip, @adminSid, @adminName, @created, @time, @end, @reason, @banType, @serverId)",
                                   new
@@ -1570,6 +1609,10 @@ public class PluginApi : IIksAdminApi
             {
                 serverId = Config.ServerId;
             }
+            muteInfo.ServerId = serverId;
+            bool isContinue = true;
+            PreAddMute?.Invoke(muteInfo, isContinue);
+            if (!isContinue) return false;
             await conn.QueryAsync("insert into iks_mutes(name, sid, adminsid, adminName, created, time, end, reason, server_id)" +
                                   "values (@name, @sid, @adminSid, @adminName, @created, @time, @end, @reason, @serverId)",
                 new
@@ -1608,6 +1651,11 @@ public class PluginApi : IIksAdminApi
             {
                 serverId = Config.ServerId;
             }
+
+            gagInfo.ServerId = serverId;
+            bool isContinue = true;
+            PreAddGag?.Invoke(gagInfo, isContinue);
+            if (!isContinue) return false;
             await conn.QueryAsync("insert into iks_gags(name, sid, adminsid, adminName, created, time, end, reason, server_id)" +
                                   "values (@name, @sid, @adminSid, @adminName, @created, @time, @end, @reason, @serverId)",
                 new

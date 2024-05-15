@@ -10,7 +10,8 @@
         "dependencies": {
           "CounterStrikeSharp.API": "1.0.215",
           "Dapper": "2.1.35",
-          "MySqlConnector": "2.3.5"
+          "MySqlConnector": "2.3.5",
+          "MenuManagerApi": "1.0.0.0"
         },
         "runtime": {
           "IksAdminApi.dll": {}
@@ -551,6 +552,14 @@
         "dependencies": {
           "System.Text.Encodings.Web": "8.0.0"
         }
+      },
+      "MenuManagerApi/1.0.0.0": {
+        "runtime": {
+          "MenuManagerApi.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
       }
     }
   },
@@ -902,6 +911,11 @@
       "sha512": "sha512-OdrZO2WjkiEG6ajEFRABTRCi/wuXQPxeV6g8xvUJqdxMvvuCCEk86zPla8UiIQJz3durtUEbNyY/3lIhS0yZvQ==",
       "path": "system.text.json/8.0.0",
       "hashPath": "system.text.json.8.0.0.nupkg.sha512"
+    },
+    "MenuManagerApi/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
     }
   }
 }

@@ -3,6 +3,7 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
 using IksAdminApi;
+using MenuManager;
 using Microsoft.Extensions.Localization;
 
 namespace IksAdmin.Menus;
@@ -12,6 +13,7 @@ public static class PluginMenuManager
     private static readonly IIksAdminApi? Api = IksAdmin.Api;
     private static readonly IStringLocalizer Localizer = Api!.Localizer;
     private static readonly PluginConfig Config = IksAdmin.ConfigNow;
+    private static IMenuApi _menuManager = IksAdmin.MenuManager!;
     public static void OpenAdminMenu(CCSPlayerController caller)
     {
         var menu = new Menu(ConstructAdminMenu);
@@ -93,7 +95,7 @@ public static class PluginMenuManager
         {
             menu.AddMenuOption(map.Title, (_, _) =>
             {
-                MenuManager.CloseActiveMenu(caller);
+                _menuManager.CloseMenu(caller);
                 Api!.SendMessageToAll($"Change map to {map.Title} ...");
                 Api.Plugin.AddTimer(3, () =>
                 {
@@ -170,7 +172,7 @@ public static class PluginMenuManager
     {
         OpenSelectPlayersMenu(caller, menu, (target, _) =>
         {
-            MenuManager.CloseActiveMenu(caller);
+            _menuManager.CloseMenu(caller);
             var adminSid = caller.AuthorizedSteamID!.SteamId64.ToString();
             var player = XHelper.GetPlayerFromArg($"#{target.SteamId.SteamId64}");
             if (player == null) return;
@@ -212,8 +214,8 @@ public static class PluginMenuManager
 
     private static void TeamsMenuConstructor(IMenu menu, CCSPlayerController caller, PlayerInfo target, bool changeTeam)
     {
-        menu.PostSelectAction = PostSelectAction.Nothing;
         var adminSid = caller.AuthorizedSteamID!.SteamId64.ToString();
+        menu.PostSelectAction = PostSelectAction.Close;
         menu.AddMenuOption("To CT", (_, _) =>
         {
             var selectedPlayer = XHelper.GetPlayerFromArg($"#{target.SteamId.SteamId64}");
@@ -266,7 +268,6 @@ public static class PluginMenuManager
     {
         OpenSelectPlayersMenu(caller, menu, (target, playersMenu) =>
         {
-            playersMenu.PostSelectAction = PostSelectAction.Nothing;
             var selectedPlayer = XHelper.GetPlayerFromArg($"#{target.SteamId.SteamId64}");
             if (selectedPlayer == null) return;
             selectedPlayer.CommitSuicide(true,true);
@@ -280,7 +281,7 @@ public static class PluginMenuManager
         {
             SelectReason(caller, menu, Config.KickReasons, s =>
             {
-                MenuManager.CloseActiveMenu(caller);
+                _menuManager.CloseMenu(caller);
                 var selectedPlayer = XHelper.GetPlayerFromArg($"#{target.SteamId.SteamId64}");
                 if (selectedPlayer == null) return;
                 Server.ExecuteCommand("kickid " + selectedPlayer.UserId);
@@ -370,7 +371,7 @@ public static class PluginMenuManager
         {
             SelectReasonAndTime(caller, menu, Config.BanReasons, (reason, time) =>
             {
-                MenuManager.CloseActiveMenu(caller);
+                _menuManager.CloseMenu(caller);
                 time = time * 60;
                 var newBan = new PlayerBan(
                     target.PlayerName,
@@ -455,7 +456,7 @@ public static class PluginMenuManager
         {
             SelectReasonAndTime(caller, menu, Config.GagReasons, (reason, time) =>
             {
-                MenuManager.CloseActiveMenu(caller);
+                _menuManager.CloseMenu(caller);
                 time = time * 60;
                 var newBan = new PlayerComm(
                     target.PlayerName,
@@ -488,7 +489,7 @@ public static class PluginMenuManager
                 {
                     Task.Run(async () =>
                     {
-                        MenuManager.CloseActiveMenu(caller);
+                        _menuManager.CloseMenu(caller);
                         await Api.UnGag(playerSid, adminSid);
                     });
                 });
@@ -501,7 +502,7 @@ public static class PluginMenuManager
         {
             SelectReasonAndTime(caller, menu, Config.GagReasons, (reason, time) =>
             {
-                MenuManager.CloseActiveMenu(caller);
+                _menuManager.CloseMenu(caller);
                 time = time * 60;
                 var newBan = new PlayerComm(
                     target.PlayerName,
@@ -536,7 +537,7 @@ public static class PluginMenuManager
                 {
                     Task.Run(async () =>
                     {
-                        MenuManager.CloseActiveMenu(caller);
+                        _menuManager.CloseMenu(caller);
                         await Api.UnMute(playerSid, adminSid);
                     });
                 });
@@ -554,7 +555,7 @@ public static class PluginMenuManager
             {
                 Task.Run(async () =>
                 {
-                    MenuManager.CloseActiveMenu(caller);
+                    _menuManager.CloseMenu(caller);
                     if (Api!.HasPermisions(adminSid, "ungag", "g")) await Api.UnGag(playerSid, adminSid);
                     if (Api.HasPermisions(adminSid, "unmute", "m")) await Api.UnMute(playerSid, adminSid);
                     
@@ -569,7 +570,7 @@ public static class PluginMenuManager
         {
             SelectReasonAndTime(caller, menu, Config.MuteReasons, (reason, time) =>
             {
-                MenuManager.CloseActiveMenu(caller);
+                _menuManager.CloseMenu(caller);
                 time = time * 60;
                 var newBan = new PlayerComm(
                     target.PlayerName,
@@ -600,7 +601,6 @@ public static class PluginMenuManager
     private static void SelectReasonAndTimeConstructor(CCSPlayerController caller, IMenu menu, 
         List<Reason> reasons, Action<string, int> onSelect)
     {
-        menu.PostSelectAction = PostSelectAction.Nothing;
         foreach (var reason in reasons)
         {
             if (reason.Time >= 0)
@@ -647,7 +647,6 @@ public static class PluginMenuManager
     }
     private static void SelectTimeConstructor(CCSPlayerController caller, IMenu menu, Action<int> onSelect)
     {
-        menu.PostSelectAction = PostSelectAction.Nothing;
         foreach (var time in Config.Times)
         {
             if (time.Value == -1)

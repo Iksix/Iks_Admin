@@ -14,3 +14,4 @@ D:\__iksAdmin\Iks_Admin\IksAdmin\obj\Debug\net8.0\IksAdmin.dll
 D:\__iksAdmin\Iks_Admin\IksAdmin\obj\Debug\net8.0\refint\IksAdmin.dll
 D:\__iksAdmin\Iks_Admin\IksAdmin\obj\Debug\net8.0\IksAdmin.pdb
 D:\__iksAdmin\Iks_Admin\IksAdmin\obj\Debug\net8.0\ref\IksAdmin.dll
+D:\__iksAdmin\Iks_Admin\IksAdmin\bin\Debug\net8.0\MenuManagerApi.dll

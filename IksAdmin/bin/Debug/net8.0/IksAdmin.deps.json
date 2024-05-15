@@ -11,7 +11,8 @@
           "CounterStrikeSharp.API": "1.0.215",
           "Dapper": "2.1.35",
           "IksAdminApi": "1.0.0",
-          "MySqlConnector": "2.3.7"
+          "MySqlConnector": "2.3.7",
+          "MenuManagerApi": "1.0.0.0"
         },
         "runtime": {
           "IksAdmin.dll": {}
@@ -562,6 +563,14 @@
         "runtime": {
           "IksAdminApi.dll": {}
         }
+      },
+      "MenuManagerApi/1.0.0.0": {
+        "runtime": {
+          "MenuManagerApi.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
       }
     }
   },
@@ -916,6 +925,11 @@
     },
     "IksAdminApi/1.0.0": {
       "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "MenuManagerApi/1.0.0.0": {
+      "type": "reference",
       "serviceable": false,
       "sha512": ""
     }

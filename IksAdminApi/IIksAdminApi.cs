@@ -5,6 +5,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
+using MenuManager;
 using Microsoft.Extensions.Localization;
 using Microsoft.VisualBasic.CompilerServices;
 
@@ -15,7 +16,8 @@ public interface IIksAdminApi
     public enum UsedMenuType
     {
         Chat,
-        Html
+        Html,
+        Button
     }
     
     public IPluginCfg Config { get; set; }
@@ -25,7 +27,7 @@ public interface IIksAdminApi
     public List<PlayerComm> OnlineGaggedPlayers { get; set; }
     public Dictionary<string, PlayerInfo> DisconnectedPlayers { get; set; } // steamid -> info
     public Dictionary<CCSPlayerController, Action<string>> NextCommandAction { get; set; }
-    public UsedMenuType MenuType { get; set; }
+    public MenuType MenuType { get; set; }
     public string DbConnectionString { get; set; }
     public List<Admin> AllAdmins { get; set; }
     public List<Admin> ThisServerAdmins { get; set; }
@@ -75,6 +77,7 @@ public interface IIksAdminApi
     
     public bool HasPermisions(string adminSid, string flagsAccess, string flagsDefault);
     public bool HasMoreImmunity(string adminSid, string targetSid);
+    public void ConvertAll();
     
     // Events
     public void EOnMenuOpen(string index, IMenu menu, CCSPlayerController player);
@@ -82,8 +85,11 @@ public interface IIksAdminApi
     event Action<Admin> OnAddAdmin;
     event Action<Admin> OnDelAdmin;
     event Action<PlayerBan> OnAddBan;
+    event Action<PlayerBan, bool> PreAddBan; // ban -> continue?
     event Action<PlayerComm> OnAddMute;
+    event Action<PlayerComm, bool> PreAddMute; // mute -> continue?
     event Action<PlayerComm> OnAddGag;
+    event Action<PlayerComm, bool> PreAddGag; // gag -> continue?
     event Action<PlayerBan, string> OnUnBan;
     event Action<PlayerComm, string> OnUnMute;
     event Action<PlayerComm, string> OnUnGag;
@@ -345,7 +351,8 @@ public interface IPluginCfg
     [JsonPropertyName("Database")] public string Database { get; set; } 
     [JsonPropertyName("Password")] public string Password { get; set; }
     [JsonPropertyName("Port")] public string Port { get; set; }
-    [JsonPropertyName("UseHtmlMenu")] public bool UseHtmlMenu { get; set; } 
+    //[JsonPropertyName("UseHtmlMenu")] public bool UseHtmlMenu { get; set; } 
+    public string MenuType { get; set; }
     
     [JsonPropertyName("BanOnAllServers")] public bool BanOnAllServers { get; set; }
     public bool UpdateNames { get; set; }

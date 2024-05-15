@@ -12,7 +12,8 @@ public class PluginConfig : BasePluginConfig, IPluginCfg
     [JsonPropertyName("User")] public string User { get; set; } = "User";
     [JsonPropertyName("Password")] public string Password { get; set; } = "Password";
     [JsonPropertyName("Port")] public string Port { get; set; } = "3306";
-    [JsonPropertyName("UseHtmlMenu")] public bool UseHtmlMenu { get; set; } = false;
+    //[JsonPropertyName("UseHtmlMenu")] public bool UseHtmlMenu { get; set; } = false;
+    public string MenuType { get; set; } = "nickfox"; // chat, html, nickfox
     public bool UpdateNames { get; set; } = false; 
 
     [JsonPropertyName("BanOnAllServers")] public bool BanOnAllServers { get; set; } = true;

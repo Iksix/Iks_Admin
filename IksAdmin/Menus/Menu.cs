@@ -1,8 +1,10 @@
 ﻿using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Menu;
 using IksAdminApi;
+using MenuManager;
 
-namespace IksAdmin.Menus;
+
+namespace IksAdmin;
 
 
 public class Menu : BaseMenu
@@ -22,37 +24,43 @@ public class Menu : BaseMenu
 public abstract class BaseMenu : IBaseMenu
 {
     public event Action<CCSPlayerController, Admin?, IMenu>? OnOpen;
-    private IIksAdminApi.UsedMenuType _menuType = IksAdmin.Api!.MenuType;
-    private IIksAdminApi _api = IksAdmin.Api!;
+    private MenuType _menuType = IksAdmin.Api!.MenuType;
+    private IIksAdminApi _api = IksAdmin.Api;
+    private IMenuApi _menuManager = IksAdmin.MenuManager!;
+    
     public void Open(CCSPlayerController caller, string title, IMenu? backMenu = null)
     {
-        IMenu menu;
-        if (_menuType == IIksAdminApi.UsedMenuType.Html) menu = new CenterHtmlMenu(title);
-        else
+        if ((_menuType == MenuType.Default && _menuManager.GetMenuType(caller) == MenuType.ChatMenu) || _menuType == MenuType.ChatMenu)
         {
-            menu = new ChatMenu($" {_api.Localizer["PluginTag"]} {title}");
-            menu.AddMenuOption(_api.Localizer["MENUOPTION_Close"], (p, _) =>
-            {
-                MenuManager.CloseActiveMenu(p);
-                p.PrintToChat($" {_api.Localizer["PluginTag"]} {_api.Localizer["NOTIFY_MenuClosed"]}");
-            });
+            title = _api.Localizer["PluginTag"] + $" {title}";
         }
-        var admin = _api.ThisServerAdmins.FirstOrDefault(x =>
-            x.SteamId == caller.AuthorizedSteamID!.SteamId64.ToString());
-
+        IMenu menu = _menuManager.NewMenuForcetype(title, _menuType);
         if (backMenu != null)
         {
-            menu.AddMenuOption(_api.Localizer["MENUOPTION_Back"], (p, _) =>
-            {
-                if (_menuType == IIksAdminApi.UsedMenuType.Html) MenuManager.OpenCenterHtmlMenu(_api.Plugin, caller, (CenterHtmlMenu)backMenu);
-                else MenuManager.OpenChatMenu(caller, (ChatMenu)backMenu);
-            });
+            menu = _menuManager.NewMenuForcetype(title, _menuType, p => { OpenBackMenu(p, backMenu); });
         }
+        
+        // if (_menuType != MenuType.ButtonMenu)
+        // {
+        //     menu.AddMenuOption(_api.Localizer["MENUOPTION_Close"], (p, _) =>
+        //     {
+        //         _menuManager.CloseMenu(p);
+        //         p.PrintToChat($" {_api.Localizer["PluginTag"]} {_api.Localizer["NOTIFY_MenuClosed"]}");
+        //     });
+        // }
+        
+        var admin = _api.ThisServerAdmins.FirstOrDefault(x =>
+            x.SteamId == caller.AuthorizedSteamID!.SteamId64.ToString());
+        
         
         OnOpen?.Invoke(caller, admin, menu);
         
-        if (_menuType == IIksAdminApi.UsedMenuType.Html) MenuManager.OpenCenterHtmlMenu(_api.Plugin, caller, (CenterHtmlMenu)menu);
-        else MenuManager.OpenChatMenu(caller, (ChatMenu)menu);
+        menu.Open(caller);
+    }
+
+    private void OpenBackMenu(CCSPlayerController player, IMenu menu)
+    {
+        menu.Open(player);
     }
 }
 

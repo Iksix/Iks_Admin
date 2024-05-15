@@ -11,3 +11,5 @@ D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net8.0\IksAdminApi.dll
 D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net8.0\refint\IksAdminApi.dll
 D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net8.0\IksAdminApi.pdb
 D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net8.0\ref\IksAdminApi.dll
+D:\__iksAdmin\Iks_Admin\IksAdminApi\bin\Debug\net8.0\MenuManagerApi.dll
+D:\__iksAdmin\Iks_Admin\IksAdminApi\obj\Debug\net8.0\IksAdmin.4561C933.Up2Date
