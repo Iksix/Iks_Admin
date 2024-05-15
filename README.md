@@ -5,6 +5,7 @@
 
 ![изображение](https://github.com/Iksix/Iks_Admin/assets/109164274/f2e83b43-a40a-48ad-8093-5a7a1f991620) 
 
+![изображение](https://github.com/Iksix/Iks_Admin/assets/109164274/8f6490c3-4f10-4c25-a792-2d91766d09c2)
 
 
 ## Features
@@ -60,9 +61,6 @@ For example:
     "rename" : "bkmgus"
 },
 ```
-
-> [!IMPORTANT]
-> - ServerID in config must be only 1 symbol
 
 > [!TIP]
 > - You can write "ABCD" in ServerID column for admin
