@@ -67,6 +67,16 @@ For example:
 > - At the moment, you can add groups only directly to the database.
 > - Tested on [CS# v215](https://docs.cssharp.dev/index.html)
 
+## API connect:
+```csharp
+private readonly PluginCapability<IIksAdminApi> _pluginCapability = new("iksadmin:core");
+public static IIksAdminApi? AdminApi;
+public override void OnAllPluginsLoaded(bool hotReload)
+{
+    AdminApi = _pluginCapability.Get();
+}
+```
+
 ## To do...
 - [ ] Pre hooks
 - [ ] Advanced Admin Commands module
