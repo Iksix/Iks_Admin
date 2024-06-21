@@ -28,11 +28,12 @@ public abstract class BaseMenu : IBaseMenu
     private IIksAdminApi _api = IksAdmin.Api;
     private IMenuApi _menuManager = IksAdmin.MenuManager!;
     
-    public void Open(CCSPlayerController caller, string title, IMenu? backMenu = null)
+    public void Open(CCSPlayerController caller, string title, IMenu? backMenu = null, string? menuTag = null)
     {
+        var tag = menuTag == null ? _api.Localizer["PluginTag"] : menuTag;
         if ((_menuType == MenuType.Default && _menuManager.GetMenuType(caller) == MenuType.ChatMenu) || _menuType == MenuType.ChatMenu)
         {
-            title = _api.Localizer["PluginTag"] + $" {title}";
+            title = tag + $" {title}";
         }
         IMenu menu = _menuManager.NewMenuForcetype(title, _menuType);
         if (backMenu != null)

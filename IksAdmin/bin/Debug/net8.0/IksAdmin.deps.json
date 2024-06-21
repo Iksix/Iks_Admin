@@ -8,7 +8,7 @@
     ".NETCoreApp,Version=v8.0": {
       "IksAdmin/1.0.0": {
         "dependencies": {
-          "CounterStrikeSharp.API": "1.0.215",
+          "CounterStrikeSharp.API": "1.0.236",
           "Dapper": "2.1.35",
           "IksAdminApi": "1.0.0",
           "MySqlConnector": "2.3.7",
@@ -18,7 +18,7 @@
           "IksAdmin.dll": {}
         }
       },
-      "CounterStrikeSharp.API/1.0.215": {
+      "CounterStrikeSharp.API/1.0.236": {
         "dependencies": {
           "McMaster.NETCore.Plugins": "1.4.0",
           "Microsoft.CSharp": "4.7.0",
@@ -35,8 +35,8 @@
         },
         "runtime": {
           "lib/net8.0/CounterStrikeSharp.API.dll": {
-            "assemblyVersion": "1.0.215.0",
-            "fileVersion": "1.0.215.0"
+            "assemblyVersion": "1.0.236.0",
+            "fileVersion": "1.0.236.0"
           }
         }
       },
@@ -556,7 +556,7 @@
       },
       "IksAdminApi/1.0.0": {
         "dependencies": {
-          "CounterStrikeSharp.API": "1.0.215",
+          "CounterStrikeSharp.API": "1.0.236",
           "Dapper": "2.1.35",
           "MySqlConnector": "2.3.7"
         },
@@ -580,12 +580,12 @@
       "serviceable": false,
       "sha512": ""
     },
-    "CounterStrikeSharp.API/1.0.215": {
+    "CounterStrikeSharp.API/1.0.236": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-6+Alg+R3JMKQd9Jf2urnyzegW/ge0hNeE719RCoTX9bKoejoBAqWx2D9g/MfyHRJfE1sFdVbObyGuNfnp0NI4Q==",
-      "path": "counterstrikesharp.api/1.0.215",
-      "hashPath": "counterstrikesharp.api.1.0.215.nupkg.sha512"
+      "sha512": "sha512-H9ZbSlEiQFvKprCWl7uwiB1W1jYurb4wSGOZltHj2eG+ZbJp/AB/OIqeSttyiTK/DG+Ga7y0o6RexkXJLqb39A==",
+      "path": "counterstrikesharp.api/1.0.236",
+      "hashPath": "counterstrikesharp.api.1.0.236.nupkg.sha512"
     },
     "Dapper/2.1.35": {
       "type": "package",

@@ -47,7 +47,9 @@ public interface IIksAdminApi
     [Obsolete]
     public IBaseMenu CreateMenu(CCSPlayerController caller, Action<CCSPlayerController, Admin?, IMenu> onOpen);
     public IBaseMenu CreateMenu(Action<CCSPlayerController, Admin?, IMenu> onOpen);
+    public void SendMessageToPlayer(CCSPlayerController? controller, string message, string? tag = null);
     public void SendMessageToPlayer(CCSPlayerController? controller, string message);
+    public void SendMessageToAll(string message, string? tag = null);
     public void SendMessageToAll(string message);
     public Task ReloadInfractions(string sid, bool checkBan = true);
     public Task<bool> AddBan(string adminSid, PlayerBan banInfo);
@@ -75,9 +77,18 @@ public interface IIksAdminApi
     public bool HasAccess(string adminSid, CommandUsage commandUsage, string flagsAccess,
         string flagsDefault);
     
+    public bool HasPermissions(string adminSid, string flagsAccess, string flagsDefault);
+    [Obsolete]
     public bool HasPermisions(string adminSid, string flagsAccess, string flagsDefault);
     public bool HasMoreImmunity(string adminSid, string targetSid);
     public void ConvertAll();
+
+    /// <summary>
+    /// Identities: #uid/#sid/name
+    /// </summary>
+    /// <param name="identity"></param>
+    /// <returns></returns>
+    public CCSPlayerController? GetPlayerFromIdentity(string identity);
     
     // Events
     public void EOnMenuOpen(string index, IMenu menu, CCSPlayerController player);
@@ -274,7 +285,7 @@ public class AdminMenuOption
 public interface IBaseMenu
 {
     public event Action<CCSPlayerController, Admin?, IMenu>? OnOpen;
-    public void Open(CCSPlayerController caller, string title, IMenu? backMenu = null);
+    public void Open(CCSPlayerController caller, string title, IMenu? backMenu = null, string? menuTag = null);
 }
 
 public class Reason
@@ -346,37 +357,26 @@ public static class PlayerExtensions
 
 public interface IPluginCfg
 {
-    [JsonPropertyName("ServerId")] public string ServerId { get; set; }
-    [JsonPropertyName("Host")] public string Host { get; set; } 
-    [JsonPropertyName("Database")] public string Database { get; set; } 
-    [JsonPropertyName("Password")] public string Password { get; set; }
-    [JsonPropertyName("Port")] public string Port { get; set; }
-    //[JsonPropertyName("UseHtmlMenu")] public bool UseHtmlMenu { get; set; } 
+    public string ServerId { get; set; }
+    public string Host { get; set; } 
+    public string Database { get; set; } 
+    public string Password { get; set; }
+    public string Port { get; set; }
     public string MenuType { get; set; }
+    public int NotAuthorizedKickTime { get; set; }
     
-    [JsonPropertyName("BanOnAllServers")] public bool BanOnAllServers { get; set; }
+    public bool BanOnAllServers { get; set; }
     public bool UpdateNames { get; set; }
-
-    [JsonPropertyName("HasAccessIfImmunityIsEqual")]
     public bool HasAccessIfImmunityIsEqual { get; set; }  // Give access to command above the target if immunity == caller
-    [JsonPropertyName("Flags")] public Dictionary<string, string> Flags { get; set; }
+    public Dictionary<string, string> Flags { get; set; }
     public List<string> BlockMassTargets { get; set; }
-
-
-    [JsonPropertyName("BanReasons")]
-    public List<Reason> BanReasons { get; set; }
-    [JsonPropertyName("GagReasons")]
-    public List<Reason> GagReasons { get; set; } 
-    [JsonPropertyName("MuteReasons")]
-    public List<Reason> MuteReasons { get; set; }
-    [JsonPropertyName("KickReasons")]
-    public List<string> KickReasons { get; set; } 
     
-    [JsonPropertyName("Times")] public Dictionary<string, int> Times { get; set; } 
-
-    [JsonPropertyName("ConvertedFlags")]
+    public string[] AllServersBanReasons { get; set; }
+    public List<Reason> BanReasons { get; set; }
+    public List<Reason> GagReasons { get; set; } 
+    public List<Reason> MuteReasons { get; set; }
+    public List<string> KickReasons { get; set; } 
+    public Dictionary<string, int> Times { get; set; } 
     public Dictionary<string, List<string>> ConvertedFlags { get; set; } 
-
-    [JsonPropertyName("Maps")]
     public List<Map> Maps { get; set; } 
 }

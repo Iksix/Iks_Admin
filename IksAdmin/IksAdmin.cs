@@ -24,7 +24,7 @@ namespace IksAdmin;
 public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
 {
     public override string ModuleName => "IksAdmin";
-    public override string ModuleVersion => "2.1.6";
+    public override string ModuleVersion => "2.1.9";
     public override string ModuleAuthor => "iks__";
 
     private static List<int> _kickSlots = new();
@@ -782,14 +782,29 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
     {
         var player = @event.Userid;
-        
         if (player.IsBot || !player.IsValid) return HookResult.Continue;
         if (_kickSlots.Contains(player.Slot))
             _kickSlots.Remove(player.Slot);
         if (Api!.TimeAdmins.ContainsKey(player))
             Api.TimeAdmins.Remove(player);
         if (player.AuthorizedSteamID == null) return HookResult.Continue;
-        Api.DisconnectedPlayers.TryAdd(player.AuthorizedSteamID!.SteamId64.ToString(), XHelper.CreateInfo(player));
+        Api.DisconnectedPlayers.TryAdd(player.SteamID.ToString(), XHelper.CreateInfo(player));
+        return HookResult.Continue;
+    }
+    [GameEventHandler]
+    public HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
+    {
+        var player = @event.Userid;
+        if (player == null) return HookResult.Continue;
+        if (player.AuthorizedSteamID != null || player.IsBot) return HookResult.Continue;
+
+        AddTimer(Config.NotAuthorizedKickTime, () =>
+        {
+            if (player.AuthorizedSteamID != null) return;
+            Logger.LogWarning("Kick not authorized player! | name: " + player.PlayerName);
+            Server.ExecuteCommand("kickid " + player.UserId);
+        });
+        
         return HookResult.Continue;
     }
     
@@ -1235,12 +1250,12 @@ public class PluginApi : IIksAdminApi
 
     public async Task<Admin?> GetAdmin(string sid)
     {
-        Admin? admin = null;
         try
         {
             await using var conn = new MySqlConnection(DbConnectionString);
             await conn.OpenAsync();
-            admin = await conn.QuerySingleOrDefaultAsync<Admin>(@"
+            
+            var admins = (await conn.QueryAsync<Admin>(@"
             select 
             name as name,
             sid as steamId,
@@ -1251,17 +1266,21 @@ public class PluginApi : IIksAdminApi
             server_id as serverId
             from iks_admins
             where sid = @sid
-            ", new {sid});
-            if (admin == null)
-                return null;
-            admin = await SetAdminGroup(admin);
+            ", new {sid})).ToList();
+            foreach (var admin in admins)
+            {
+                if (admin.ServerId.Split(";").Contains(Config.ServerId) || admin.ServerId == "")
+                {
+                    return await SetAdminGroup(admin);
+                }
+            }
         }
         catch (MySqlException e)
         {
             Plugin.Logger.LogError("DB ERROR: " + e);
         }
 
-        return admin;
+        return null;
     }
 
     public async Task<List<Admin>> GetAllAdmins()
@@ -1465,9 +1484,14 @@ public class PluginApi : IIksAdminApi
         if (commandUsage == CommandUsage.SERVER_ONLY && adminSid != "console") return false;
         if (adminSid == "console" && commandUsage != CommandUsage.CLIENT_ONLY) return true;
         
+        return HasPermissions(adminSid, flagsAccess, flagsDefault);
+    }
+
+    public bool HasPermissions(string adminSid, string flagsAccess, string flagsDefault)
+    { 
         return HasPermisions(adminSid, flagsAccess, flagsDefault);
     }
-    
+
     public bool HasPermisions(string adminSid, string flagsAccess, string flagsDefault)
     {
         adminSid = adminSid.ToLower();
@@ -1514,6 +1538,25 @@ public class PluginApi : IIksAdminApi
         IksAdmin.ConvertAll();
     }
 
+    public CCSPlayerController? GetPlayerFromIdentity(string identity)
+    {
+        var players = XHelper.GetOnlinePlayers();
+        CCSPlayerController? player;
+        if (identity.StartsWith("#"))
+        {
+            player = players.FirstOrDefault(u => u.SteamID.ToString() == identity.Replace("#", ""));
+
+            if (player != null) return player;
+
+            player = players.FirstOrDefault(u => u.UserId.ToString() == identity.Replace("#", ""));
+
+            if (player != null) return player;
+        }
+        if (!identity.StartsWith("#"))
+            return players.FirstOrDefault(u => u.PlayerName.Contains(identity));
+        return null;
+    }
+
     public void EOnMenuOpen(string index, IMenu menu, CCSPlayerController player)
     {
         OnMenuOpen?.Invoke(index, menu, player);
@@ -1542,7 +1585,7 @@ public class PluginApi : IIksAdminApi
     #endregion
 
     #region Punishments
-
+    
     public async Task ReloadInfractions(string sid, bool checkBan = true)
     {
         await IksAdmin.ReloadPlayerInfractions(sid, checkBan);
@@ -1562,6 +1605,10 @@ public class PluginApi : IIksAdminApi
             if (banInfo.ServerId == "-")
             {
                 serverId = Config.ServerId;
+            }
+            if (Config.AllServersBanReasons.Contains(banInfo.Reason))
+            {
+                serverId = "";
             }
             banInfo.ServerId = serverId;
             bool isContinue = true;
@@ -1904,33 +1951,74 @@ public class PluginApi : IIksAdminApi
         return new Menu(onOpen);
     }
 
-    public void SendMessageToPlayer(CCSPlayerController? controller, string message)
+    public void SendMessageToPlayer(CCSPlayerController? controller, string message, string? tag = null)
     {
         Server.NextFrame(() =>
         {
+            var messagePrefix = tag == null ? Localizer["PluginTag"] : tag;
+            if (tag == null && controller == null)
+            {
+                messagePrefix = "[IksAdmin]";
+            }
             if (message.Trim() == "") return;
             foreach (var str in message.Split("\n"))
             {
                 if (controller == null)
                 {
-                    Console.WriteLine($"[IksAdmin] {str}");
+                    Console.WriteLine($"{messagePrefix} {str}");
                 }
                 else
                 {
-                    controller.PrintToChat($" {Localizer["PluginTag"]} {str}");
+                    controller.PrintToChat($" {messagePrefix} {str}");
+                }
+            }
+        });
+    }
+    public void SendMessageToPlayer(CCSPlayerController? controller, string message)
+    {
+        Server.NextFrame(() =>
+        {
+            var messagePrefix = Localizer["PluginTag"].Value;
+            if (controller == null)
+            {
+                messagePrefix = "[IksAdmin]";
+            }
+            if (message.Trim() == "") return;
+            foreach (var str in message.Split("\n"))
+            {
+                if (controller == null)
+                {
+                    Console.WriteLine($"{messagePrefix} {str}");
+                }
+                else
+                {
+                    controller.PrintToChat($" {messagePrefix} {str}");
                 }
             }
         });
     }
 
+    public void SendMessageToAll(string message, string? tag = null)
+    {
+        Server.NextFrame(() =>
+        {
+            if (message.Trim() == "") return;
+            var messagePrefix = tag == null ? Localizer["PluginTag"] : tag;
+            foreach (var str in message.Split("\n"))
+            {
+                Server.PrintToChatAll($" {messagePrefix} {str}");
+            }
+        });
+    }
     public void SendMessageToAll(string message)
     {
         Server.NextFrame(() =>
         {
             if (message.Trim() == "") return;
+            var messagePrefix = Localizer["PluginTag"].Value;
             foreach (var str in message.Split("\n"))
             {
-                Server.PrintToChatAll($" {Localizer["PluginTag"]} {str}");
+                Server.PrintToChatAll($" {messagePrefix} {str}");
             }
         });
     }
