@@ -5,6 +5,7 @@
 
 ![изображение](https://github.com/Iksix/Iks_Admin/assets/109164274/f2e83b43-a40a-48ad-8093-5a7a1f991620) 
 
+![изображение](https://github.com/Iksix/Iks_Admin/assets/109164274/8f6490c3-4f10-4c25-a792-2d91766d09c2)
 
 
 ## Features
@@ -61,13 +62,23 @@ For example:
 },
 ```
 
-> [!IMPORTANT]
-> - ServerID in config must be only 1 symbol
-
 > [!TIP]
 > - You can write "ABCD" in ServerID column for admin
 > - At the moment, you can add groups only directly to the database.
 > - Tested on [CS# v215](https://docs.cssharp.dev/index.html)
+
+## API connect:
+```csharp
+using CounterStrikeSharp.API.Core.Capabilities;
+using IksAdminApi;
+
+private readonly PluginCapability<IIksAdminApi> _pluginCapability = new("iksadmin:core");
+public static IIksAdminApi? AdminApi;
+public override void OnAllPluginsLoaded(bool hotReload)
+{
+    AdminApi = _pluginCapability.Get();
+}
+```
 
 ## To do...
 - [ ] Pre hooks
