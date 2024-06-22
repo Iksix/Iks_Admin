@@ -26,7 +26,6 @@ public interface IIksAdminApi
     public List<PlayerComm> OnlineMutedPlayers { get; set; }
     public List<PlayerComm> OnlineGaggedPlayers { get; set; }
     public Dictionary<string, PlayerInfo> DisconnectedPlayers { get; set; } // steamid -> info
-    public Dictionary<CCSPlayerController, Action<string>> NextCommandAction { get; set; }
     public MenuType MenuType { get; set; }
     public string DbConnectionString { get; set; }
     public List<Admin> AllAdmins { get; set; }
@@ -39,26 +38,13 @@ public interface IIksAdminApi
     public Task AddGroup(Group group);
     public Task<Group?> GetGroup(string name);
     public Task DeleteGroup(string name);
-    public Admin? GetAdminBySid(string steamId);
-    public List<Admin> GetThisServerAdmins();
-    public Admin? GetAdmin(CCSPlayerController player);
-    public Admin? GetAdmin(ulong steamId);
-    public Dictionary<CCSPlayerController, Admin> GetOnlineAdmins();
     [Obsolete]
     public IBaseMenu CreateMenu(CCSPlayerController caller, Action<CCSPlayerController, Admin?, IMenu> onOpen);
-    public IBaseMenu CreateMenu(Action<CCSPlayerController, Admin?, IMenu> onOpen);
-    public void SendMessageToPlayer(CCSPlayerController? controller, string message, string? tag = null);
     public void SendMessageToPlayer(CCSPlayerController? controller, string message);
-    public void SendMessageToAll(string message, string? tag = null);
     public void SendMessageToAll(string message);
     public Task ReloadInfractions(string sid, bool checkBan = true);
-    public Task<bool> AddBan(string adminSid, PlayerBan banInfo);
-    public Task<bool> AddMute(string adminSid, PlayerComm muteInfo);
-    public Task<bool> AddGag(string adminSid, PlayerComm gagInfo);
+    
 
-    public Task<PlayerBan?> UnBan(string sid, string adminSid);
-    public Task<PlayerComm?> UnMute(string sid, string adminSid);
-    public Task<PlayerComm?> UnGag(string sid, string adminSid);
     
     public Task<PlayerBan?> GetBan(string arg);
     public Task<PlayerComm?> GetMute(string sid);
@@ -77,7 +63,6 @@ public interface IIksAdminApi
     public bool HasAccess(string adminSid, CommandUsage commandUsage, string flagsAccess,
         string flagsDefault);
     
-    public bool HasPermissions(string adminSid, string flagsAccess, string flagsDefault);
     [Obsolete]
     public bool HasPermisions(string adminSid, string flagsAccess, string flagsDefault);
     public bool HasMoreImmunity(string adminSid, string targetSid);
@@ -91,19 +76,15 @@ public interface IIksAdminApi
     public CCSPlayerController? GetPlayerFromIdentity(string identity);
     
     // Events
-    public void EOnMenuOpen(string index, IMenu menu, CCSPlayerController player);
     event Action<string, IMenu, CCSPlayerController> OnMenuOpen; // menu index -> menu -> player
     event Action<Admin> OnAddAdmin;
     event Action<Admin> OnDelAdmin;
     event Action<PlayerBan> OnAddBan;
-    event Action<PlayerBan, bool> PreAddBan; // ban -> continue?
     event Action<PlayerComm> OnAddMute;
-    event Action<PlayerComm, bool> PreAddMute; // mute -> continue?
     event Action<PlayerComm> OnAddGag;
-    event Action<PlayerComm, bool> PreAddGag; // gag -> continue?
-    event Action<PlayerBan, string> OnUnBan;
-    event Action<PlayerComm, string> OnUnMute;
-    event Action<PlayerComm, string> OnUnGag;
+    event Action<PlayerBan> OnUnBan;
+    event Action<PlayerComm> OnUnMute;
+    event Action<PlayerComm> OnUnGag;
 
     event Action<string, PlayerInfo, string> OnKick; // AdminSid -> Target info
     event Action<string, PlayerInfo, string, string> OnRename; // AdminSid -> Target info -> OldName -> newName
@@ -118,14 +99,66 @@ public interface IIksAdminApi
     /// Player, Ban, Mute, Gag
     /// </summary>
     event Action<PlayerInfo, Admin?, PlayerBan?, PlayerComm?, PlayerComm?> OnPlayerConnected; // info -> ban -> mute -> gag
-    
+
+    #region Event Calling
+
     // events callers
+
+    #endregion
     public void EKick(string adminSid, PlayerInfo target, string reason);
     public void ERename(string adminSid, PlayerInfo target, string oldName, string newName);
     public void ESlay(string adminSid, PlayerInfo target);
     public void ESwitchTeam(string adminSid, PlayerInfo target, CsTeam oldTeam, CsTeam newTeam);
     public void EChangeTeam(string adminSid, PlayerInfo target, CsTeam oldTeam, CsTeam newTeam);
     public void EChangeMap(string adminSid, Map newMap);
+
+    #region Use for do a plugin
+
+    public void ReplyToCommand(CommandInfo info, string reply, string? replyToConsole = null, string? customTag = null);
+    public bool HasPermissions(string adminSid, string flagsAccess, string flagsDefault);
+    public List<Admin> GetThisServerAdmins();
+    public Admin? GetAdminBySid(string steamId);
+    public Admin? GetAdmin(CCSPlayerController player);
+    public Admin? GetAdmin(ulong steamId);
+    public Dictionary<CCSPlayerController, Admin> GetOnlineAdmins();
+    public IBaseMenu CreateMenu(Action<CCSPlayerController, Admin?, IMenu> onOpen);
+    public void SendMessageToPlayer(CCSPlayerController? controller, string message, string? tag = null);
+    public void SendMessageToAll(string message, string? tag = null);
+    public Dictionary<CCSPlayerController, Action<string>> NextCommandAction { get; set; }
+    public void EOnMenuOpen(string index, IMenu menu, CCSPlayerController player);
+    #region Punishments without chat message
+    
+    public delegate Task<HookResult> PreBanEventHandler(PlayerBan info);
+    public event PreBanEventHandler PreBan;
+    public Task<bool> AddBanToDB(PlayerBan banInfo); 
+    public delegate Task<HookResult> PreMuteEventHandler(PlayerComm info);
+    public event PreMuteEventHandler PreMute;
+    public Task<bool> AddMuteToDB(PlayerComm muteInfo); 
+    public delegate Task<HookResult> PreGagEventHandler(PlayerComm info);
+    public event PreGagEventHandler PreGag;
+    public Task<bool> AddGagToDB(PlayerComm gagInfo);
+
+    public Task<PlayerBan?> RemoveBan(string sid, string adminSid); 
+
+    public Task<PlayerComm?> RemoveMute(string sid, string adminSid); 
+
+    public Task<PlayerComm?> RemoveGag(string sid, string adminSid); 
+    
+    #endregion
+
+    #region Punishments with chat message
+
+    public Task<bool> AddBan(string adminSid, PlayerBan banInfo); // With chat message
+    public Task<bool> AddMute(string adminSid, PlayerComm muteInfo); // With chat message
+    public Task<bool> AddGag(string adminSid, PlayerComm gagInfo); // With chat message
+    public Task<PlayerBan?> UnBan(string sid, string adminSid); // With chat message
+    public Task<PlayerComm?> UnMute(string sid, string adminSid); // With chat message
+    public Task<PlayerComm?> UnGag(string sid, string adminSid); // With chat message
+    
+    #endregion
+    
+
+    #endregion
 
 }
 public class Admin

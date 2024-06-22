@@ -20,9 +20,9 @@
 	"SERVER_ChangeTeam": "Админ {red}{admin}{white} сменил команду игрока {red}{name}{white} на {red}{newTeam}{white}!",
 	"SERVER_Rename": "Админ {red}{admin}{white} сменил имя игрока {red}{oldName}{white} на {red}{newName}{white}!",
 	// 		действия (снятие наказаний)
-	"SERVER_OnUnBan": "Игрок {red}{name}{white} был разбанен админом {red}{admin}",
-	"SERVER_OnUnMute": "Игрок {red}{name}{white} был размучен админом {red}{admin}",
-	"SERVER_OnUnGag": "Игрок {red}{name}{white} был разгаган админом {red}{admin}",
+	"SERVER_OnUnBan": "Игрок {red}{name}{white} был разбанен админом {red}{unbannedBy}",
+	"SERVER_OnUnMute": "Игрок {red}{name}{white} был размучен админом {red}{unbannedBy}",
+	"SERVER_OnUnGag": "Игрок {red}{name}{white} был разгаган админом {red}{unbannedBy}",
 	
 	// NOTIFY Отправляются админу:
 	"NOTIFY_HaveNotAccess": "{darkred}У вас нету доступа к этой команде!",

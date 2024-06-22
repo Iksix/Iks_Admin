@@ -23,6 +23,14 @@ namespace IksAdmin;
 
 public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
 {
+    // ToDo:
+    // - Рефакторинг кода команд
+    // - Разделение методов добавления наказаний в базу и отправки сообщения в чат(опционально)
+    // - Разделение IksAdminApi на регионы, функции которые должны задействоваться при создании модулей
+    // - Вынести все функции использующиеся для создания команд в API
+    // - Привести базу данных в порядок, используя SQL от Flames
+    // - Использовать JOIN в sql
+    
     public override string ModuleName => "IksAdmin";
     public override string ModuleVersion => "2.1.9";
     public override string ModuleAuthor => "iks__";
@@ -70,7 +78,6 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         RegisterListener<Listeners.OnClientAuthorized>(OnAuthorized);
         _plugin = this;
         InitializeCommands();
-        InitializeMessages();
         AddCommandListener("say", OnSay);
         AddCommandListener("say_team", OnSay);
         AddCommandListener("jointeam", (p, _) =>
@@ -124,89 +131,6 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             ConvertAll();
         });
     }
-
-    private void InitializeMessages()
-    {
-        Api!.OnAddGag += comm =>
-        {
-            Api.SendMessageToAll(ReplaceComm(Localizer["SERVER_OnGag"], comm));
-        };
-        Api.OnAddMute += comm =>
-        {
-            Api.SendMessageToAll(ReplaceComm(Localizer["SERVER_OnMute"], comm));
-        };
-        Api.OnAddBan += ban =>
-        {
-            Api.SendMessageToAll(ReplaceBan(Localizer["SERVER_OnBan"], ban));
-        };
-        Api.OnUnGag += (comm, adminsSid) =>
-        {
-            comm.UnbannedBy = adminsSid;
-            Api.SendMessageToAll(ReplaceComm(Localizer["SERVER_OnUnGag"], comm, adminsSid));
-        };
-        Api.OnUnMute += (comm, adminsSid) =>
-        {
-            comm.UnbannedBy = adminsSid;
-            Api.SendMessageToAll(ReplaceComm(Localizer["SERVER_OnUnMute"], comm, adminsSid));
-        };
-        Api.OnUnBan += (ban, adminsSid) =>
-        {
-            ban.UnbannedBy = adminsSid;
-            Api.SendMessageToAll(ReplaceBan(Localizer["SERVER_OnUnBan"], ban, adminsSid));
-        };
-        Api.OnKick += (adminSid, target, reason) =>
-        {
-            Api.SendMessageToAll(Localizer["SERVER_OnKick"].Value
-                .Replace("{name}", target.PlayerName)
-                .Replace("{sid}", target.SteamId.SteamId64.ToString())
-                .Replace("{admin}", AdminName(adminSid))
-                .Replace("{adminSid}", adminSid)
-                .Replace("{reason}", reason)
-            );
-        };
-        Api.OnSlay += (adminSid, target) =>
-        {
-            Api.SendMessageToAll(Localizer["SERVER_OnSlay"].Value
-                .Replace("{name}", target.PlayerName)
-                .Replace("{sid}", target.SteamId.SteamId64.ToString())
-                .Replace("{admin}", AdminName(adminSid))
-                .Replace("{adminSid}", adminSid)
-            );
-        };
-        Api.OnSwitchTeam += (adminSid, target, oldTeam, newTeam) =>
-        {
-            Api.SendMessageToAll(Localizer["SERVER_SwitchTeam"].Value
-                .Replace("{oldTeam}", XHelper.GetStringFromTeam(oldTeam))
-                .Replace("{newTeam}",  XHelper.GetStringFromTeam(newTeam))
-                .Replace("{name}", target.PlayerName)
-                .Replace("{sid}", target.SteamId.SteamId64.ToString())
-                .Replace("{admin}", AdminName(adminSid))
-                .Replace("{adminSid}", adminSid)
-            );
-        };
-        Api.OnChangeTeam += (adminSid, target, oldTeam, newTeam) =>
-        {
-            Api.SendMessageToAll(Localizer["SERVER_ChangeTeam"].Value
-                .Replace("{oldTeam}", XHelper.GetStringFromTeam(oldTeam))
-                .Replace("{newTeam}",  XHelper.GetStringFromTeam(newTeam))
-                .Replace("{name}", target.PlayerName)
-                .Replace("{sid}", target.SteamId.SteamId64.ToString())
-                .Replace("{admin}", AdminName(adminSid))
-                .Replace("{adminSid}", adminSid)
-            );
-        };
-        Api.OnRename += (adminSid, target, oldName, newName) =>
-        {
-            Api.SendMessageToAll(Localizer["SERVER_Rename"].Value
-                .Replace("{oldName}", oldName)
-                .Replace("{newName}",  newName)
-                .Replace("{sid}", target.SteamId.SteamId64.ToString())
-                .Replace("{admin}", AdminName(adminSid))
-                .Replace("{adminSid}", adminSid)
-            );
-        };
-    }
-
     private void InitializeCommands()
     {
         Api!.AddNewCommand(
@@ -558,71 +482,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         info.ReplyToCommand("Config reloaded");
     }
 
-    private string ReplaceComm(string message, PlayerComm comm, string unbannedBy = "")
-    {
-        var admin = AdminName(comm.AdminSid);
-        var adminSid = comm.AdminSid;
-        if (unbannedBy != "")
-        {
-            admin = AdminName(unbannedBy);
-            adminSid = unbannedBy;
-        }
-        return message
-            .Replace("{name}", comm.Name)
-            .Replace("{reason}", comm.Reason)
-            .Replace("{duration}", GetTime(comm.Time))
-            .Replace("{unbannedBy}", AdminName(comm.UnbannedBy!))
-            .Replace("{unbannedBySid}", comm.UnbannedBy!)
-            .Replace("{admin}", admin)
-            .Replace("{adminSid}", adminSid)
-            .Replace("{sid}", comm.Sid)
-            .Replace("{unbannedBy}", AdminName(unbannedBy))
-            .Replace("{unbannedBySid}", unbannedBy)
-            .Replace("{serverId}", comm.ServerId)
-            .Replace("{end}", XHelper.GetDateStringFromUtc(comm.End))
-            .Replace("{created}", XHelper.GetDateStringFromUtc(comm.Created));
-    }
-    private string ReplaceBan(string message, PlayerBan ban, string unbannedBy = "")
-    {
-        var admin = AdminName(ban.AdminSid);
-        var adminSid = ban.AdminSid;
-        if (unbannedBy != "")
-        {
-            admin = AdminName(unbannedBy);
-            adminSid = unbannedBy;
-        }
-        return message
-            .Replace("{name}", ban.Name)
-            .Replace("{reason}", ban.Reason)
-            .Replace("{unbannedBy}", AdminName(unbannedBy))
-            .Replace("{unbannedBySid}", unbannedBy)
-            .Replace("{duration}", GetTime(ban.Time))
-            .Replace("{admin}", admin)
-            .Replace("{adminSid}", adminSid)
-            .Replace("{sid}", ban.Sid)
-            .Replace("{ip}", ban.Ip)
-            .Replace("{serverId}", ban.ServerId)
-            .Replace("{banType}", ban.BanType switch{ 0 => "Normal", 1 => "Ip", _ => "Normal" })
-            .Replace("{end}", XHelper.GetDateStringFromUtc(ban.End))
-            .Replace("{created}", XHelper.GetDateStringFromUtc(ban.Created));
-    }
-
-    private string GetTime(int time)
-    {
-        time = time / 60;
-        if (!Config.Times.ContainsValue(time))
-            return $"{time}{Localizer["HELPER_Min"]}";
-        return Config.Times.First(x => x.Value == time).Key;
-    }
-
-    private string AdminName(string? adminSid)
-    {
-        if (adminSid == null) return "CONSOLE";
-        var admin = Api!.GetAdminBySid(adminSid);
-        string adminName = adminSid.ToLower() == "console" ? "CONSOLE" :
-            admin == null ? "~Deleted Admin~" : admin.Name;
-        return adminName;
-    }
+    
 
     private HookResult OnSay(CCSPlayerController? player, CommandInfo info)
     {
@@ -861,7 +721,6 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     }
 
     public static async Task ReloadPlayerInfractions(string sid64, bool checkBan = false, string ip = "127.0.0.1", int? slot = null, string? name = null, bool onConnected = false)
-
     {
         var existingMute = await Api!.GetMute(sid64);
         if (existingMute != null)
@@ -1384,14 +1243,11 @@ public class PluginApi : IIksAdminApi
     public event Action<Admin>? OnAddAdmin;
     public event Action<Admin>? OnDelAdmin;
     public event Action<PlayerBan>? OnAddBan;
-    public event Action<PlayerBan, bool>? PreAddBan;
     public event Action<PlayerComm>? OnAddMute;
-    public event Action<PlayerComm, bool>? PreAddMute;
     public event Action<PlayerComm>? OnAddGag;
-    public event Action<PlayerComm, bool>? PreAddGag;
-    public event Action<PlayerBan, string>? OnUnBan;
-    public event Action<PlayerComm, string>? OnUnMute;
-    public event Action<PlayerComm, string>? OnUnGag;
+    public event Action<PlayerBan>? OnUnBan;
+    public event Action<PlayerComm>? OnUnMute;
+    public event Action<PlayerComm>? OnUnGag;
     public event Action<string, PlayerInfo, string>? OnKick;
     public event Action<string, PlayerInfo, string, string>? OnRename;
     public event Action<string, PlayerInfo>? OnSlay;
@@ -1487,6 +1343,28 @@ public class PluginApi : IIksAdminApi
         return HasPermissions(adminSid, flagsAccess, flagsDefault);
     }
 
+    public void ReplyToCommand(CommandInfo info, string reply, string? replyToConsole = null, string? customTag = null)
+    {
+        Server.NextFrame(() =>
+        {
+            var player = info.CallingPlayer;
+            string message = player != null ? reply : replyToConsole == null ? reply : replyToConsole;
+            var tag = customTag == null ? Localizer["PluginTag"] : customTag;
+            foreach (var str in message.Split("\n"))
+            {
+                if (player == null)
+                {
+                    info.ReplyToCommand($" {tag} {str}");
+                }
+                else
+                {
+                    if (reply.Trim() == "") return;
+                    player.PrintToChat($" {tag} {str}");
+                }
+            }
+        });
+    }
+    
     public bool HasPermissions(string adminSid, string flagsAccess, string flagsDefault)
     { 
         return HasPermisions(adminSid, flagsAccess, flagsDefault);
@@ -1562,6 +1440,96 @@ public class PluginApi : IIksAdminApi
         OnMenuOpen?.Invoke(index, menu, player);
     }
 
+    public event IIksAdminApi.PreBanEventHandler? PreBan;
+    public async Task<bool> AddBanToDB(PlayerBan banInfo)
+    {
+        try
+        {
+            await using var conn = new MySqlConnection(DbConnectionString);
+            await conn.OpenAsync();
+            var ban = await GetBan(banInfo.Sid);
+            if (ban != null)
+                return false;
+            
+            var serverId = Config.BanOnAllServers ? "" : banInfo.ServerId;
+            if (banInfo.ServerId == "-")
+            {
+                serverId = Config.ServerId;
+            }
+            if (Config.AllServersBanReasons.Contains(banInfo.Reason))
+            {
+                serverId = "";
+            }
+            banInfo.ServerId = serverId;
+            
+            // PreBan event
+            if (PreBan != null)
+            {
+                foreach (IIksAdminApi.PreBanEventHandler handler in PreBan.GetInvocationList())
+                {
+                    HookResult result = await handler(banInfo);
+                    if (result is HookResult.Stop or HookResult.Handled)
+                    {
+                        Console.WriteLine("Ban operation stopped by event handler.");
+                        return false;
+                    }
+                }
+            }
+            
+            await conn.QueryAsync("insert into iks_bans(name, sid, ip, adminsid, adminName, created, time, end, reason, BanType, server_id)" +
+                                  "values (@name, @sid, @ip, @adminSid, @adminName, @created, @time, @end, @reason, @banType, @serverId)",
+                                  new
+                                  {
+                                      name = banInfo.Name,
+                                      sid = banInfo.Sid,
+                                      ip = banInfo.Ip.Split(":")[0],
+                                      adminSid = banInfo.AdminSid,
+                                      adminName = banInfo.AdminName,
+                                      created = banInfo.Created,
+                                      time = banInfo.Time,
+                                      end = banInfo.End,
+                                      reason = banInfo.Reason,
+                                      banType = banInfo.BanType,
+                                      serverId
+                                  });
+            await ReloadInfractions(banInfo.Sid);
+            OnAddBan?.Invoke(banInfo);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        return true;
+    }
+
+    public event IIksAdminApi.PreMuteEventHandler? PreMute;
+    public Task<bool> AddMuteToDB(PlayerComm muteInfo)
+    {
+        throw new NotImplementedException();
+    }
+
+    public event IIksAdminApi.PreGagEventHandler? PreGag;
+    
+    public Task<bool> AddGagToDB(PlayerComm gagInfo)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<PlayerBan?> RemoveBan(string sid, string adminSid)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<PlayerComm?> RemoveMute(string sid, string adminSid)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<PlayerComm?> RemoveGag(string sid, string adminSid)
+    {
+        throw new NotImplementedException();
+    }
+
     public event Action<string, IMenu, CCSPlayerController>? OnMenuOpen;
 
     private static List<string> GetArgsFromCommandLine(string commandLine)
@@ -1611,9 +1579,20 @@ public class PluginApi : IIksAdminApi
                 serverId = "";
             }
             banInfo.ServerId = serverId;
-            bool isContinue = true;
-            PreAddBan?.Invoke(banInfo, isContinue);
-            if (!isContinue) return false;
+            
+            // PreBan event
+            if (PreBan != null)
+            {
+                foreach (IIksAdminApi.PreBanEventHandler handler in PreBan.GetInvocationList())
+                {
+                    HookResult result = await handler(banInfo);
+                    if (result is HookResult.Stop or HookResult.Handled)
+                    {
+                        Console.WriteLine("Ban operation stopped by event handler.");
+                        return false;
+                    }
+                }
+            }
             
             await conn.QueryAsync("insert into iks_bans(name, sid, ip, adminsid, adminName, created, time, end, reason, BanType, server_id)" +
                                   "values (@name, @sid, @ip, @adminSid, @adminName, @created, @time, @end, @reason, @banType, @serverId)",
@@ -1633,6 +1612,7 @@ public class PluginApi : IIksAdminApi
                                   });
             await ReloadInfractions(banInfo.Sid);
             OnAddBan?.Invoke(banInfo);
+            BaseMessages.SERVER_BAN(banInfo);
         }
         catch (Exception e)
         {
@@ -1652,14 +1632,25 @@ public class PluginApi : IIksAdminApi
                 return false;
             
             var serverId = Config.BanOnAllServers ? "" : muteInfo.ServerId;
+            
             if (muteInfo.ServerId == "-")
             {
                 serverId = Config.ServerId;
             }
             muteInfo.ServerId = serverId;
-            bool isContinue = true;
-            PreAddMute?.Invoke(muteInfo, isContinue);
-            if (!isContinue) return false;
+            
+            if (PreMute != null)
+            {
+                foreach (IIksAdminApi.PreMuteEventHandler handler in PreMute.GetInvocationList())
+                {
+                    HookResult result = await handler(muteInfo);
+                    if (result is HookResult.Stop or HookResult.Handled)
+                    {
+                        Console.WriteLine("Mute operation stopped by event handler.");
+                        return false;
+                    }
+                }
+            }
             await conn.QueryAsync("insert into iks_mutes(name, sid, adminsid, adminName, created, time, end, reason, server_id)" +
                                   "values (@name, @sid, @adminSid, @adminName, @created, @time, @end, @reason, @serverId)",
                 new
@@ -1676,6 +1667,7 @@ public class PluginApi : IIksAdminApi
                 });
             OnAddMute?.Invoke(muteInfo);
             await ReloadInfractions(muteInfo.Sid, false);
+            BaseMessages.SERVER_MUTE(muteInfo);
         }
         catch (Exception e)
         {
@@ -1700,9 +1692,19 @@ public class PluginApi : IIksAdminApi
             }
 
             gagInfo.ServerId = serverId;
-            bool isContinue = true;
-            PreAddGag?.Invoke(gagInfo, isContinue);
-            if (!isContinue) return false;
+            
+            if (PreGag != null)
+            {
+                foreach (IIksAdminApi.PreGagEventHandler handler in PreGag.GetInvocationList())
+                {
+                    HookResult result = await handler(gagInfo);
+                    if (result is HookResult.Stop or HookResult.Handled)
+                    {
+                        Console.WriteLine("Gag operation stopped by event handler.");
+                        return false;
+                    }
+                }
+            }
             await conn.QueryAsync("insert into iks_gags(name, sid, adminsid, adminName, created, time, end, reason, server_id)" +
                                   "values (@name, @sid, @adminSid, @adminName, @created, @time, @end, @reason, @serverId)",
                 new
@@ -1719,6 +1721,7 @@ public class PluginApi : IIksAdminApi
                 });
             OnAddGag?.Invoke(gagInfo);
             await ReloadInfractions(gagInfo.Sid, false);
+            BaseMessages.SERVER_GAG(gagInfo);
         }
         catch (Exception e)
         {
@@ -1739,8 +1742,10 @@ public class PluginApi : IIksAdminApi
 
             await conn.QueryAsync("update iks_bans set Unbanned = 1, UnbannedBy = @unbannedBy where id = @id",
                 new { id = ban.Id, unbannedBy = adminSid });
-            
-            OnUnBan?.Invoke(ban, adminSid);
+            ban.Unbanned = 1;
+            ban.UnbannedBy = adminSid;
+            OnUnBan?.Invoke(ban);
+            BaseMessages.SERVER_UNBAN(ban);
             return ban;
         }
         catch (Exception e)
@@ -1769,8 +1774,11 @@ public class PluginApi : IIksAdminApi
             {
                 OnlineMutedPlayers.Remove(existingMute);
             }
-            OnUnMute!.Invoke(mute, adminSid);
+            mute.Unbanned = 1;
+            mute.UnbannedBy = adminSid;
+            OnUnMute?.Invoke(mute);
             await ReloadInfractions(sid, false);
+            BaseMessages.SERVER_UNMUTE(mute);
             return mute;
         }
         catch (Exception e)
@@ -1798,8 +1806,11 @@ public class PluginApi : IIksAdminApi
             {
                 OnlineGaggedPlayers.Remove(existingGag);
             }
-            OnUnGag?.Invoke(gag, adminSid);
+            gag.Unbanned = 1;
+            gag.UnbannedBy = adminSid;
+            OnUnGag?.Invoke(gag);
             await ReloadInfractions(sid, false);
+            BaseMessages.SERVER_UNGAG(gag);
             return gag;
         }
         catch (Exception e)
