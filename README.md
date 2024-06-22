@@ -69,9 +69,6 @@ For example:
 
 ## API connect:
 ```csharp
-using CounterStrikeSharp.API.Core.Capabilities;
-using IksAdminApi;
-
 private readonly PluginCapability<IIksAdminApi> _pluginCapability = new("iksadmin:core");
 public static IIksAdminApi? AdminApi;
 public override void OnAllPluginsLoaded(bool hotReload)
