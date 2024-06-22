@@ -1,5 +1,6 @@
 ## IksAdmin 2.0
 **Support the author: [DonationAlerts](https://www.donationalerts.com/r/iks__)** <br>
+**required: [MenuManager](https://csdevs.net/resources/menumanager.726/) <br>**
 **Admin system with menu**<br><br>
 ![изображение](https://github.com/Iksix/Iks_Admin/assets/109164274/b5df9e4f-aeb5-4260-81ba-1916265898a4)
 
