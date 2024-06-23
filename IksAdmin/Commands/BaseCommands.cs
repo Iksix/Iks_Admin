@@ -166,7 +166,7 @@ public class BaseCommands
     public static void Admin(CCSPlayerController caller, Admin? admin, List<string> args, CommandInfo info)
     {
         // css_admin
-        PluginMenuManager.OpenAdminMenu(caller);
+        BaseMenus.OpenAdminMenu(caller);
     }
     public static void ReloadInfractions(CCSPlayerController caller, Admin? admin, List<string> args, CommandInfo info)
     {
@@ -557,7 +557,8 @@ public class BaseCommands
                     return;
                 var targetInfo = XHelper.CreateInfo(target);
                 target.CommitSuicide(true, true);
-                _api!.ESlay(adminSid, targetInfo);
+                _api.ESlay(adminSid, targetInfo);
+                BaseMessages.SERVER_SLAY(adminSid, targetInfo);
             });
             return;
         }
@@ -575,6 +576,7 @@ public class BaseCommands
         var targetInfo = XHelper.CreateInfo(target);
         target.CommitSuicide(true, true);
         _api.ESlay(adminSid, targetInfo);
+        BaseMessages.SERVER_SLAY(adminSid, targetInfo);
     }
 
     public static void SwitchTeam(CCSPlayerController? caller, Admin? admin, List<string> args, CommandInfo info)

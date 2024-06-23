@@ -264,7 +264,7 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
                 });
             }
         };
-        api.OnUnBan += (ban, unbannedBy) =>
+        api.OnUnBan += (ban) =>
         {
             var end = ban.Time == 0 ? Localizer["NEVER"] : XHelper.GetDateStringFromUtc(ban.End);
             var banType = ban.BanType == 1 ? "IP" : "SteamId";
@@ -273,8 +273,8 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
                 .Replace("{steamId}", ban.Sid)
                 .Replace("{ip}", ban.Ip)
                 .Replace("{banType}", banType)
-                .Replace("{adminSid}", unbannedBy)
-                .Replace("{admin}", AdminName(unbannedBy))
+                .Replace("{adminSid}", ban.UnbannedBy)
+                .Replace("{admin}", AdminName(ban.UnbannedBy))
                 .Replace("{reason}", ban.Reason)
                 .Replace("{end}", end)
                 .Replace("{created}", XHelper.GetDateStringFromUtc(ban.Created))
@@ -288,8 +288,8 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
                     .Replace("{steamId}", ban.Sid)
                     .Replace("{ip}", ban.Ip)
                     .Replace("{banType}", banType)
-                    .Replace("{adminSid}", unbannedBy)
-                    .Replace("{admin}", AdminName(unbannedBy))
+                    .Replace("{adminSid}", ban.UnbannedBy)
+                    .Replace("{admin}", AdminName(ban.UnbannedBy))
                     .Replace("{reason}", ban.Reason)
                     .Replace("{end}", end)
                     .Replace("{created}", XHelper.GetDateStringFromUtc(ban.Created))
@@ -299,8 +299,8 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
                     .Replace("{steamId}", ban.Sid)
                     .Replace("{ip}", ban.Ip)
                     .Replace("{banType}", banType)
-                    .Replace("{adminSid}", unbannedBy)
-                    .Replace("{admin}", AdminName(unbannedBy))
+                    .Replace("{adminSid}", ban.UnbannedBy)
+                    .Replace("{admin}", AdminName(ban.UnbannedBy))
                     .Replace("{reason}", ban.Reason)
                     .Replace("{end}", end)
                     .Replace("{created}", XHelper.GetDateStringFromUtc(ban.Created))
@@ -312,8 +312,8 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
                             .Replace("{steamId}", ban.Sid)
                             .Replace("{ip}", ban.Ip)
                             .Replace("{banType}", banType)
-                            .Replace("{adminSid}", unbannedBy)
-                            .Replace("{admin}", AdminName(unbannedBy))
+                            .Replace("{adminSid}", ban.UnbannedBy)
+                            .Replace("{admin}", AdminName(ban.UnbannedBy))
                             .Replace("{reason}", ban.Reason)
                             .Replace("{end}", end)
                             .Replace("{created}", XHelper.GetDateStringFromUtc(ban.Created))
@@ -388,7 +388,7 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
                 }
             });
         };
-        api.OnUnGag += (ban, unbannedBy) =>
+        api.OnUnGag += (ban) =>
         {
             Server.NextFrame(() =>
             {
@@ -432,9 +432,9 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
                         field.Value = field.Value
                                 .Replace("{name}", ban.Name)
                                 .Replace("{steamId}", ban.Sid)
-                                .Replace("{adminSid}", unbannedBy)
+                                .Replace("{adminSid}", ban.UnbannedBy)
                                 .Replace("{ip}", PlayerIp(ban.Sid))
-                                .Replace("{admin}", AdminName(unbannedBy))
+                                .Replace("{admin}", AdminName(ban.UnbannedBy))
                                 .Replace("{reason}", ban.Reason)
                                 .Replace("{end}", end)
                                 .Replace("{created}", XHelper.GetDateStringFromUtc(ban.Created))
@@ -511,7 +511,7 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
                 }
             });
         };
-        api.OnUnMute += (ban, unbannedBy) =>
+        api.OnUnMute += (ban) =>
         {
             Server.NextFrame(() =>
             {
@@ -520,8 +520,8 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
                     .Replace("{name}", ban.Name)
                     .Replace("{steamId}", ban.Sid)
                     .Replace("{ip}", PlayerIp(ban.Sid))
-                    .Replace("{adminSid}", unbannedBy)
-                    .Replace("{admin}", AdminName(unbannedBy))
+                    .Replace("{adminSid}", ban.UnbannedBy)
+                    .Replace("{admin}", AdminName(ban.UnbannedBy))
                     .Replace("{reason}", ban.Reason)
                     .Replace("{end}", end)
                     .Replace("{created}", XHelper.GetDateStringFromUtc(ban.Created))
@@ -534,8 +534,8 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
                         .Replace("{name}", ban.Name)
                         .Replace("{steamId}", ban.Sid)
                         .Replace("{ip}", PlayerIp(ban.Sid))
-                        .Replace("{adminSid}", unbannedBy)
-                        .Replace("{admin}", AdminName(unbannedBy))
+                        .Replace("{adminSid}", ban.UnbannedBy)
+                        .Replace("{admin}", AdminName(ban.UnbannedBy))
                         .Replace("{reason}", ban.Reason)
                         .Replace("{end}", end)
                         .Replace("{created}", XHelper.GetDateStringFromUtc(ban.Created))
@@ -544,8 +544,8 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
                         .Replace("{name}", ban.Name)
                         .Replace("{steamId}", ban.Sid)
                         .Replace("{ip}", PlayerIp(ban.Sid))
-                        .Replace("{adminSid}", unbannedBy)
-                        .Replace("{admin}", AdminName(unbannedBy))
+                        .Replace("{adminSid}", ban.UnbannedBy)
+                        .Replace("{admin}", AdminName(ban.UnbannedBy))
                         .Replace("{reason}", ban.Reason)
                         .Replace("{end}", end)
                         .Replace("{created}", XHelper.GetDateStringFromUtc(ban.Created))
@@ -556,8 +556,8 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
                                 .Replace("{name}", ban.Name)
                                 .Replace("{steamId}", ban.Sid)
                                 .Replace("{ip}", PlayerIp(ban.Sid))
-                                .Replace("{adminSid}", unbannedBy)
-                                .Replace("{admin}", AdminName(unbannedBy))
+                                .Replace("{adminSid}", ban.UnbannedBy)
+                                .Replace("{admin}", AdminName(ban.UnbannedBy))
                                 .Replace("{reason}", ban.Reason)
                                 .Replace("{end}", end)
                                 .Replace("{created}", XHelper.GetDateStringFromUtc(ban.Created))

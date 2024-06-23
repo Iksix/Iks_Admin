@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using CounterStrikeSharp.API;
+﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Entities;
@@ -7,7 +6,6 @@ using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
 using MenuManager;
 using Microsoft.Extensions.Localization;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace IksAdminApi;
 
@@ -101,16 +99,26 @@ public interface IIksAdminApi
     event Action<PlayerInfo, Admin?, PlayerBan?, PlayerComm?, PlayerComm?> OnPlayerConnected; // info -> ban -> mute -> gag
 
     #region Event Calling
+    
+    public delegate Task<HookResult> PreBanEventHandler(PlayerBan info);
+    public event PreBanEventHandler PreBan;
+    public event PreBanEventHandler PreUnBan;
+    public delegate Task<HookResult> PreCommEventHandler(PlayerComm info);
+    public event PreCommEventHandler PreMute;
+    public event PreCommEventHandler PreUnMute;
+    public event PreCommEventHandler PreGag;
+    public event PreCommEventHandler PreUnGag;
 
-    // events callers
 
-    #endregion
     public void EKick(string adminSid, PlayerInfo target, string reason);
     public void ERename(string adminSid, PlayerInfo target, string oldName, string newName);
     public void ESlay(string adminSid, PlayerInfo target);
     public void ESwitchTeam(string adminSid, PlayerInfo target, CsTeam oldTeam, CsTeam newTeam);
     public void EChangeTeam(string adminSid, PlayerInfo target, CsTeam oldTeam, CsTeam newTeam);
     public void EChangeMap(string adminSid, Map newMap);
+
+    #endregion
+    
 
     #region Use for do a plugin
 
@@ -122,21 +130,15 @@ public interface IIksAdminApi
     public Admin? GetAdmin(ulong steamId);
     public Dictionary<CCSPlayerController, Admin> GetOnlineAdmins();
     public IBaseMenu CreateMenu(Action<CCSPlayerController, Admin?, IMenu> onOpen);
-    public void SendMessageToPlayer(CCSPlayerController? controller, string message, string? tag = null);
-    public void SendMessageToAll(string message, string? tag = null);
+    public void SendMessageToPlayer(CCSPlayerController? controller, string message, string? tag);
+    public void SendMessageToAll(string message, string? tag);
     public Dictionary<CCSPlayerController, Action<string>> NextCommandAction { get; set; }
     public void EOnMenuOpen(string index, IMenu menu, CCSPlayerController player);
     #region Punishments without chat message
     
-    public delegate Task<HookResult> PreBanEventHandler(PlayerBan info);
-    public event PreBanEventHandler PreBan;
-    public Task<bool> AddBanToDB(PlayerBan banInfo); 
-    public delegate Task<HookResult> PreMuteEventHandler(PlayerComm info);
-    public event PreMuteEventHandler PreMute;
-    public Task<bool> AddMuteToDB(PlayerComm muteInfo); 
-    public delegate Task<HookResult> PreGagEventHandler(PlayerComm info);
-    public event PreGagEventHandler PreGag;
-    public Task<bool> AddGagToDB(PlayerComm gagInfo);
+    public Task<bool> AddBanToDb(PlayerBan banInfo); 
+    public Task<bool> AddMuteToDb(PlayerComm muteInfo); 
+    public Task<bool> AddGagToDb(PlayerComm gagInfo);
 
     public Task<PlayerBan?> RemoveBan(string sid, string adminSid); 
 
@@ -206,6 +208,7 @@ public class PlayerInfo
     public string IpAddress;
     public string PlayerName;
     public SteamID SteamId;
+    public CCSPlayerController? Controller;
     public PlayerInfo(string name, ulong sid, string ip)
     {
         PlayerName = name;
@@ -318,7 +321,8 @@ public class AdminMenuOption
 public interface IBaseMenu
 {
     public event Action<CCSPlayerController, Admin?, IMenu>? OnOpen;
-    public void Open(CCSPlayerController caller, string title, IMenu? backMenu = null, string? menuTag = null);
+    public void Open(CCSPlayerController caller, string title, string? menuTag, IMenu? backMenu = null); 
+    public void Open(CCSPlayerController caller, string title, IMenu? backMenu = null);
 }
 
 public class Reason
@@ -373,15 +377,15 @@ public static class PlayerExtensions
     }
     public static string GetIp(this CCSPlayerController? controller)
     {
-        return controller == null ? "0.0.0.0" : controller.IpAddress!.Split(":")[0] ?? "0.0.0.0";
+        return controller == null ? "0.0.0.0" : controller.IpAddress!.Split(":")[0];
     }
-    public static void Kick(this CCSPlayerController? controller)
+    public static void Kick(this CCSPlayerController? controller)   
     {
         if (controller == null) return;
         Server.ExecuteCommand("kickid " + controller.UserId);
     }
     
-    public static int GetTime(int time)
+    public static int GetTime(int time) 
     {
         return (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
     }
@@ -412,4 +416,21 @@ public interface IPluginCfg
     public Dictionary<string, int> Times { get; set; } 
     public Dictionary<string, List<string>> ConvertedFlags { get; set; } 
     public List<Map> Maps { get; set; } 
+}
+
+public class CommandConstructor
+{
+    /// <summary>
+    /// Examples:
+    /// "css_admin_add <identity:offline> <>"
+    /// </summary>
+    public string ConstructorString; 
+    public string Description;
+    public Action<CCSPlayerController, List<Object>> OnExecute;
+    public CommandConstructor(string constructorString, string description, Action<CCSPlayerController, Object[]>onExecute)
+    {
+        ConstructorString = constructorString;
+        Description = description;
+    }
+    
 }

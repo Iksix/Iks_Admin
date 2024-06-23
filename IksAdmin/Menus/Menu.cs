@@ -19,16 +19,27 @@ public class Menu : BaseMenu
     {
         OnOpen += onOpen;
     }
+    public Menu(Action<CCSPlayerController, Admin?, IMenu> onOpen, string? uniqueMenuIndex = null)
+    {
+        index = uniqueMenuIndex;
+        OnOpen += onOpen;
+    }
 }
 
 public abstract class BaseMenu : IBaseMenu
 {
     public event Action<CCSPlayerController, Admin?, IMenu>? OnOpen;
+    public string? index = null;
     private MenuType _menuType = IksAdmin.Api!.MenuType;
     private IIksAdminApi _api = IksAdmin.Api;
     private IMenuApi _menuManager = IksAdmin.MenuManager!;
     
-    public void Open(CCSPlayerController caller, string title, IMenu? backMenu = null, string? menuTag = null)
+    public void Open(CCSPlayerController caller, string title, IMenu? backMenu = null)
+    {
+        Open(caller, title, null, backMenu);
+    }
+    
+    public void Open(CCSPlayerController caller, string title, string? menuTag, IMenu? backMenu = null)
     {
         var tag = menuTag == null ? _api.Localizer["PluginTag"] : menuTag;
         if ((_menuType == MenuType.Default && _menuManager.GetMenuType(caller) == MenuType.ChatMenu) || _menuType == MenuType.ChatMenu)
@@ -41,20 +52,14 @@ public abstract class BaseMenu : IBaseMenu
             menu = _menuManager.NewMenuForcetype(title, _menuType, p => { OpenBackMenu(p, backMenu); });
         }
         
-        // if (_menuType != MenuType.ButtonMenu)
-        // {
-        //     menu.AddMenuOption(_api.Localizer["MENUOPTION_Close"], (p, _) =>
-        //     {
-        //         _menuManager.CloseMenu(p);
-        //         p.PrintToChat($" {_api.Localizer["PluginTag"]} {_api.Localizer["NOTIFY_MenuClosed"]}");
-        //     });
-        // }
-        
         var admin = _api.ThisServerAdmins.FirstOrDefault(x =>
             x.SteamId == caller.AuthorizedSteamID!.SteamId64.ToString());
         
         
         OnOpen?.Invoke(caller, admin, menu);
+        
+        if (index != null)
+            _api.EOnMenuOpen(index, menu, caller);
         
         menu.Open(caller);
     }

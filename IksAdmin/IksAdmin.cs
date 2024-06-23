@@ -25,8 +25,6 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
 {
     // ToDo:
     // - Рефакторинг кода команд
-    // - Разделение методов добавления наказаний в базу и отправки сообщения в чат(опционально)
-    // - Разделение IksAdminApi на регионы, функции которые должны задействоваться при создании модулей
     // - Вынести все функции использующиеся для создания команд в API
     // - Привести базу данных в порядок, используя SQL от Flames
     // - Использовать JOIN в sql
@@ -119,7 +117,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         var player = Utilities.GetPlayerFromSlot(slot);
         Console.WriteLine($"{steamid.SteamId64} CLIENT AUTHORIZED");
         string sid64 = steamid.SteamId64.ToString();
-        string ip = player.IpAddress!;
+        string ip = player!.IpAddress!;
         string name = player.PlayerName;
         Console.WriteLine($"{name} name");
         Console.WriteLine($"{sid64} sid64");
@@ -630,7 +628,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
                     }
                     catch (Exception _)
                     {
-                        // ignored
+                        // ignore
                     }
                 }
             });
@@ -642,6 +640,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
     {
         var player = @event.Userid;
+        if (player == null) return HookResult.Continue;
         if (player.IsBot || !player.IsValid) return HookResult.Continue;
         if (_kickSlots.Contains(player.Slot))
             _kickSlots.Remove(player.Slot);
@@ -1441,7 +1440,9 @@ public class PluginApi : IIksAdminApi
     }
 
     public event IIksAdminApi.PreBanEventHandler? PreBan;
-    public async Task<bool> AddBanToDB(PlayerBan banInfo)
+    public event IIksAdminApi.PreBanEventHandler? PreUnBan;
+
+    public async Task<bool> AddBanToDb(PlayerBan banInfo)
     {
         try
         {
@@ -1502,32 +1503,244 @@ public class PluginApi : IIksAdminApi
         return true;
     }
 
-    public event IIksAdminApi.PreMuteEventHandler? PreMute;
-    public Task<bool> AddMuteToDB(PlayerComm muteInfo)
+    public event IIksAdminApi.PreCommEventHandler? PreMute;
+    public event IIksAdminApi.PreCommEventHandler? PreUnMute;
+
+    public async Task<bool> AddMuteToDb(PlayerComm muteInfo)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await using var conn = new MySqlConnection(DbConnectionString);
+            await conn.OpenAsync();
+            var ban = await GetMute(muteInfo.Sid);
+            if (ban != null)
+                return false;
+            
+            var serverId = Config.BanOnAllServers ? "" : muteInfo.ServerId;
+            
+            if (muteInfo.ServerId == "-")
+            {
+                serverId = Config.ServerId;
+            }
+            muteInfo.ServerId = serverId;
+            
+            if (PreMute != null)
+            {
+                foreach (IIksAdminApi.PreCommEventHandler handler in PreMute.GetInvocationList())
+                {
+                    HookResult result = await handler(muteInfo);
+                    if (result is HookResult.Stop or HookResult.Handled)
+                    {
+                        Console.WriteLine("Mute operation stopped by event handler.");
+                        return false;
+                    }
+                }
+            }
+            await conn.QueryAsync("insert into iks_mutes(name, sid, adminsid, adminName, created, time, end, reason, server_id)" +
+                                  "values (@name, @sid, @adminSid, @adminName, @created, @time, @end, @reason, @serverId)",
+                new
+                {
+                    name = muteInfo.Name,
+                    sid = muteInfo.Sid,
+                    adminSid = muteInfo.AdminSid,
+                    adminName = muteInfo.AdminName,
+                    created = muteInfo.Created,
+                    time = muteInfo.Time,
+                    end = muteInfo.End,
+                    reason = muteInfo.Reason,
+                    serverId
+                });
+            OnAddMute?.Invoke(muteInfo);
+            await ReloadInfractions(muteInfo.Sid, false);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        return true;
     }
 
-    public event IIksAdminApi.PreGagEventHandler? PreGag;
-    
-    public Task<bool> AddGagToDB(PlayerComm gagInfo)
+    public event IIksAdminApi.PreCommEventHandler? PreGag;
+    public event IIksAdminApi.PreCommEventHandler? PreUnGag;
+
+    public async Task<bool> AddGagToDb(PlayerComm gagInfo)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await using var conn = new MySqlConnection(DbConnectionString);
+            await conn.OpenAsync();
+            var ban = await GetGag(gagInfo.Sid);
+            if (ban != null)
+                return false;
+            var serverId = Config.BanOnAllServers ? "" : gagInfo.ServerId;
+            if (gagInfo.ServerId == "-")
+            {
+                serverId = Config.ServerId;
+            }
+
+            gagInfo.ServerId = serverId;
+            
+            if (PreGag != null)
+            {
+                foreach (IIksAdminApi.PreCommEventHandler handler in PreGag.GetInvocationList())
+                {
+                    HookResult result = await handler(gagInfo);
+                    if (result is HookResult.Stop or HookResult.Handled)
+                    {
+                        Console.WriteLine("Gag operation stopped by event handler.");
+                        return false;
+                    }
+                }
+            }
+            await conn.QueryAsync("insert into iks_gags(name, sid, adminsid, adminName, created, time, end, reason, server_id)" +
+                                  "values (@name, @sid, @adminSid, @adminName, @created, @time, @end, @reason, @serverId)",
+                new
+                {
+                    name = gagInfo.Name,
+                    sid = gagInfo.Sid,
+                    adminSid = gagInfo.AdminSid,
+                    adminName = gagInfo.AdminName,
+                    created = gagInfo.Created,
+                    time = gagInfo.Time,
+                    end = gagInfo.End,
+                    reason = gagInfo.Reason,
+                    serverId
+                });
+            OnAddGag?.Invoke(gagInfo);
+            await ReloadInfractions(gagInfo.Sid, false);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        return true;
     }
 
-    public Task<PlayerBan?> RemoveBan(string sid, string adminSid)
+    public async Task<PlayerBan?> RemoveBan(string sid, string adminSid)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await using var conn = new MySqlConnection(DbConnectionString);
+            await conn.OpenAsync();
+            var ban = await GetBan(sid);
+            if (ban == null)
+                return null;
+            ban.Unbanned = 1;
+            ban.UnbannedBy = adminSid;
+            if (PreUnBan != null)
+            {
+                foreach (IIksAdminApi.PreBanEventHandler handler in PreUnBan.GetInvocationList())
+                {
+                    var result = await handler(ban);
+                    if (result is HookResult.Stop or HookResult.Handled)
+                    {
+                        Console.WriteLine("Un ban was stopped from handler");
+                        return null;
+                    }
+                }
+            }
+            await conn.QueryAsync("update iks_bans set Unbanned = 1, UnbannedBy = @unbannedBy where id = @id",
+                new { id = ban.Id, unbannedBy = adminSid });
+            
+            OnUnBan?.Invoke(ban);
+            return ban;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+
+        return null;
     }
 
-    public Task<PlayerComm?> RemoveMute(string sid, string adminSid)
+    public async Task<PlayerComm?> RemoveMute(string sid, string adminSid)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await using var conn = new MySqlConnection(DbConnectionString);
+            await conn.OpenAsync();
+            var mute = await GetMute(sid);
+            if (mute == null)
+                return null;
+            mute.Unbanned = 1;
+            mute.UnbannedBy = adminSid;
+            if (PreUnMute != null)
+            {
+                foreach (IIksAdminApi.PreCommEventHandler handler in PreUnMute.GetInvocationList())
+                {
+                    var result = await handler(mute);
+                    if (result is HookResult.Stop or HookResult.Handled)
+                    {
+                        Console.WriteLine("Un mute was stopped from handler");
+                        return null;
+                    }
+                }
+            }
+
+            await conn.QueryAsync("update iks_mutes set Unbanned = 1, UnbannedBy = @unbannedBy where id = @id",
+                new { id = mute.Id, unbannedBy = adminSid });
+            
+            var existingMute = OnlineMutedPlayers.FirstOrDefault(x => x.Sid == mute.Sid);
+            if (existingMute != null)
+            {
+                OnlineMutedPlayers.Remove(existingMute);
+            }
+            
+            OnUnMute?.Invoke(mute);
+            await ReloadInfractions(sid, false);
+            return mute;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+
+        return null;
     }
 
-    public Task<PlayerComm?> RemoveGag(string sid, string adminSid)
+    public async Task<PlayerComm?> RemoveGag(string sid, string adminSid)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await using var conn = new MySqlConnection(DbConnectionString);
+            await conn.OpenAsync();
+            var gag = await GetGag(sid);
+            if (gag == null)
+                return null;
+            gag.Unbanned = 1;
+            gag.UnbannedBy = adminSid;
+
+            if (PreUnGag != null)
+            {
+                foreach (IIksAdminApi.PreCommEventHandler handler in PreUnGag.GetInvocationList())
+                {
+                    var result = await handler(gag);
+                    if (result is HookResult.Stop or HookResult.Handled)
+                    {
+                        Console.WriteLine("Un gag was stopped from handler");
+                        return null;
+                    }
+                }
+            }
+
+            await conn.QueryAsync("update iks_gags set Unbanned = 1, UnbannedBy = @unbannedBy where id = @id",
+                new { id = gag.Id, unbannedBy = adminSid });
+            var existingGag = OnlineGaggedPlayers.FirstOrDefault(x => x.Sid == gag.Sid);
+            if (existingGag != null)
+            {
+                OnlineGaggedPlayers.Remove(existingGag);
+            }
+            
+            OnUnGag?.Invoke(gag);
+            await ReloadInfractions(sid, false);
+            return gag;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+
+        return null;
     }
 
     public event Action<string, IMenu, CCSPlayerController>? OnMenuOpen;
@@ -1641,7 +1854,7 @@ public class PluginApi : IIksAdminApi
             
             if (PreMute != null)
             {
-                foreach (IIksAdminApi.PreMuteEventHandler handler in PreMute.GetInvocationList())
+                foreach (IIksAdminApi.PreCommEventHandler handler in PreMute.GetInvocationList())
                 {
                     HookResult result = await handler(muteInfo);
                     if (result is HookResult.Stop or HookResult.Handled)
@@ -1695,7 +1908,7 @@ public class PluginApi : IIksAdminApi
             
             if (PreGag != null)
             {
-                foreach (IIksAdminApi.PreGagEventHandler handler in PreGag.GetInvocationList())
+                foreach (IIksAdminApi.PreCommEventHandler handler in PreGag.GetInvocationList())
                 {
                     HookResult result = await handler(gagInfo);
                     if (result is HookResult.Stop or HookResult.Handled)
@@ -1739,11 +1952,23 @@ public class PluginApi : IIksAdminApi
             var ban = await GetBan(sid);
             if (ban == null)
                 return null;
-
-            await conn.QueryAsync("update iks_bans set Unbanned = 1, UnbannedBy = @unbannedBy where id = @id",
-                new { id = ban.Id, unbannedBy = adminSid });
             ban.Unbanned = 1;
             ban.UnbannedBy = adminSid;
+            if (PreUnBan != null)
+            {
+                foreach (IIksAdminApi.PreBanEventHandler handler in PreUnBan.GetInvocationList())
+                {
+                    var result = await handler(ban);
+                    if (result is HookResult.Stop or HookResult.Handled)
+                    {
+                        Console.WriteLine("Un ban was stopped from handler");
+                        return null;
+                    }
+                }
+            }
+            await conn.QueryAsync("update iks_bans set Unbanned = 1, UnbannedBy = @unbannedBy where id = @id",
+                new { id = ban.Id, unbannedBy = adminSid });
+            
             OnUnBan?.Invoke(ban);
             BaseMessages.SERVER_UNBAN(ban);
             return ban;
@@ -1765,6 +1990,20 @@ public class PluginApi : IIksAdminApi
             var mute = await GetMute(sid);
             if (mute == null)
                 return null;
+            mute.Unbanned = 1;
+            mute.UnbannedBy = adminSid;
+            if (PreUnMute != null)
+            {
+                foreach (IIksAdminApi.PreCommEventHandler handler in PreUnMute.GetInvocationList())
+                {
+                    var result = await handler(mute);
+                    if (result is HookResult.Stop or HookResult.Handled)
+                    {
+                        Console.WriteLine("Un mute was stopped from handler");
+                        return null;
+                    }
+                }
+            }
 
             await conn.QueryAsync("update iks_mutes set Unbanned = 1, UnbannedBy = @unbannedBy where id = @id",
                 new { id = mute.Id, unbannedBy = adminSid });
@@ -1774,8 +2013,7 @@ public class PluginApi : IIksAdminApi
             {
                 OnlineMutedPlayers.Remove(existingMute);
             }
-            mute.Unbanned = 1;
-            mute.UnbannedBy = adminSid;
+            
             OnUnMute?.Invoke(mute);
             await ReloadInfractions(sid, false);
             BaseMessages.SERVER_UNMUTE(mute);
@@ -1798,6 +2036,21 @@ public class PluginApi : IIksAdminApi
             var gag = await GetGag(sid);
             if (gag == null)
                 return null;
+            gag.Unbanned = 1;
+            gag.UnbannedBy = adminSid;
+
+            if (PreUnGag != null)
+            {
+                foreach (IIksAdminApi.PreCommEventHandler handler in PreUnGag.GetInvocationList())
+                {
+                    var result = await handler(gag);
+                    if (result is HookResult.Stop or HookResult.Handled)
+                    {
+                        Console.WriteLine("Un gag was stopped from handler");
+                        return null;
+                    }
+                }
+            }
 
             await conn.QueryAsync("update iks_gags set Unbanned = 1, UnbannedBy = @unbannedBy where id = @id",
                 new { id = gag.Id, unbannedBy = adminSid });
@@ -1806,8 +2059,7 @@ public class PluginApi : IIksAdminApi
             {
                 OnlineGaggedPlayers.Remove(existingGag);
             }
-            gag.Unbanned = 1;
-            gag.UnbannedBy = adminSid;
+            
             OnUnGag?.Invoke(gag);
             await ReloadInfractions(sid, false);
             BaseMessages.SERVER_UNGAG(gag);
@@ -1962,7 +2214,7 @@ public class PluginApi : IIksAdminApi
         return new Menu(onOpen);
     }
 
-    public void SendMessageToPlayer(CCSPlayerController? controller, string message, string? tag = null)
+    public void SendMessageToPlayer(CCSPlayerController? controller, string message, string? tag)
     {
         Server.NextFrame(() =>
         {
@@ -2009,7 +2261,7 @@ public class PluginApi : IIksAdminApi
         });
     }
 
-    public void SendMessageToAll(string message, string? tag = null)
+    public void SendMessageToAll(string message, string? tag)
     {
         Server.NextFrame(() =>
         {
