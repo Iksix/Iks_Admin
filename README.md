@@ -64,7 +64,7 @@ For example:
 ```
 
 > [!TIP]
-> - You can write "ABCD" in ServerID column for admin
+> - You can write "1;2;3;4" in ServerID column for admin
 > - At the moment, you can add groups only directly to the database.
 > - Tested on [CS# v215](https://docs.cssharp.dev/index.html)
 
