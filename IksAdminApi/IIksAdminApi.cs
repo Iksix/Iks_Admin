@@ -6,6 +6,7 @@ using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
 using MenuManager;
 using Microsoft.Extensions.Localization;
+using static CounterStrikeSharp.API.Modules.Commands.CommandInfo;
 
 namespace IksAdminApi;
 
@@ -19,6 +20,7 @@ public interface IIksAdminApi
     }
     
     public IPluginCfg Config { get; set; }
+    public static List<CCSPlayerController> HidenPlayers = new();
     // Fields
     public List<AdminMenuOption> ModulesOptions { get; set; }
     public List<PlayerComm> OnlineMutedPlayers { get; set; }
@@ -31,6 +33,8 @@ public interface IIksAdminApi
     public Dictionary<CCSPlayerController, Admin> TimeAdmins { get; set; }
     public IStringLocalizer Localizer { get; set; }
     public BasePlugin Plugin { get; }
+
+    public void RemoveCommand(string command);
     
     // Functions
     public Task AddGroup(Group group);
@@ -56,7 +60,7 @@ public interface IIksAdminApi
 
     public void AddNewCommand(string command, string description, string commandUsage, int minArgs, string flagAccess,
         string flagDefault, CommandUsage whoCanExecute,
-        Action<CCSPlayerController, Admin?, List<string>, CommandInfo> onCommandExecute);
+        Action<CCSPlayerController, Admin?, List<string>, HelpCommandInfo> onCommandExecute);
 
     public bool HasAccess(string adminSid, CommandUsage commandUsage, string flagsAccess,
         string flagsDefault);
@@ -122,7 +126,7 @@ public interface IIksAdminApi
 
     #region Use for do a plugin
 
-    public void ReplyToCommand(CommandInfo info, string reply, string? replyToConsole = null, string? customTag = null);
+    public void ReplyToCommand(HelpCommandInfo info, string reply, string? replyToConsole = null, string? customTag = null);
     public bool HasPermissions(string adminSid, string flagsAccess, string flagsDefault);
     public List<Admin> GetThisServerAdmins();
     public Admin? GetAdminBySid(string steamId);
@@ -208,12 +212,20 @@ public class PlayerInfo
     public string IpAddress;
     public string PlayerName;
     public SteamID SteamId;
-    public CCSPlayerController? Controller;
+    public CCSPlayerController? Controller {get {
+        return Utilities.GetPlayerFromSteamId(SteamId.SteamId64);
+    }}
     public PlayerInfo(string name, ulong sid, string ip)
     {
         PlayerName = name;
         SteamId = new SteamID(sid);
         IpAddress = ip;
+    }
+    public PlayerInfo(CCSPlayerController controller)
+    {
+        PlayerName = controller.PlayerName;
+        SteamId = controller.AuthorizedSteamID!;
+        IpAddress = controller.IpAddress!;
     }
 }
 
@@ -418,19 +430,22 @@ public interface IPluginCfg
     public List<Map> Maps { get; set; } 
 }
 
-public class CommandConstructor
+public class HelpCommandInfo
 {
-    /// <summary>
-    /// Examples:
-    /// "css_admin_add <identity:offline> <>"
-    /// </summary>
-    public string ConstructorString; 
-    public string Description;
-    public Action<CCSPlayerController, List<Object>> OnExecute;
-    public CommandConstructor(string constructorString, string description, Action<CCSPlayerController, Object[]>onExecute)
+    public string Command { get; set; }
+    public string Description { get; set; }
+    public string CommandUsage { get; set; }
+    public string FlagAccess {get; set;}
+    public string FlagDefault {get; set;}
+    public CommandCallback Handler {get; set;}
+
+    public HelpCommandInfo(string command, string description, string commandUsage, string flagAccess, string flagDefault, CommandCallback callback)
     {
-        ConstructorString = constructorString;
+        Command = command;
         Description = description;
+        CommandUsage = commandUsage;
+        FlagAccess = flagAccess;
+        FlagDefault = flagDefault;
+        Handler = callback;
     }
-    
 }

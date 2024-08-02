@@ -71,7 +71,7 @@
 	"MENUTITLE_Mute" : "Выдать Мут",
 	"MENUTITLE_Silence" : "Заглушить", // [2.1.7]
 	"MENUTITLE_SelectPlayer" : "Выберите игрока",
-	"MENUTITLE_SelectTeam" : "Выберите время",
+	"MENUTITLE_SelectTeam" : "Выберите команду",
 	"MENUTITLE_Reason" : "Выберите причину",
 	"MENUTITLE_Time" : "Выберите время",
 	
