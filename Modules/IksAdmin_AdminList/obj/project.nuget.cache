@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "UdAZe14GtA8=",
+  "dgSpecHash": "zLuPQKGcUkk=",
   "success": false,
   "projectFilePath": "E:\\__iksAdmin\\Iks_Admin\\Modules\\IksAdmin_AdminList\\IksAdmin_AdminList.csproj",
   "expectedPackageFiles": [
@@ -58,7 +58,7 @@
     {
       "code": "NU1605",
       "level": "Error",
-      "message": "Warning As Error: Detected package downgrade: CounterStrikeSharp.Api from 1.0.215 to 1.0.202. Reference the package directly from the project to select a different version. \r\n IksAdmin_AdminList -> IksAdminApi -> CounterStrikeSharp.Api (>= 1.0.215) \r\n IksAdmin_AdminList -> CounterStrikeSharp.API (>= 1.0.202)",
+      "message": "Warning As Error: Detected package downgrade: CounterStrikeSharp.Api from 1.0.263 to 1.0.202. Reference the package directly from the project to select a different version. \r\n IksAdmin_AdminList -> IksAdminApi -> CounterStrikeSharp.Api (>= 1.0.263) \r\n IksAdmin_AdminList -> CounterStrikeSharp.API (>= 1.0.202)",
       "libraryId": "CounterStrikeSharp.Api",
       "targetGraphs": [
         "net8.0"

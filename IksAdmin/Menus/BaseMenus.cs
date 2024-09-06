@@ -694,14 +694,14 @@ public static class BaseMenus
     private static void ConstructSelectPlayerMenu(CCSPlayerController caller, IMenu menu, 
         Action<PlayerInfo, IMenu> onSelect, bool ignoreYourself = true, bool offline = false, bool aliveOnly = false, string? filter = null)
     {
-        var players = Api!.DisconnectedPlayers;
+        var players = Api!.DisconnectedPlayers.Values.ToList();
         if (!offline)
         {
             players.Clear();
             foreach (var player in XHelper.GetOnlinePlayers())
             {
                 if (aliveOnly && !player.PawnIsAlive) continue;
-                players.Add(player.AuthorizedSteamID!.SteamId64.ToString(), XHelper.CreateInfo(player));
+                players.Add(XHelper.CreateInfo(player));
             }
         }
 
@@ -709,7 +709,7 @@ public static class BaseMenus
         
         foreach (var player in players)
         {
-            var playerInfo = new PlayerInfo(player.Value.PlayerName, player.Value.SteamId.SteamId64, player.Value.IpAddress);
+            var playerInfo = new PlayerInfo(player.PlayerName, player.SteamId.SteamId64, player.IpAddress);
             if (filter != null)
             {
                 switch (filter)

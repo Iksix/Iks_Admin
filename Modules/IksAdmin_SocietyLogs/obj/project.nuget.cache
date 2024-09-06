@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "Rvh5K8Do5dY=",
+  "dgSpecHash": "c9C6qeHapw0=",
   "success": false,
   "projectFilePath": "E:\\__iksAdmin\\Iks_Admin\\Modules\\IksAdmin_SocietyLogs\\IksAdmin_SocietyLogs.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\iks\\.nuget\\packages\\counterstrikesharp.api\\1.0.202\\counterstrikesharp.api.1.0.202.nupkg.sha512",
+    "C:\\Users\\iks\\.nuget\\packages\\counterstrikesharp.api\\1.0.215\\counterstrikesharp.api.1.0.215.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\dapper\\2.1.35\\dapper.2.1.35.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\discord.webhook\\1.0.9\\discord.webhook.1.0.9.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\htmlagilitypack\\1.11.53\\htmlagilitypack.1.11.53.nupkg.sha512",
@@ -63,7 +63,7 @@
     {
       "code": "NU1605",
       "level": "Error",
-      "message": "Warning As Error: Detected package downgrade: CounterStrikeSharp.Api from 1.0.215 to 1.0.202. Reference the package directly from the project to select a different version. \r\n IksAdmin_SocietyLogs -> IksAdminApi -> CounterStrikeSharp.Api (>= 1.0.215) \r\n IksAdmin_SocietyLogs -> CounterStrikeSharp.API (>= 1.0.202)",
+      "message": "Warning As Error: Detected package downgrade: CounterStrikeSharp.Api from 1.0.263 to 1.0.215. Reference the package directly from the project to select a different version. \r\n IksAdmin_SocietyLogs -> IksAdminApi -> CounterStrikeSharp.Api (>= 1.0.263) \r\n IksAdmin_SocietyLogs -> CounterStrikeSharp.API (>= 1.0.215)",
       "libraryId": "CounterStrikeSharp.Api",
       "targetGraphs": [
         "net8.0"

@@ -71,7 +71,7 @@
 	"MENUTITLE_Mute" : "Выдать Мут",
 	"MENUTITLE_Silence" : "Заглушить", // [2.1.7]
 	"MENUTITLE_SelectPlayer" : "Выберите игрока",
-	"MENUTITLE_SelectTeam" : "Выберите команду",
+	"MENUTITLE_SelectTeam" : "Выберите время",
 	"MENUTITLE_Reason" : "Выберите причину",
 	"MENUTITLE_Time" : "Выберите время",
 	
@@ -118,6 +118,8 @@
 	"OTHER_ToAdmins" : "{green}Админам: {message}",
 	"OTHER_FromAdminToAll" : "{green}[ВСЕМ ОТ АДМИНА]: {message}",
 	"OTHER_AdminsSee" : "{green}[Админам] {name}: {message}",
+	"OTHER_FakeLeaveWhenHide" : "Игрок {red}{name}{white} вышел с сервера.",
 
 	"HELPER_Min": " мин." // Отображается если у срока нет ключа в Times | Example: 24 -> 24 мин.
+
 }

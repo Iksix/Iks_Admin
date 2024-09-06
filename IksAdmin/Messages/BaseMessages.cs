@@ -21,14 +21,14 @@ public class BaseMessages
     {
         Server.NextFrame(() =>
         {
-            Api.SendMessageToAll(ReplaceComm(Api.Localizer["SERVER_OnMute"], info));
+            Api.SendMessageToAll(ReplaceComm(Api.Localizer["SERVER_OnGag"], info));
         });
     }
     public static void SERVER_MUTE(PlayerComm info)
     {
         Server.NextFrame(() =>
         {
-            Api.SendMessageToAll(ReplaceComm(Api.Localizer["SERVER_OnGag"], info));
+            Api.SendMessageToAll(ReplaceComm(Api.Localizer["SERVER_OnMute"], info));
         });
     }
     

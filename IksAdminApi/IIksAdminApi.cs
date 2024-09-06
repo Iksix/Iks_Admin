@@ -4,9 +4,9 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
+using CounterStrikeSharp.API.ValveConstants.Protobuf;
 using MenuManager;
 using Microsoft.Extensions.Localization;
-using static CounterStrikeSharp.API.Modules.Commands.CommandInfo;
 
 namespace IksAdminApi;
 
@@ -20,7 +20,6 @@ public interface IIksAdminApi
     }
     
     public IPluginCfg Config { get; set; }
-    public static List<CCSPlayerController> HidenPlayers = new();
     // Fields
     public List<AdminMenuOption> ModulesOptions { get; set; }
     public List<PlayerComm> OnlineMutedPlayers { get; set; }
@@ -33,8 +32,6 @@ public interface IIksAdminApi
     public Dictionary<CCSPlayerController, Admin> TimeAdmins { get; set; }
     public IStringLocalizer Localizer { get; set; }
     public BasePlugin Plugin { get; }
-
-    public void RemoveCommand(string command);
     
     // Functions
     public Task AddGroup(Group group);
@@ -60,7 +57,7 @@ public interface IIksAdminApi
 
     public void AddNewCommand(string command, string description, string commandUsage, int minArgs, string flagAccess,
         string flagDefault, CommandUsage whoCanExecute,
-        Action<CCSPlayerController, Admin?, List<string>, HelpCommandInfo> onCommandExecute);
+        Action<CCSPlayerController, Admin?, List<string>, CommandInfo> onCommandExecute);
 
     public bool HasAccess(string adminSid, CommandUsage commandUsage, string flagsAccess,
         string flagsDefault);
@@ -126,7 +123,7 @@ public interface IIksAdminApi
 
     #region Use for do a plugin
 
-    public void ReplyToCommand(HelpCommandInfo info, string reply, string? replyToConsole = null, string? customTag = null);
+    public void ReplyToCommand(CommandInfo info, string reply, string? replyToConsole = null, string? customTag = null);
     public bool HasPermissions(string adminSid, string flagsAccess, string flagsDefault);
     public List<Admin> GetThisServerAdmins();
     public Admin? GetAdminBySid(string steamId);
@@ -137,6 +134,8 @@ public interface IIksAdminApi
     public void SendMessageToPlayer(CCSPlayerController? controller, string message, string? tag);
     public void SendMessageToAll(string message, string? tag);
     public Dictionary<CCSPlayerController, Action<string>> NextCommandAction { get; set; }
+
+
     public void EOnMenuOpen(string index, IMenu menu, CCSPlayerController player);
     #region Punishments without chat message
     
@@ -212,20 +211,12 @@ public class PlayerInfo
     public string IpAddress;
     public string PlayerName;
     public SteamID SteamId;
-    public CCSPlayerController? Controller {get {
-        return Utilities.GetPlayerFromSteamId(SteamId.SteamId64);
-    }}
+    public CCSPlayerController? Controller;
     public PlayerInfo(string name, ulong sid, string ip)
     {
         PlayerName = name;
         SteamId = new SteamID(sid);
         IpAddress = ip;
-    }
-    public PlayerInfo(CCSPlayerController controller)
-    {
-        PlayerName = controller.PlayerName;
-        SteamId = controller.AuthorizedSteamID!;
-        IpAddress = controller.IpAddress!;
     }
 }
 
@@ -391,10 +382,10 @@ public static class PlayerExtensions
     {
         return controller == null ? "0.0.0.0" : controller.IpAddress!.Split(":")[0];
     }
-    public static void Kick(this CCSPlayerController? controller)   
+    public static void Kick(this CCSPlayerController? controller, NetworkDisconnectionReason reason = NetworkDisconnectionReason.NETWORK_DISCONNECT_KICKED)   
     {
         if (controller == null) return;
-        Server.ExecuteCommand("kickid " + controller.UserId);
+        controller.Disconnect(reason);
     }
     
     public static int GetTime(int time) 
@@ -430,22 +421,19 @@ public interface IPluginCfg
     public List<Map> Maps { get; set; } 
 }
 
-public class HelpCommandInfo
+public class CommandConstructor
 {
-    public string Command { get; set; }
-    public string Description { get; set; }
-    public string CommandUsage { get; set; }
-    public string FlagAccess {get; set;}
-    public string FlagDefault {get; set;}
-    public CommandCallback Handler {get; set;}
-
-    public HelpCommandInfo(string command, string description, string commandUsage, string flagAccess, string flagDefault, CommandCallback callback)
+    /// <summary>
+    /// Examples:
+    /// "css_admin_add <identity:offline> <>"
+    /// </summary>
+    public string ConstructorString; 
+    public string Description;
+    public Action<CCSPlayerController, List<Object>> OnExecute;
+    public CommandConstructor(string constructorString, string description, Action<CCSPlayerController, Object[]>onExecute)
     {
-        Command = command;
+        ConstructorString = constructorString;
         Description = description;
-        CommandUsage = commandUsage;
-        FlagAccess = flagAccess;
-        FlagDefault = flagDefault;
-        Handler = callback;
     }
+    
 }

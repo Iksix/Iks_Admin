@@ -10,6 +10,7 @@ using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
+using CounterStrikeSharp.API.ValveConstants.Protobuf;
 using Dapper;
 using IksAdmin.Commands;
 using IksAdminApi;
@@ -17,7 +18,6 @@ using MenuManager;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using MySqlConnector;
-using static CounterStrikeSharp.API.Modules.Commands.CommandInfo;
 using Group = IksAdminApi.Group;
 
 namespace IksAdmin;
@@ -28,10 +28,10 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     // - Рефакторинг кода команд
     // - Вынести все функции использующиеся для создания команд в API
     // - Привести базу данных в порядок, используя SQL от Flames
-    
+    // - Использовать JOIN в sql
     
     public override string ModuleName => "IksAdmin";
-    public override string ModuleVersion => "2.2.0";
+    public override string ModuleVersion => "2.1.9.1";
     public override string ModuleAuthor => "iks__";
 
     private static List<int> _kickSlots = new();
@@ -77,6 +77,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         RegisterListener<Listeners.OnClientAuthorized>(OnAuthorized);
         _plugin = this;
         InitializeCommands();
+        InitMessages();
         AddCommandListener("say", OnSay);
         AddCommandListener("say_team", OnSay);
         AddCommandListener("jointeam", (p, _) =>
@@ -111,7 +112,26 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             }
         }, TimerFlags.REPEAT);
     }
-    
+
+    private void InitMessages()
+    {
+        Api!.OnKick += (adminId, target, reason) =>
+        {
+            BaseMessages.SERVER_KICK(adminId, target, reason);
+        };
+        Api!.OnSwitchTeam += (adminId, target, oldTeam, newTeam) =>
+        {
+            BaseMessages.SERVER_SWITCHTEAM(adminId, target, oldTeam, newTeam);
+        };
+        Api!.OnChangeTeam += (adminId, target, oldTeam, newTeam) =>
+        {
+            BaseMessages.SERVER_CHANGETEAM(adminId, target, oldTeam, newTeam);
+        };
+        Api!.OnRename += (adminId, target, oldName, newName) =>
+        {
+            BaseMessages.SERVER_RENAME(adminId, target, oldName, newName);
+        };
+    }
 
     private void OnAuthorized(int slot, SteamID steamid)
     {
@@ -123,7 +143,12 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         Console.WriteLine($"{name} name");
         Console.WriteLine($"{sid64} sid64");
         Console.WriteLine($"{ip} ip");
-        Api!.DisconnectedPlayers.Remove(sid64);
+        if (Api!.DisconnectedPlayers.ContainsKey(sid64))
+        {
+            Api!.DisconnectedPlayers.Remove(sid64);
+            Console.WriteLine($"Removed from disconnected players");
+        }
+        
         Task.Run(async () =>
         {
             await ReloadPlayerInfractions(sid64, true, ip, slot, name, true);
@@ -132,16 +157,6 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     }
     private void InitializeCommands()
     {
-        Api!.AddNewCommand(
-            "db_update",
-            "update db structure",
-            " ",
-            0,
-            "dbUpdate",
-            "z",
-            CommandUsage.CLIENT_AND_SERVER,
-            BaseCommands.DbUpdate
-        );
         Api!.AddNewCommand(
             "db_update",
             "update db structure",
@@ -572,6 +587,20 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
     }
 
 
+    [GameEventHandler]
+    public HookResult OnChangeTeam(EventPlayerTeam @event, GameEventInfo info)
+    {
+        if (Localizer["OTHER_FakeLeaveWhenHide"].Value == "") return HookResult.Continue;
+        var player = @event.Userid;
+        if (player == null) return HookResult.Continue;
+        if (@event.Team != 1) return HookResult.Continue;
+        if (!BaseCommands.HidenPlayers.Contains(player)) return HookResult.Continue;
+        info.DontBroadcast = true;
+        Server.PrintToChatAll(Localizer["OTHER_FakeLeaveWhenHide"].Value.Replace("{name}", player.PlayerName));
+        return HookResult.Stop;
+    }
+    
+
 
     public static void ConvertAll()
     {
@@ -658,7 +687,8 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         if (Api!.TimeAdmins.ContainsKey(player))
             Api.TimeAdmins.Remove(player);
         if (player.AuthorizedSteamID == null) return HookResult.Continue;
-        Api.DisconnectedPlayers.TryAdd(player.SteamID.ToString(), XHelper.CreateInfo(player));
+        Api.DisconnectedPlayers.Add(player.AuthorizedSteamID.SteamId64.ToString(), XHelper.CreateInfo(player));
+        Console.WriteLine($"Added to disconnected players");
         return HookResult.Continue;
     }
     [GameEventHandler]
@@ -668,6 +698,8 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
         if (player == null) return HookResult.Continue;
         if (player.AuthorizedSteamID != null || player.IsBot) return HookResult.Continue;
 
+        if (Config.NotAuthorizedKickTime == 0) return HookResult.Continue;
+        
         AddTimer(Config.NotAuthorizedKickTime, () =>
         {
             if (player.AuthorizedSteamID != null) return;
@@ -685,7 +717,7 @@ public class IksAdmin : BasePlugin, IPluginConfig<PluginConfig>
             var player = XHelper.GetPlayerFromArg("#" + sid);
             if (player != null)
             {
-                Server.ExecuteCommand($"kickid {player.UserId}");
+                player.Disconnect(NetworkDisconnectionReason.NETWORK_DISCONNECT_REJECT_BANNED);
             }
         });
     }
@@ -818,7 +850,6 @@ public class PluginApi : IIksAdminApi
     public List<PlayerComm> OnlineGaggedPlayers { get; set; } = new();
     public Dictionary<string, PlayerInfo> DisconnectedPlayers { get; set; } = new();
     public Dictionary<CCSPlayerController, Action<string>> NextCommandAction { get; set; } = new();
-    public Dictionary<string, HelpCommandInfo> HelpOutput {get; set;} = new();
     public MenuType MenuType { get; set; } 
 
     public BasePlugin Plugin { get; }
@@ -1268,7 +1299,6 @@ public class PluginApi : IIksAdminApi
     public event Action<List<Admin>>? OnReloadAdmins;
     public event Action<CCSPlayerController?, CommandInfo>? OnCommandUsed;
 
-
     public void EOnPlayerConnected(PlayerInfo info, Admin? admin, PlayerBan? ban, PlayerComm? mute, PlayerComm? gag)
     {
         OnPlayerConnected?.Invoke(info, admin, ban, mute, gag);
@@ -1278,20 +1308,12 @@ public class PluginApi : IIksAdminApi
     #endregion
 
     #region Commands helpers
-
-    public void RemoveCommand(string command)
-    {
-        if (HelpOutput.TryGetValue(command, out var commandInfo))
-        {
-            Plugin.RemoveCommand("css_" + command, commandInfo.Handler);
-            HelpOutput.Remove(command);
-        }
-    }
+    
     public void AddNewCommand(string command, string description, string commandUsage, int minArgs, string flagAccess,
         string flagDefault, CommandUsage whoCanExecute,
         Action<CCSPlayerController, Admin?, List<string>, CommandInfo> onCommandExecute)
     {
-        CommandCallback commandCallback = (player, info) =>
+        Plugin.AddCommand("css_" + command, description, (player, info) =>
         {
             try
             {
@@ -1351,9 +1373,7 @@ public class PluginApi : IIksAdminApi
             {
                 Plugin.Logger.LogError(e.ToString());
             }
-        };
-        Plugin.AddCommand("css_" + command, description, commandCallback);
-        HelpOutput.TryAdd(command, new HelpCommandInfo(command, description, commandUsage, flagAccess, flagDefault, commandCallback));
+        });
     }
     public bool HasAccess(string adminSid, CommandUsage commandUsage, string flagsAccess, string flagsDefault)
     {
@@ -1500,23 +1520,6 @@ public class PluginApi : IIksAdminApi
                 }
             }
             
-            await BanQuery(banInfo);
-            await ReloadInfractions(banInfo.Sid);
-            OnAddBan?.Invoke(banInfo);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-        return true;
-    }
-
-    public async Task BanQuery(PlayerBan banInfo)
-    {
-        try
-        {
-            await using var conn = new MySqlConnection(DbConnectionString);
-            await conn.OpenAsync();
             await conn.QueryAsync("insert into iks_bans(name, sid, ip, adminsid, adminName, created, time, end, reason, BanType, server_id)" +
                                   "values (@name, @sid, @ip, @adminSid, @adminName, @created, @time, @end, @reason, @banType, @serverId)",
                                   new
@@ -1531,13 +1534,16 @@ public class PluginApi : IIksAdminApi
                                       end = banInfo.End,
                                       reason = banInfo.Reason,
                                       banType = banInfo.BanType,
-                                      serverId = banInfo.ServerId
+                                      serverId
                                   });
+            await ReloadInfractions(banInfo.Sid);
+            OnAddBan?.Invoke(banInfo);
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
         }
+        return true;
     }
 
     public event IIksAdminApi.PreCommEventHandler? PreMute;
@@ -1808,9 +1814,7 @@ public class PluginApi : IIksAdminApi
     {
         await IksAdmin.ReloadPlayerInfractions(sid, checkBan);
     }
-    /// <summary>
-    /// With message
-    /// </summary>
+
     public async Task<bool> AddBan(string adminSid, PlayerBan banInfo)
     {
         try
@@ -1846,7 +1850,22 @@ public class PluginApi : IIksAdminApi
                 }
             }
             
-            await BanQuery(banInfo);
+            await conn.QueryAsync("insert into iks_bans(name, sid, ip, adminsid, adminName, created, time, end, reason, BanType, server_id)" +
+                                  "values (@name, @sid, @ip, @adminSid, @adminName, @created, @time, @end, @reason, @banType, @serverId)",
+                                  new
+                                  {
+                                      name = banInfo.Name,
+                                      sid = banInfo.Sid,
+                                      ip = banInfo.Ip.Split(":")[0],
+                                      adminSid = banInfo.AdminSid,
+                                      adminName = banInfo.AdminName,
+                                      created = banInfo.Created,
+                                      time = banInfo.Time,
+                                      end = banInfo.End,
+                                      reason = banInfo.Reason,
+                                      banType = banInfo.BanType,
+                                      serverId
+                                  });
             await ReloadInfractions(banInfo.Sid);
             OnAddBan?.Invoke(banInfo);
             BaseMessages.SERVER_BAN(banInfo);
@@ -1857,9 +1876,7 @@ public class PluginApi : IIksAdminApi
         }
         return true;
     }
-    /// <summary>
-    /// With message
-    /// </summary>
+
     public async Task<bool> AddMute(string adminSid, PlayerComm muteInfo)
     {
         try
@@ -1890,23 +1907,6 @@ public class PluginApi : IIksAdminApi
                     }
                 }
             }
-            await MuteQuery(muteInfo);
-            OnAddMute?.Invoke(muteInfo);
-            await ReloadInfractions(muteInfo.Sid, false);
-            BaseMessages.SERVER_MUTE(muteInfo);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-        return true;
-    }
-    public async Task MuteQuery(PlayerComm muteInfo)
-    {
-        try
-        {
-            await using var conn = new MySqlConnection(DbConnectionString);
-            await conn.OpenAsync();
             await conn.QueryAsync("insert into iks_mutes(name, sid, adminsid, adminName, created, time, end, reason, server_id)" +
                                   "values (@name, @sid, @adminSid, @adminName, @created, @time, @end, @reason, @serverId)",
                 new
@@ -1919,18 +1919,19 @@ public class PluginApi : IIksAdminApi
                     time = muteInfo.Time,
                     end = muteInfo.End,
                     reason = muteInfo.Reason,
-                    serverId = muteInfo.ServerId
+                    serverId
                 });
+            OnAddMute?.Invoke(muteInfo);
+            await ReloadInfractions(muteInfo.Sid, false);
+            BaseMessages.SERVER_MUTE(muteInfo);
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
         }
+        return true;
     }
 
-    /// <summary>
-    /// With message
-    /// </summary>
     public async Task<bool> AddGag(string adminSid, PlayerComm gagInfo)
     {
         try
@@ -1960,24 +1961,6 @@ public class PluginApi : IIksAdminApi
                     }
                 }
             }
-            await GagQuery(gagInfo);
-            OnAddGag?.Invoke(gagInfo);
-            await ReloadInfractions(gagInfo.Sid, false);
-            BaseMessages.SERVER_GAG(gagInfo);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-        return true;
-    }
-
-    public async Task GagQuery(PlayerComm gagInfo)
-    {
-        try
-        {
-            await using var conn = new MySqlConnection(DbConnectionString);
-            await conn.OpenAsync();
             await conn.QueryAsync("insert into iks_gags(name, sid, adminsid, adminName, created, time, end, reason, server_id)" +
                                   "values (@name, @sid, @adminSid, @adminName, @created, @time, @end, @reason, @serverId)",
                 new
@@ -1990,13 +1973,17 @@ public class PluginApi : IIksAdminApi
                     time = gagInfo.Time,
                     end = gagInfo.End,
                     reason = gagInfo.Reason,
-                    serverId = gagInfo.ServerId
+                    serverId
                 });
+            OnAddGag?.Invoke(gagInfo);
+            await ReloadInfractions(gagInfo.Sid, false);
+            BaseMessages.SERVER_GAG(gagInfo);
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
         }
+        return true;
     }
 
     public async Task<PlayerBan?> UnBan(string sid, string adminSid)
@@ -2371,14 +2358,5 @@ public class PluginApi : IIksAdminApi
         OnRename?.Invoke(adminSid, target, oldName, newName);
     }
 
-    public void AddNewCommand(string command, string description, string commandUsage, int minArgs, string flagAccess, string flagDefault, CommandUsage whoCanExecute, Action<CCSPlayerController, Admin?, List<string>, HelpCommandInfo> onCommandExecute)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void ReplyToCommand(HelpCommandInfo info, string reply, string? replyToConsole = null, string? customTag = null)
-    {
-        throw new NotImplementedException();
-    }
     #endregion
 }

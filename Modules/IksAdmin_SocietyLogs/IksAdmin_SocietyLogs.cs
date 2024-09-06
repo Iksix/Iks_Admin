@@ -29,7 +29,7 @@ public class IksAdmin_SocietyLogs : BasePlugin, IPluginConfig<PluginConfig>
 
     
     public override string ModuleName => "IksAdmin_SocietyLogs";
-    public override string ModuleVersion => "1.0.0";
+    public override string ModuleVersion => "1.0.1";
     public override string ModuleAuthor => "iks";
     public override string ModuleDescription => "Logs for Iks_Admin =)";
     public PluginConfig Config { get; set; }

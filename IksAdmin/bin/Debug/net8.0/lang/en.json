@@ -118,6 +118,7 @@
 	"OTHER_ToAdmins": "{green}Admins: {message}",
 	"OTHER_FromAdminToAll": "{green}[FROM ADMIN TO ALL]: {message}",
 	"OTHER_AdminsSee": "{green}[Admins] {name}: {message}",
+	"OTHER_FakeLeaveWhenHide" : "The player {red}{name}{white} logged out of the server.",
 
 	"HELPER_Min": " min." // Displayed if the time has no key in Times | Example: 24 -> 24 min.
 }
