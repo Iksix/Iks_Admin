@@ -13,20 +13,13 @@
         "packagesPath": "C:\\Users\\iks\\.nuget\\packages\\",
         "outputPath": "E:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\iks\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\iks\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -52,15 +45,7 @@
           "dependencies": {
             "CounterStrikeSharp.Api": {
               "target": "Package",
-              "version": "[1.0.263, )"
-            },
-            "Dapper": {
-              "target": "Package",
-              "version": "[2.1.35, )"
-            },
-            "MySqlConnector": {
-              "target": "Package",
-              "version": "[2.3.5, )"
+              "version": "[1.0.276, )"
             }
           },
           "imports": [
@@ -79,7 +64,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
@@ -92,20 +77,13 @@
         "packagesPath": "C:\\Users\\iks\\.nuget\\packages\\",
         "outputPath": "E:\\__iksAdmin\\Iks_Admin\\IksAdmin\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\iks\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\iks\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -133,15 +111,23 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "CoreRcon": {
+              "target": "Package",
+              "version": "[5.4.1, )"
+            },
             "CounterStrikeSharp.Api": {
               "target": "Package",
-              "version": "[1.0.263, )"
+              "version": "[1.0.276, )"
             },
-            "Dapper": {
+            "SteamWebAPI2": {
+              "target": "Package",
+              "version": "[4.4.1, )"
+            },
+            "dapper": {
               "target": "Package",
               "version": "[2.1.35, )"
             },
-            "MySqlConnector": {
+            "mysqlconnector": {
               "target": "Package",
               "version": "[2.3.7, )"
             }
@@ -162,7 +148,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

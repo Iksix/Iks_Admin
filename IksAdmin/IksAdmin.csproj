@@ -4,15 +4,17 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>IksAdmin</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.263" />
-    <PackageReference Include="Dapper" Version="2.1.35" />
-    <PackageReference Include="MySqlConnector" Version="2.3.7" />
+    <PackageReference Include="CoreRcon" Version="5.4.1" />
+    <PackageReference Include="dapper" Version="2.1.35" />
+    <PackageReference Include="mysqlconnector" Version="2.3.7" />
+    <PackageReference Include="SteamWebAPI2" Version="4.4.1" />
     <ProjectReference Include="..\IksAdminApi\IksAdminApi.csproj" />
-    <Reference Include="E:\__iksAdmin\Iks_Admin\MenuManagerApi.dll" />
+    <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.276" />
+    <Reference Include="../RequirmentsApi/MenuManagerApi.dll" />
   </ItemGroup>
 
 </Project>

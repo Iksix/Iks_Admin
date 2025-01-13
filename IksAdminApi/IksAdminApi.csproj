@@ -1,17 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <RootNamespace>IIksAdminApi</RootNamespace>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.263" />
-        <PackageReference Include="Dapper" Version="2.1.35" />
-        <PackageReference Include="MySqlConnector" Version="2.3.5" />
-        <Reference Include="E:\__iksAdmin\Iks_Admin\MenuManagerApi.dll" />
-    </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.276" />
+    <Reference Include="../RequirmentsApi/MenuManagerApi.dll" />
+  </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     "net8.0": {
-      "CounterStrikeSharp.API/1.0.263": {
+      "CounterStrikeSharp.API/1.0.276": {
         "type": "package",
         "dependencies": {
           "McMaster.NETCore.Plugins": "1.4.0",
@@ -26,19 +26,6 @@
         "runtime": {
           "lib/net8.0/CounterStrikeSharp.API.dll": {
             "related": ".runtimeconfig.json;.xml"
-          }
-        }
-      },
-      "Dapper/2.1.35": {
-        "type": "package",
-        "compile": {
-          "lib/net7.0/Dapper.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net7.0/Dapper.dll": {
-            "related": ".xml"
           }
         }
       },
@@ -703,22 +690,6 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
-      "MySqlConnector/2.3.5": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "7.0.1"
-        },
-        "compile": {
-          "lib/net8.0/MySqlConnector.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net8.0/MySqlConnector.dll": {
-            "related": ".xml"
-          }
-        }
-      },
       "Scrutor/4.2.2": {
         "type": "package",
         "dependencies": {
@@ -927,39 +898,18 @@
     }
   },
   "libraries": {
-    "CounterStrikeSharp.API/1.0.263": {
-      "sha512": "Y91TJiKweVJT6d0O5ESEKmoAPrOr4ZRepSBqFD0RTiAdIPPukKvWPB0BeYC1a+GaxOEWI/XB+pB8Mn0tGUDMeQ==",
+    "CounterStrikeSharp.API/1.0.276": {
+      "sha512": "3rzfOqg+5jin/XUFg8tvJySlQmuPBHirNCNB0oTTCMe4EUZwWB3nVVBdfuR4C4qjfLeao6qeghGgvQOZNdoTxg==",
       "type": "package",
-      "path": "counterstrikesharp.api/1.0.263",
+      "path": "counterstrikesharp.api/1.0.276",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "counterstrikesharp.api.1.0.263.nupkg.sha512",
+        "counterstrikesharp.api.1.0.276.nupkg.sha512",
         "counterstrikesharp.api.nuspec",
         "lib/net8.0/CounterStrikeSharp.API.dll",
         "lib/net8.0/CounterStrikeSharp.API.runtimeconfig.json",
         "lib/net8.0/CounterStrikeSharp.API.xml"
-      ]
-    },
-    "Dapper/2.1.35": {
-      "sha512": "YKRwjVfrG7GYOovlGyQoMvr1/IJdn+7QzNXJxyMh0YfFF5yvDmTYaJOVYWsckreNjGsGSEtrMTpnzxTUq/tZQw==",
-      "type": "package",
-      "path": "dapper/2.1.35",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "Dapper.png",
-        "dapper.2.1.35.nupkg.sha512",
-        "dapper.nuspec",
-        "lib/net461/Dapper.dll",
-        "lib/net461/Dapper.xml",
-        "lib/net5.0/Dapper.dll",
-        "lib/net5.0/Dapper.xml",
-        "lib/net7.0/Dapper.dll",
-        "lib/net7.0/Dapper.xml",
-        "lib/netstandard2.0/Dapper.dll",
-        "lib/netstandard2.0/Dapper.xml",
-        "readme.md"
       ]
     },
     "McMaster.NETCore.Plugins/1.4.0": {
@@ -2164,35 +2114,6 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "MySqlConnector/2.3.5": {
-      "sha512": "AmEfUPkFl+Ev6jJ8Dhns3CYHBfD12RHzGYWuLt6DfG6/af6YvOMyPz74ZPPjBYQGRJkumD2Z48Kqm8s5DJuhLA==",
-      "type": "package",
-      "path": "mysqlconnector/2.3.5",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "README.md",
-        "lib/net462/MySqlConnector.dll",
-        "lib/net462/MySqlConnector.xml",
-        "lib/net471/MySqlConnector.dll",
-        "lib/net471/MySqlConnector.xml",
-        "lib/net48/MySqlConnector.dll",
-        "lib/net48/MySqlConnector.xml",
-        "lib/net6.0/MySqlConnector.dll",
-        "lib/net6.0/MySqlConnector.xml",
-        "lib/net7.0/MySqlConnector.dll",
-        "lib/net7.0/MySqlConnector.xml",
-        "lib/net8.0/MySqlConnector.dll",
-        "lib/net8.0/MySqlConnector.xml",
-        "lib/netstandard2.0/MySqlConnector.dll",
-        "lib/netstandard2.0/MySqlConnector.xml",
-        "lib/netstandard2.1/MySqlConnector.dll",
-        "lib/netstandard2.1/MySqlConnector.xml",
-        "logo.png",
-        "mysqlconnector.2.3.5.nupkg.sha512",
-        "mysqlconnector.nuspec"
-      ]
-    },
     "Scrutor/4.2.2": {
       "sha512": "t5VIYA7WJXoJJo7s4DoHakMGwTu+MeEnZumMOhTCH7kz9xWha24G7dJNxWrHPlu0ZdZAS4jDZCxxAnyaBh7uYw==",
       "type": "package",
@@ -2599,14 +2520,11 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "CounterStrikeSharp.Api >= 1.0.263",
-      "Dapper >= 2.1.35",
-      "MySqlConnector >= 2.3.5"
+      "CounterStrikeSharp.Api >= 1.0.276"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\iks\\.nuget\\packages\\": {},
-    "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\iks\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -2617,20 +2535,13 @@
       "packagesPath": "C:\\Users\\iks\\.nuget\\packages\\",
       "outputPath": "E:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\iks\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\iks\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -2656,15 +2567,7 @@
         "dependencies": {
           "CounterStrikeSharp.Api": {
             "target": "Package",
-            "version": "[1.0.263, )"
-          },
-          "Dapper": {
-            "target": "Package",
-            "version": "[2.1.35, )"
-          },
-          "MySqlConnector": {
-            "target": "Package",
-            "version": "[2.3.5, )"
+            "version": "[1.0.276, )"
           }
         },
         "imports": [
@@ -2683,7 +2586,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

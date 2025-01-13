@@ -2,7 +2,37 @@
   "version": 3,
   "targets": {
     "net8.0": {
-      "CounterStrikeSharp.API/1.0.263": {
+      "AutoMapper/12.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.CSharp": "4.7.0"
+        },
+        "compile": {
+          "lib/netstandard2.1/AutoMapper.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.1/AutoMapper.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CoreRCON/5.4.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Logging": "8.0.0",
+          "System.Diagnostics.DiagnosticSource": "8.0.1",
+          "System.IO.Pipelines": "8.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/CoreRCON.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/CoreRCON.dll": {}
+        }
+      },
+      "CounterStrikeSharp.API/1.0.276": {
         "type": "package",
         "dependencies": {
           "McMaster.NETCore.Plugins": "1.4.0",
@@ -719,6 +749,19 @@
           }
         }
       },
+      "Newtonsoft.Json/13.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Scrutor/4.2.2": {
         "type": "package",
         "dependencies": {
@@ -798,6 +841,23 @@
           }
         }
       },
+      "SteamWebAPI2/4.4.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection": "6.0.0",
+          "Microsoft.Extensions.Options": "6.0.0",
+          "automapper": "12.0.0",
+          "newtonsoft.json": "13.0.1"
+        },
+        "compile": {
+          "lib/netstandard2.1/Steam.Models.dll": {},
+          "lib/netstandard2.1/SteamWebAPI2.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.1/Steam.Models.dll": {},
+          "lib/netstandard2.1/SteamWebAPI2.dll": {}
+        }
+      },
       "System.Buffers/4.5.1": {
         "type": "package",
         "compile": {
@@ -816,7 +876,7 @@
           "lib/netstandard2.0/System.Data.DataSetExtensions.dll": {}
         }
       },
-      "System.Diagnostics.DiagnosticSource/8.0.0": {
+      "System.Diagnostics.DiagnosticSource/8.0.1": {
         "type": "package",
         "compile": {
           "lib/net8.0/System.Diagnostics.DiagnosticSource.dll": {
@@ -856,6 +916,22 @@
             "assetType": "runtime",
             "rid": "win"
           }
+        }
+      },
+      "System.IO.Pipelines/8.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/System.IO.Pipelines.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/System.IO.Pipelines.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
         }
       },
       "System.Memory/4.5.4": {
@@ -928,9 +1004,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
-          "CounterStrikeSharp.Api": "1.0.263",
-          "Dapper": "2.1.35",
-          "MySqlConnector": "2.3.5"
+          "CounterStrikeSharp.Api": "1.0.276"
         },
         "compile": {
           "bin/placeholder/IksAdminApi.dll": {}
@@ -942,14 +1016,43 @@
     }
   },
   "libraries": {
-    "CounterStrikeSharp.API/1.0.263": {
-      "sha512": "Y91TJiKweVJT6d0O5ESEKmoAPrOr4ZRepSBqFD0RTiAdIPPukKvWPB0BeYC1a+GaxOEWI/XB+pB8Mn0tGUDMeQ==",
+    "AutoMapper/12.0.0": {
+      "sha512": "0Rmg0zI5AFu1O/y//o9VGyhxKjhggWpk9mOA1tp0DEVx40c61bs+lnQv+0jUq8XbniF7FKgIVvI1perqiMtLrA==",
       "type": "package",
-      "path": "counterstrikesharp.api/1.0.263",
+      "path": "automapper/12.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "counterstrikesharp.api.1.0.263.nupkg.sha512",
+        "README.md",
+        "automapper.12.0.0.nupkg.sha512",
+        "automapper.nuspec",
+        "icon.png",
+        "lib/netstandard2.1/AutoMapper.dll",
+        "lib/netstandard2.1/AutoMapper.xml"
+      ]
+    },
+    "CoreRCON/5.4.1": {
+      "sha512": "RCHNbOlilx99DnCv7XeIGL68ivbMZLKYe6htGX0kiwnshUiIyP3p0369vKuymRQgLQfONuHDsdKQW69rvOaxNQ==",
+      "type": "package",
+      "path": "corercon/5.4.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "corercon.5.4.1.nupkg.sha512",
+        "corercon.nuspec",
+        "lib/netstandard2.0/CoreRCON.dll",
+        "logo.png"
+      ]
+    },
+    "CounterStrikeSharp.API/1.0.276": {
+      "sha512": "3rzfOqg+5jin/XUFg8tvJySlQmuPBHirNCNB0oTTCMe4EUZwWB3nVVBdfuR4C4qjfLeao6qeghGgvQOZNdoTxg==",
+      "type": "package",
+      "path": "counterstrikesharp.api/1.0.276",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "counterstrikesharp.api.1.0.276.nupkg.sha512",
         "counterstrikesharp.api.nuspec",
         "lib/net8.0/CounterStrikeSharp.API.dll",
         "lib/net8.0/CounterStrikeSharp.API.runtimeconfig.json",
@@ -2208,6 +2311,33 @@
         "mysqlconnector.nuspec"
       ]
     },
+    "Newtonsoft.Json/13.0.1": {
+      "sha512": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A==",
+      "type": "package",
+      "path": "newtonsoft.json/13.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/netstandard1.0/Newtonsoft.Json.dll",
+        "lib/netstandard1.0/Newtonsoft.Json.xml",
+        "lib/netstandard1.3/Newtonsoft.Json.dll",
+        "lib/netstandard1.3/Newtonsoft.Json.xml",
+        "lib/netstandard2.0/Newtonsoft.Json.dll",
+        "lib/netstandard2.0/Newtonsoft.Json.xml",
+        "newtonsoft.json.13.0.1.nupkg.sha512",
+        "newtonsoft.json.nuspec",
+        "packageIcon.png"
+      ]
+    },
     "Scrutor/4.2.2": {
       "sha512": "t5VIYA7WJXoJJo7s4DoHakMGwTu+MeEnZumMOhTCH7kz9xWha24G7dJNxWrHPlu0ZdZAS4jDZCxxAnyaBh7uYw==",
       "type": "package",
@@ -2337,6 +2467,21 @@
         "serilog.sinks.file.nuspec"
       ]
     },
+    "SteamWebAPI2/4.4.1": {
+      "sha512": "hejID7bZsWT1HLqcCzbCUC2QftUYc25Mtz5tbZjhDFsbr6ra1qvVPZhAaL/ERxSaNWqiESrQXbQE1U7W7Ezmrg==",
+      "type": "package",
+      "path": "steamwebapi2/4.4.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/Steam.Models.dll",
+        "lib/netstandard2.0/SteamWebAPI2.dll",
+        "lib/netstandard2.1/Steam.Models.dll",
+        "lib/netstandard2.1/SteamWebAPI2.dll",
+        "steamwebapi2.4.4.1.nupkg.sha512",
+        "steamwebapi2.nuspec"
+      ]
+    },
     "System.Buffers/4.5.1": {
       "sha512": "Rw7ijyl1qqRS0YQD/WycNst8hUUMgrMH4FCn1nNm27M4VxchZ1js3fVjQaANHO5f3sN4isvP4a+Met9Y4YomAg==",
       "type": "package",
@@ -2387,10 +2532,10 @@
         "version.txt"
       ]
     },
-    "System.Diagnostics.DiagnosticSource/8.0.0": {
-      "sha512": "c9xLpVz6PL9lp/djOWtk5KPDZq3cSYpmXoJQY524EOtuFl5z9ZtsotpsyrDW40U1DRnQSYvcPKEUV0X//u6gkQ==",
+    "System.Diagnostics.DiagnosticSource/8.0.1": {
+      "sha512": "vaoWjvkG1aenR2XdjaVivlCV9fADfgyhW5bZtXT23qaEea0lWiUljdQuze4E31vKM7ZWJaSUsbYIKE3rnzfZUg==",
       "type": "package",
-      "path": "system.diagnostics.diagnosticsource/8.0.0",
+      "path": "system.diagnostics.diagnosticsource/8.0.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2411,7 +2556,7 @@
         "lib/net8.0/System.Diagnostics.DiagnosticSource.xml",
         "lib/netstandard2.0/System.Diagnostics.DiagnosticSource.dll",
         "lib/netstandard2.0/System.Diagnostics.DiagnosticSource.xml",
-        "system.diagnostics.diagnosticsource.8.0.0.nupkg.sha512",
+        "system.diagnostics.diagnosticsource.8.0.1.nupkg.sha512",
         "system.diagnostics.diagnosticsource.nuspec",
         "useSharedDesignerContext.txt"
       ]
@@ -2452,6 +2597,35 @@
         "runtimes/win/lib/net8.0/System.Diagnostics.EventLog.xml",
         "system.diagnostics.eventlog.8.0.0.nupkg.sha512",
         "system.diagnostics.eventlog.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "System.IO.Pipelines/8.0.0": {
+      "sha512": "FHNOatmUq0sqJOkTx+UF/9YK1f180cnW5FVqnQMvYUN0elp6wFzbtPSiqbo1/ru8ICp43JM1i7kKkk6GsNGHlA==",
+      "type": "package",
+      "path": "system.io.pipelines/8.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/net461/System.IO.Pipelines.targets",
+        "buildTransitive/net462/_._",
+        "buildTransitive/net6.0/_._",
+        "buildTransitive/netcoreapp2.0/System.IO.Pipelines.targets",
+        "lib/net462/System.IO.Pipelines.dll",
+        "lib/net462/System.IO.Pipelines.xml",
+        "lib/net6.0/System.IO.Pipelines.dll",
+        "lib/net6.0/System.IO.Pipelines.xml",
+        "lib/net7.0/System.IO.Pipelines.dll",
+        "lib/net7.0/System.IO.Pipelines.xml",
+        "lib/net8.0/System.IO.Pipelines.dll",
+        "lib/net8.0/System.IO.Pipelines.xml",
+        "lib/netstandard2.0/System.IO.Pipelines.dll",
+        "lib/netstandard2.0/System.IO.Pipelines.xml",
+        "system.io.pipelines.8.0.0.nupkg.sha512",
+        "system.io.pipelines.nuspec",
         "useSharedDesignerContext.txt"
       ]
     },
@@ -2619,15 +2793,16 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "CounterStrikeSharp.Api >= 1.0.263",
-      "Dapper >= 2.1.35",
+      "CoreRcon >= 5.4.1",
+      "CounterStrikeSharp.Api >= 1.0.276",
       "IksAdminApi >= 1.0.0",
-      "MySqlConnector >= 2.3.7"
+      "SteamWebAPI2 >= 4.4.1",
+      "dapper >= 2.1.35",
+      "mysqlconnector >= 2.3.7"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\iks\\.nuget\\packages\\": {},
-    "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\iks\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -2638,20 +2813,13 @@
       "packagesPath": "C:\\Users\\iks\\.nuget\\packages\\",
       "outputPath": "E:\\__iksAdmin\\Iks_Admin\\IksAdmin\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\iks\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\iks\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -2679,15 +2847,23 @@
       "net8.0": {
         "targetAlias": "net8.0",
         "dependencies": {
+          "CoreRcon": {
+            "target": "Package",
+            "version": "[5.4.1, )"
+          },
           "CounterStrikeSharp.Api": {
             "target": "Package",
-            "version": "[1.0.263, )"
+            "version": "[1.0.276, )"
           },
-          "Dapper": {
+          "SteamWebAPI2": {
+            "target": "Package",
+            "version": "[4.4.1, )"
+          },
+          "dapper": {
             "target": "Package",
             "version": "[2.1.35, )"
           },
-          "MySqlConnector": {
+          "mysqlconnector": {
             "target": "Package",
             "version": "[2.3.7, )"
           }
@@ -2708,7 +2884,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

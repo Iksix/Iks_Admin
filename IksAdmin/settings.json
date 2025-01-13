@@ -1,0 +1,5 @@
+{
+    "plugin_name" : "IksAdmin",
+    "has_api" : true,
+    "api_name" : "IksAdminApi"
+}

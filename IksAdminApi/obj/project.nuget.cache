@@ -1,11 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "PEhyOVBBkGI=",
+  "dgSpecHash": "QlT0YYnOvAE=",
   "success": true,
   "projectFilePath": "E:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\iks\\.nuget\\packages\\counterstrikesharp.api\\1.0.263\\counterstrikesharp.api.1.0.263.nupkg.sha512",
-    "C:\\Users\\iks\\.nuget\\packages\\dapper\\2.1.35\\dapper.2.1.35.nupkg.sha512",
+    "C:\\Users\\iks\\.nuget\\packages\\counterstrikesharp.api\\1.0.276\\counterstrikesharp.api.1.0.276.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\mcmaster.netcore.plugins\\1.4.0\\mcmaster.netcore.plugins.1.4.0.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\microsoft.dotnet.apicompat.task\\8.0.203\\microsoft.dotnet.apicompat.task.8.0.203.nupkg.sha512",
@@ -39,7 +38,6 @@
     "C:\\Users\\iks\\.nuget\\packages\\microsoft.extensions.options\\8.0.0\\microsoft.extensions.options.8.0.0.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\microsoft.extensions.options.configurationextensions\\8.0.0\\microsoft.extensions.options.configurationextensions.8.0.0.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\microsoft.extensions.primitives\\8.0.0\\microsoft.extensions.primitives.8.0.0.nupkg.sha512",
-    "C:\\Users\\iks\\.nuget\\packages\\mysqlconnector\\2.3.5\\mysqlconnector.2.3.5.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\scrutor\\4.2.2\\scrutor.4.2.2.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\serilog\\3.1.1\\serilog.3.1.1.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\serilog.extensions.logging\\8.0.0\\serilog.extensions.logging.8.0.0.nupkg.sha512",
