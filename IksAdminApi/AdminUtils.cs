@@ -56,9 +56,30 @@ public static class AdminUtils
     {
         return CoreApi.Comms.Where(x => x.SteamId == player.AuthorizedSteamID!.SteamId64.ToString()).ToList();
     }
-    public static string GetDurationString( int seconds )
+    public static string GetDurationString(int seconds)
     {
-        return $"{seconds} сек.";
+        if (seconds == 0)
+        {
+            return CoreApi.Localizer["Other.Days"];
+        }
+        // ищем seconds во всех конфигах с Times =)
+        if (BansConfig.Config.Times.TryGetValue(seconds, out var time)) return time;
+        if (MutesConfig.Config.Times.TryGetValue(seconds, out time)) return time;
+        if (GagsConfig.Config.Times.TryGetValue(seconds, out time)) return time;
+        if (SilenceConfig.Config.Times.TryGetValue(seconds, out time)) return time;
+        if (seconds % 86400 == 0)
+        {
+            return $"{seconds}{CoreApi.Localizer["Other.Days"]}";
+        }
+        if (seconds % 3600 == 0)
+        {
+            return $"{seconds}{CoreApi.Localizer["Other.Hours"]}";
+        }
+        if (seconds % 60 == 0)
+        {
+            return $"{seconds}{CoreApi.Localizer["Other.Minutes"]}";
+        }
+        return $"{seconds}{CoreApi.Localizer["Other.Seconds"]}";
     }
     public static bool CanUnban(Admin admin, PlayerBan existingBan)
     {
