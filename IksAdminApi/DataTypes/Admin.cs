@@ -24,6 +24,14 @@ public class Admin
     public bool Online {get {
         return PlayersUtils.GetControllerBySteamId(SteamId) != null;
     }}
+    public string CurrentName {get {
+        if (!CoreConfig.Config.UseOnlineAdminsName)
+            return Name;
+        var controller = PlayersUtils.GetControllerBySteamId(SteamId);
+        if (controller == null)
+            return Name;
+        return controller.PlayerName;
+    }}
     public string CurrentFlags { get {
         return GetCurrentFlagsFunc(this);
     }}

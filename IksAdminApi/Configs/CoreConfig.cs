@@ -34,6 +34,8 @@ public class CoreConfig : PluginCFG<CoreConfig>, IPluginCFG
     public string[] IgnoreCommandsRegistering {get; set;} = ["example_command"]; // Эти команды не будут инициализированны при добавлении через метод админки (пишем без префикса css_)
     public string[] MirrorsIp {get; set;} = ["0.0.0.0"]; // Эти айпи не возможно будет добавить в наказания (будет null) (рассчитано что тут будут айпи зеркал)
     public int LastPunishmentTime {get; set;} = 24*60*60*2; // Последние наказания за это время буду отображаться в снятии бана и оффлайн наказаний в ообщем (в секундах)
+    public bool UseOnlineAdminsName {get; set;} = false; // Использовать ли текущий ник админа если он онлайн (Для Announce)
+    public bool AutoUpdateDatabaseNames {get; set;} = false; // Обновлять ли ники админов в базе данных на текущие в стиме при подключении
     public void Set()
     {
         Config = ReadOrCreate("configs/core", Config);

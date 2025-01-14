@@ -76,7 +76,7 @@ public static class MenuAM
             {
                 OpenAdminAddMenu(caller, t, m);
             }, backMenu: menu);
-        });
+        }, viewFlags: AdminUtils.GetCurrentPermissionFlags("admins_manage.add"));
         menu.AddMenuOption("edit_this_server", _localizer["MenuOption.AM.Edit.ThisServer"], (_, _) =>
         {
             MenuUtils.SelectItem<Admin?>(caller, "am_edit", "Name", _api.ServerAdmins!, (t, m) =>
@@ -86,7 +86,7 @@ public static class MenuAM
                 EditAdminServerIdBuffer[caller.Admin()!] = newAdmin.Servers.ToList();
                 OpenAdminEditMenu(caller, newAdmin, m);
             }, backMenu: menu, nullOption: false);
-        });
+        }, viewFlags: AdminUtils.GetCurrentPermissionFlags("admins_manage.edit"));
         menu.AddMenuOption("edit_all", _localizer["MenuOption.AM.Edit.All"], (_, _) =>
         {
             MenuUtils.SelectItem<Admin?>(caller, "am_edit", "Name", _api.AllAdmins!, (t, m) =>
@@ -96,7 +96,7 @@ public static class MenuAM
                 EditAdminServerIdBuffer[caller.Admin()!] = newAdmin.Servers.ToList();
                 OpenAdminEditMenu(caller, newAdmin, m);
             }, backMenu: menu, nullOption: false);
-        });
+        }, viewFlags: AdminUtils.GetCurrentPermissionFlags("admins_manage.edit"));
         menu.AddMenuOption("delete", _localizer["MenuOption.AM.Delete"], (_, _) =>
         {
             MenuUtils.SelectItem<Admin?>(caller, "am_delete", "Name", _api.ServerAdmins!, (t, m) =>
@@ -104,14 +104,14 @@ public static class MenuAM
                 var cAdmin = caller.Admin();
                 Task.Run(async () =>
                 {
-                    await _api.DeleteAdmin(cAdmin, t);
+                    await _api.DeleteAdmin(cAdmin!, t!);
                     Server.NextFrame(() =>
                     {
                         OpenAdminManageMenuSection(caller, menu);
                     });
                 });
             }, nullOption: false, backMenu: menu);
-        });
+        }, viewFlags: AdminUtils.GetCurrentPermissionFlags("admins_manage.delete"));
         
         menu.Open(caller);
     }

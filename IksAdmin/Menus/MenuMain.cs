@@ -58,7 +58,13 @@ public static class MenuMain
             title: _localizer["MenuOption.BansManage"],
             (p, _) => {
                 MenuBansManage.OpenBansMenu(caller, menu);
-            }
+            }, viewFlags:
+            AdminUtils.GetCurrentPermissionFlags("blocks_manage.ban") +
+            AdminUtils.GetCurrentPermissionFlags("blocks_manage.own_ban_reason") +
+            AdminUtils.GetCurrentPermissionFlags("blocks_manage.own_ban_time") +
+            AdminUtils.GetCurrentPermissionFlags("blocks_manage.ban_ip") +
+            AdminUtils.GetCurrentPermissionFlags("blocks_manage.unban") +
+            AdminUtils.GetCurrentPermissionFlags("blocks_manage.unban_ip") 
         );
         menu.AddMenuOption(
             id: "cm",

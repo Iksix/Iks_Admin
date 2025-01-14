@@ -25,6 +25,7 @@ using SteamWebAPI2.Interfaces;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Timers;
 using IksAdmin.Menus;
+using CoreConfig = IksAdminApi.CoreConfig;
 namespace IksAdmin;
 
 public class Main : BasePlugin
@@ -129,6 +130,14 @@ public class Main : BasePlugin
                 AdminApi.OnFullConnectInvoke(steamId64, ip ?? "");
                 var admin = player.Admin();
                 if (admin == null) return;
+                if (CoreConfig.Config.AutoUpdateDatabaseNames)
+                {
+                    var name = player!.PlayerName;
+                    admin.Name = name;
+                    Task.Run(async () => {
+                        await AdminApi.UpdateAdmin(AdminApi.ConsoleAdmin, admin);
+                    });
+                }
                 if (admin.Warns.Count >= AdminApi.Config.MaxWarns)
                 {
                     player.Print(Localizer["ActionError.DisabledByWarns"]);
@@ -222,7 +231,7 @@ public class Main : BasePlugin
         AdminApi.RegisterPermission("admins_manage.add", "z");
         AdminApi.RegisterPermission("admins_manage.delete", "z");
         AdminApi.RegisterPermission("admins_manage.edit", "z");
-        AdminApi.RegisterPermission("admins_manage.refresh", "z");
+        AdminApi.RegisterPermission("admins_manage.list", "z");
         // Admin manage ===
         AdminApi.RegisterPermission("admins_manage.warn_add", "z");
         AdminApi.RegisterPermission("admins_manage.warn_delete", "z");
@@ -336,7 +345,7 @@ public class Main : BasePlugin
         AdminApi.AddNewCommand(
             "am_warns",
             "Выводит все варны админа",
-            "admins_manage.warn_add,admins_manage.warn_delete,admins_manage.warn_list",
+            "admins_manage.warn_list",
             "css_am_warns <Admin ID>",
             CmdAdminManage.Warns,
             minArgs: 1,
@@ -345,7 +354,7 @@ public class Main : BasePlugin
         AdminApi.AddNewCommand(
             "am_list",
             "Выводит всех админов",
-            "admins_manage.add",
+            "admins_manage.list",
             "css_am_list [all]",
             CmdAdminManage.List,
             minArgs: 0,
@@ -355,7 +364,7 @@ public class Main : BasePlugin
             "am_warn_remove",
             "Выводит все варны админа",
             "admins_manage.warn_delete",
-            "am_warn_remove <Warn ID>",
+            "css_am_warn_remove <Warn ID>",
             CmdAdminManage.WarnRemove,
             minArgs: 1,
             whoCanExecute: CommandUsage.CLIENT_AND_SERVER
@@ -373,7 +382,7 @@ public class Main : BasePlugin
             "am_reload",
             "Перезагружает данные с БД",
             "servers_manage.reload_data",
-            "css_am_reload",
+            "css_am_reload [all]",
             CmdBase.Reload,
             minArgs: 0,
             whoCanExecute: CommandUsage.CLIENT_AND_SERVER
@@ -391,7 +400,7 @@ public class Main : BasePlugin
             "am_add_server_id",
             "Добавить Server Id админу",
             "admins_manage.add",
-            "css_am_add_server_id <adminID> <server_id/this>",
+            "css_am_add_server_id <AdminID> <server_id/this>",
             CmdAdminManage.AddServerId,
             minArgs: 2 
         );
@@ -407,14 +416,14 @@ public class Main : BasePlugin
             "am_addflag_or_admin",
             "Добавить флаг админу или создать админа(В случае если такого админа нет)",
             "admins_manage.edit,admins_manage.add",
-            "am_addflag_or_admin <steamId> <name> <time/0> <server_id/this> <flags> <immunity>",
+            "css_am_addflag_or_admin <steamId> <name> <time/0> <server_id/this> <flags> <immunity>",
             CmdAdminManage.AddFlagOrAdmin,
             minArgs: 6
         );
         AdminApi.AddNewCommand(
             "am_remove",
             "Удалить админа",
-            "admins_manage.edit,admins_manage.add",
+            "admins_manage.delete",
             "css_am_remove <id>",
             CmdAdminManage.RemoveAdmin,
             minArgs: 1
@@ -499,7 +508,7 @@ public class Main : BasePlugin
             "removegag",
             "Снять гаг с игрока (оффлайн)",
             "comms_manage.ungag",
-            "css_ungag <steamId> <reason>",
+            "css_removegag <steamId> <reason>",
             CmdGags.RemoveGag,
             minArgs: 2 
         );

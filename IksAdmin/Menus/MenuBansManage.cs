@@ -17,10 +17,10 @@ public static class MenuBansManage
         var menu = _api.CreateMenu(Main.MenuId("bm.ban"), _localizer["MenuTitle.BansManage"], backMenu: backMenu);
         menu.AddMenuOption("add", _localizer["MenuOption.AddBan"], (_, _) => {
             OpenAddBanMenu(caller, menu);
-        });
+        }, viewFlags: AdminUtils.GetCurrentPermissionFlags("blocks_manage.ban"));
         menu.AddMenuOption("add.offline", _localizer["MenuOption.AddOfflineBan"], (_, _) => {
             OpenAddOfflineBanMenu(caller, menu);
-        });
+        }, viewFlags: AdminUtils.GetCurrentPermissionFlags("blocks_manage.ban"));
         menu.AddMenuOption(Main.GenerateOptionId("bm.unban"), _localizer["MenuOption.Unban"], (_, _) => {
             Task.Run(async () => {
                 var bans = await DBBans.GetLastBans(_api.Config.LastPunishmentTime);
@@ -28,7 +28,7 @@ public static class MenuBansManage
                     OpenRemoveBansMenu(caller, bans, menu);
                 });
             });
-        });
+        }, viewFlags: AdminUtils.GetCurrentPermissionFlags("blocks_manage.unban") + AdminUtils.GetCurrentPermissionFlags("blocks_manage.unban_ip"));
         menu.Open(caller);
     }
 
@@ -39,6 +39,15 @@ public static class MenuBansManage
         
         foreach (var ban in bans)
         {
+            var disableByPerms = false;
+            if (ban.BanType == 1 && !caller.HasPermissions("blocks_manage.unban_ip"))
+            {
+                disableByPerms = true;
+            }
+            if (ban.BanType == 0 && !caller.HasPermissions("blocks_manage.unban"))
+            {
+                disableByPerms = true;
+            }
             string postfix = "";
             if (ban.IsUnbanned)
                 postfix = _localizer["MenuOption.Postfix.Unbanned"];
@@ -59,7 +68,7 @@ public static class MenuBansManage
                         });
                     });
                 });
-            }, disabled: !AdminUtils.CanUnban(admin, ban) || ban.IsExpired || ban.IsUnbanned);
+            }, disabled: !AdminUtils.CanUnban(admin, ban) || ban.IsExpired || ban.IsUnbanned || disableByPerms);
         }
         menu.Open(caller);
     }

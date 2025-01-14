@@ -113,6 +113,7 @@ public static class MenuCommsManage
         menu.AddMenuOption("gag", _localizer["MenuOption.CM.Gag"], (_, _) => {
             SelectPlayerForGag(caller, menu);
         }, viewFlags: _api.GetCurrentPermissionFlags("comms_manage.gag"));
+        if (caller.HasPermissions("comms_manage.silence"))
         menu.AddMenuOption("silence", _localizer["MenuOption.CM.Silence"], (_, _) => {
             SelectPlayerForSilence(caller, menu);
         }, viewFlags: _api.GetCurrentPermissionFlags("comms_manage.silence"));
