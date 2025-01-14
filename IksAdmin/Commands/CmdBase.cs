@@ -14,6 +14,7 @@ public static class CmdBase
     private static AdminApi _api = Main.AdminApi!;
     private static IStringLocalizer _localizer = _api.Localizer;
     public static List<CCSPlayerController> HidenPlayers = new();
+    public static List<CCSPlayerController> FirstMessage = new();
 
     public static void AdminMenu(CCSPlayerController? caller, List<string> args, CommandInfo info)
     {
@@ -80,12 +81,12 @@ public static class CmdBase
             return;
         }
         HidenPlayers.Add(caller);
+        FirstMessage.Add(caller);
         Server.ExecuteCommand("sv_disable_teamselect_menu 1");
         if (caller.PlayerPawn.Value != null && caller.PawnIsAlive)
             caller.PlayerPawn.Value.CommitSuicide(true, false);
-        _api!.Plugin.AddTimer(1.0f, () => { Server.NextFrame(() => caller.ChangeTeam(CsTeam.Spectator)); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
-        _api.Plugin.AddTimer(1.4f, () => { Server.NextFrame(() => caller.ChangeTeam(CsTeam.None)); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
-        caller.Print(_localizer["Message.Hide_on"]);
+        _api!.Plugin.AddTimer(1.0f, () => { Server.NextFrame(() => caller.ChangeTeam(CsTeam.Spectator)); HidenPlayers.Add(caller); FirstMessage.Add(caller); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
+        _api.Plugin.AddTimer(1.4f, () => { Server.NextFrame(() => caller.ChangeTeam(CsTeam.None)); caller.Print(_localizer["Message.Hide_on"]); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
         _api.Plugin.AddTimer(2.0f, () => { Server.NextFrame(() => Server.ExecuteCommand("sv_disable_teamselect_menu 0")); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
     }
 }

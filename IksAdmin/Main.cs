@@ -309,7 +309,7 @@ public class Main : BasePlugin
         AdminApi.AddNewCommand(
             "hide",
             "Скрывает админа в табе",
-            "sother.hide",
+            "other.hide",
             "css_hide",
             CmdBase.Hide!,
             minArgs: 0,
@@ -646,12 +646,18 @@ public class Main : BasePlugin
         AdminApi.ClearCommandInitializer();
     }
     
-    [GameEventHandler]
+    [GameEventHandler(HookMode.Pre)]
     public HookResult OnChangeTeam(EventPlayerTeam @event, GameEventInfo info)
     {
         var player = @event.Userid;
         if (player == null || !player.IsValid || player.IsBot || !CmdBase.HidenPlayers.Contains(player))
         {
+            return HookResult.Continue;
+        }
+        @event.Silent = true;
+        if (CmdBase.FirstMessage.Contains(player))
+        {
+            CmdBase.FirstMessage.Remove(player);
             return HookResult.Continue;
         }
         CmdBase.HidenPlayers.Remove(player);
