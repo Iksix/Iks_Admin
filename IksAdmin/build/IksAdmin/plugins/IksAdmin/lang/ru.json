@@ -153,6 +153,7 @@
     "ActionSuccess.UnSilenceSuccess" : "{green}С игрока успешно снят silence!",
     "ActionSuccess.SilenceSuccess" : "{green}Игроку успешно выдан silence!",
     "ActionSuccess.RconSuccess" : "{green}Ркон команда отправлена! Смотрите ответ в консоли!",
+    "ActionSuccess.AdminDeleted" : "{green}Админ удалён!",
 
     "Message.WhenGag" : "{red}У вас есть активный гаг!\nЗавершится: {red}{date} ",
     "Message.WhenSilence" : "{red}У вас есть активный silence!\nЗавершится: {red}{date} ",
@@ -163,11 +164,13 @@
     "Message.Warns" : "Варны админа {red}{name}{white}:{warnsTemplate}",
     "Message.Warns.DeleteWarn" : "Напишите {red}!delete{white} для снятия варна",
     "Message.WarnsTemplate" : "\nID: {red}{id}\nПричина: {red}{reason}\nВыдано: {red}{created}\nСрок: {red}{duration}\nЗакончится: {red}{end}\nКем: {red}{admin}\n================",
+    "Message.WarnEnded" : "Варн истёк!\nID: {red}{id}\nПричина: {red}{reason}\nВыдано админом: {red}{admin}",
     "Message.CmdWho" : "Информация об игроке {red}{name}{white}:\nID: {red}{id}\nSteamID: {red}{steamId}\nАдмин группа: {red}{group}\nФлаги: {red}{flags}\nИммунитет: {red}{immunity}",
     "Message.CmdWho_NotAdmin" : "Информация об игроке {red}{name}{white}:\nSteamID: {red}{steamId}\n{red}Не имеет админ привилегии ✖",
     "Message.OnRoundEndChangeTeam" : "{green}Команда игрока будет изменена в конце раунда ✔",
     "Message.SM.Server" : "===========\nСервер: {red}{name}\nID: {red}{id}\nIP: {red}{ip}\n===========",
-    "Message.WarnEnded" : "Варн истёк!\nID: {red}{id}\nПричина: {red}{reason}\nВыдано админом: {red}{admin}",
+    "Message.Hide_on" : "{green}Вы скрыты из таба ✔",
+    "Message.Hide_off" : "{red}Теперь вас видно в табе",
     
     "Announce.BanAdded" : "Админ {red}{admin}{white} заблокировал игрока {red}{name}\nПричина: {red}{reason}\nСрок: {red}{duration}",
     "Announce.BanAddedIp" : "Админ {red}{admin}{white} заблокировал игрока {red}{name}{white} по айпи\nПричина: {red}{reason}\nСрок: {red}{duration}",

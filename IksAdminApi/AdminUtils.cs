@@ -2,7 +2,6 @@ using System.Text.RegularExpressions;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Entities;
 using Microsoft.Extensions.Localization;
 
 namespace IksAdminApi;

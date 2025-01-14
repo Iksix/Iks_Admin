@@ -113,7 +113,21 @@ public static class CmdAdminManage
 
     public static void RemoveAdmin(CCSPlayerController? caller, List<string> args, CommandInfo info)
     {
-        
+        if (!int.TryParse(args[0], out var adminId)) {
+            throw new ArgumentException("id must be a number");
+        }
+        var admin = AdminUtils.ServerAdmin(adminId);
+        if (!_api.CanDoActionWithPlayer(caller.GetSteamId(), admin!.SteamId))
+        {
+            caller.Print(_localizer["ActionError.NotEnoughPermissionsForAction"]);
+        }
+        var callerAdmin = caller.Admin();
+        Task.Run(async () => {
+            await _api.DeleteAdmin(callerAdmin!, admin);
+            Server.NextFrame(() => {
+                caller.Print(_localizer["ActionSuccess.AdminDeleted"]);
+            });
+        });
     }
 
     public static void Warns(CCSPlayerController? caller, List<string> args, CommandInfo info)

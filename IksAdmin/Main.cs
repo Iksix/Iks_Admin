@@ -25,7 +25,6 @@ using SteamWebAPI2.Interfaces;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Timers;
 using IksAdmin.Menus;
-using System.Runtime.CompilerServices;
 namespace IksAdmin;
 
 public class Main : BasePlugin
@@ -279,6 +278,7 @@ public class Main : BasePlugin
         AdminApi.RegisterPermission("other.admin_chat", "b");
         AdminApi.RegisterPermission("other.reload_infractions", "z");
         AdminApi.RegisterPermission("other.cs_votekick_immunity", "b");
+        AdminApi.RegisterPermission("other.hide", "b");
     }
     private void InitializeCommands()
     {
@@ -305,6 +305,16 @@ public class Main : BasePlugin
         );
 
         #endregion
+        
+        AdminApi.AddNewCommand(
+            "hide",
+            "Скрывает админа в табе",
+            "sother.hide",
+            "css_hide",
+            CmdBase.Hide!,
+            minArgs: 0,
+            whoCanExecute: CommandUsage.CLIENT_ONLY
+        );
         AdminApi.AddNewCommand(
             "reload_infractions",
             "Перезагрузить данные игрока",
@@ -405,7 +415,7 @@ public class Main : BasePlugin
             "am_remove",
             "Удалить админа",
             "admins_manage.edit,admins_manage.add",
-            "am_remove <id>",
+            "css_am_remove <id>",
             CmdAdminManage.RemoveAdmin,
             minArgs: 1
         );
@@ -635,6 +645,20 @@ public class Main : BasePlugin
         );
         AdminApi.ClearCommandInitializer();
     }
+    
+    [GameEventHandler]
+    public HookResult OnChangeTeam(EventPlayerTeam @event, GameEventInfo info)
+    {
+        var player = @event.Userid;
+        if (player == null || !player.IsValid || player.IsBot || !CmdBase.HidenPlayers.Contains(player))
+        {
+            return HookResult.Continue;
+        }
+        CmdBase.HidenPlayers.Remove(player);
+        player.Print(Localizer["Message.Hide_off"]);
+        return HookResult.Continue;
+    }
+    
     public override void OnAllPluginsLoaded(bool hotReload)
     {
         try
@@ -1464,7 +1488,7 @@ public class AdminApi : IIksAdminApi
         var callerAdmin = AdminUtils.ServerAdmin(callerId);
         var targetAdmin = AdminUtils.ServerAdmin(callerId);
 
-        if (targetAdmin == null) return true;
+        if (targetAdmin == null || targetAdmin.IsDisabled) return true;
 
         if (targetAdmin != null)
         {
