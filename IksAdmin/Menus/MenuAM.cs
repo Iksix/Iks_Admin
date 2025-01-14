@@ -17,6 +17,7 @@ public static class MenuAM
 
     public static void OpenServersManageMenu(CCSPlayerController caller, IDynamicMenu backMenu)
     {
+        
         var menu = _api.CreateMenu(
             Main.MenuId("ac"),
             _localizer["MenuTitle.SM"],

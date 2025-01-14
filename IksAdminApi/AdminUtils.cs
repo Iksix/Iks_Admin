@@ -68,15 +68,15 @@ public static class AdminUtils
         if (SilenceConfig.Config.Times.TryGetValue(seconds, out time)) return time;
         if (seconds % 86400 == 0)
         {
-            return $"{seconds}{CoreApi.Localizer["Other.Days"]}";
+            return $"{seconds / 86400}{CoreApi.Localizer["Other.Days"]}";
         }
         if (seconds % 3600 == 0)
         {
-            return $"{seconds}{CoreApi.Localizer["Other.Hours"]}";
+            return $"{seconds / 3600}{CoreApi.Localizer["Other.Hours"]}";
         }
         if (seconds % 60 == 0)
         {
-            return $"{seconds}{CoreApi.Localizer["Other.Minutes"]}";
+            return $"{seconds / 60}{CoreApi.Localizer["Other.Minutes"]}";
         }
         return $"{seconds}{CoreApi.Localizer["Other.Seconds"]}";
     }

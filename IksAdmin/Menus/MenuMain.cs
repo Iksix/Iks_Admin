@@ -11,6 +11,7 @@ public static class MenuMain
     private static IStringLocalizer _localizer = _api.Localizer;
    
     public static void OpenAdminMenu(CCSPlayerController caller, IDynamicMenu? backMenu = null) {
+        _api.RemoveNextPlayerMessageHook(caller);
         var menu = _api.CreateMenu(
             id: Main.MenuId("main"),
             title: _localizer["MenuTitle.AdminMain"],

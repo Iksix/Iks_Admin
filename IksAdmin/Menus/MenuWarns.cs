@@ -60,7 +60,7 @@ public static class MenuWarns
                 _api.ServerAdmins!.Where(x => x.Warns.Count > 0).ToList()!,
                 (a, m) =>
                 {
-                    SelectWarnMenu(caller, a!, m);
+                    SelectWarnMenu(caller, a!, m, backMenu);
                 },
                 backMenu: menu, nullOption: false
             );
@@ -71,7 +71,9 @@ public static class MenuWarns
         menu.Open(caller);
     }
 
-    private static void SelectWarnMenu(CCSPlayerController caller, Admin admin, IDynamicMenu backMenu)
+
+
+    private static void SelectWarnMenu(CCSPlayerController caller, Admin admin, IDynamicMenu backMenu, IDynamicMenu? mainBack = null)
     {
         var menu = _api.CreateMenu(
             id: Main.MenuId("warns.list"),
@@ -94,6 +96,7 @@ public static class MenuWarns
                             Task.Run(async () => {
                                 await _api.DeleteWarn(admin, warn);
                             });
+                            OpenMain(caller, mainBack);
                         }
                     });
                 }

@@ -50,8 +50,10 @@
     // servers_manage
     "MenuTitle.SM" : "Управление сервером",
     "MenuOption.SM" : "Управление сервером",
+    "MenuOption.SM.Rcon" : "Отправить RCON",
     "MenuOption.SM.ReloadData" : "Обновить данные",
     "Message.SM.DataReloaded" : "{green}Информация синхронизирована с базой данных ✔",
+    "Message.SM.Rcon.WriteCmd" : "Введите команду для отправки: {red}!команда",
     
     // groups_manage
     "MenuTitle.GM" : "Управление группами",
