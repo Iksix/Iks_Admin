@@ -68,18 +68,26 @@ public static class CmdAdminManage
     public static void AddServerId(CCSPlayerController? caller, List<string> args, CommandInfo info)
     {
         // css_am_add_server_id <SteamID> <server_id/this>
-        var admin = AdminUtils.Admin(args[0]);
+        if (!int.TryParse(args[0], out var adminId))
+        {
+            throw new ArgumentException("adminId must be a number");
+        }
+        var admin = AdminUtils.Admin(adminId);
         if (admin == null)
         {
             Helper.Reply(info, "Admin not found ✖");
             return;
         }
         int? serverId = args[1] == "this" ? null : int.Parse(args[1]);
-        AdminManageFunctions.AddServerId(caller, info, admin, serverId);
-        Task.Run(async () =>
+        if (serverId != null)
         {
-            await _api.ReloadDataFromDBOnAllServers();
-        });
+            if (!_api.AllServers.All(x => x.Id == serverId))
+            {
+                caller.Print(_localizer["ActionError.ServerNotFounded"]);
+                return;
+            }
+        }
+        AdminManageFunctions.AddServerId(caller, info, admin, serverId);
     }
 
     public static void Warn(CCSPlayerController? caller, List<string> args, CommandInfo info)

@@ -143,6 +143,7 @@
     "ActionError.NotEnoughPermissionsForAction" : "{red}У вас недостаточно прав для взаимодействия с этим игроком ✖",
     "ActionError.ServerNotFound" : "{red}Сервер не найден ✖",
     "ActionError.NotEnoughPermissionsForRcon" : "{red}У вас нет прав отправлять ркон команду на этот сервер ✖",
+    "ActionError.ServerNotFounded" : "{red}Сервер не найден ✖",
     
     "ActionSuccess.BanSuccess" : "{green}Цель успешно забанена!",
     "ActionSuccess.GagSuccess" : "{green}Игрок успешно гагнут!",

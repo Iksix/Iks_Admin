@@ -391,7 +391,7 @@ public class Main : BasePlugin
             "am_add_server_id",
             "Добавить Server Id админу",
             "admins_manage.add",
-            "css_am_add_server_id <steamId> <server_id/this>",
+            "css_am_add_server_id <adminID> <server_id/this>",
             CmdAdminManage.AddServerId,
             minArgs: 2 
         );
