@@ -1,24 +1,8 @@
 {
-    "iksadmin:menu:testmenu" : [
+    "iksadmin:menu:cm_comm_select" : [ // Я пишу ID этого меню
         {
-            "Id" : "iksadmin:option:1",
-            "ViewFlags" : "not override",
-            "View" : true
-        },
-        {
-            "Id" : "iksadmin:option:3",
-            "ViewFlags" : "not override",
-            "View" : true
-        }
-    ],
-    "iksadmin:menu:main" : [
-        {
-            "Id" : "iksadmin:option:sm",
-            "View" : true
-        },
-        {
-            "Id" : "iksadmin:option:bm",
-            "View" : true
+            "Id" : "silence", // Прописываю ID пункта в этом меню
+            "View" : false // Выключаю отображение пункта в меню
         }
     ]
 }
