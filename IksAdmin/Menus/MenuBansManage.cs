@@ -181,7 +181,6 @@ public static class MenuBansManage
             }
 
             menu.AddMenuOption("ban_time_" + time.Key, time.Value, (_, _) => {
-                _api.CloseMenu(caller);
                 ban.Duration = time.Key;
                 OpenBanTypeSelectMenu(caller, ban);
             });

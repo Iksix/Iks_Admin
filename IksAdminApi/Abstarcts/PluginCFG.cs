@@ -18,7 +18,7 @@ public abstract class PluginCFG<IPluginCFG>
         using var streamReader = new StreamReader(filePath);
         var json = streamReader.ReadToEnd();
         AdminUtils.LogDebug("Deserialize config file for " + filePath);
-        var config = JsonSerializer.Deserialize<IPluginCFG>(json);
+        var config = JsonSerializer.Deserialize<IPluginCFG>(json, options: new JsonSerializerOptions() { WriteIndented = true, AllowTrailingCommas = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All, UnicodeRanges.Cyrillic), ReadCommentHandling = JsonCommentHandling.Skip});
         AdminUtils.LogDebug("Deserialized ✔");
         return config!;
     }
