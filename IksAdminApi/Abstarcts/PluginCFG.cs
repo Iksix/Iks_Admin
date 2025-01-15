@@ -13,7 +13,7 @@ public abstract class PluginCFG<IPluginCFG>
         if (!File.Exists(filePath))
         {
             AdminUtils.LogDebug("Creating config file for " + filePath);
-            File.WriteAllText(filePath, JsonSerializer.Serialize(defaultConfig, options: new JsonSerializerOptions() { WriteIndented = true, AllowTrailingCommas = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All, UnicodeRanges.Cyrillic), }));
+            File.WriteAllText(filePath, JsonSerializer.Serialize(defaultConfig, options: new JsonSerializerOptions() { WriteIndented = true, AllowTrailingCommas = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All, UnicodeRanges.Cyrillic), ReadCommentHandling = JsonCommentHandling.Skip}));
         }
         using var streamReader = new StreamReader(filePath);
         var json = streamReader.ReadToEnd();

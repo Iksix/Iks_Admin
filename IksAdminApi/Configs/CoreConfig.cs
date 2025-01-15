@@ -21,7 +21,6 @@ public class CoreConfig : PluginCFG<CoreConfig>, IPluginCFG
         //{"css_respawn", "css_arespawn"} // -> Меняет css_respawn на css_arespawn к примеру
     };
     public int MaxWarns { get; set; } = 3; // Максимальное кол-во варнов для блокировки админки у игрока
-    public bool DeleteWhenMaxWarns { get; set; } = false; // Удалять ли админа при максимальном кол-ве варнов
     public string WebApiKey {get; set;} = ""; // Указываете API ключ для получения имени в оффлайн бане
     public bool AdvancedKick {get; set;} = true;
     public int AdvancedKickTime {get; set;} = 5;

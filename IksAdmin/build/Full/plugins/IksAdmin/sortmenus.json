@@ -1,0 +1,24 @@
+{
+    "iksadmin:menu:testmenu" : [
+        {
+            "Id" : "iksadmin:option:1",
+            "ViewFlags" : "not override",
+            "View" : true
+        },
+        {
+            "Id" : "iksadmin:option:3",
+            "ViewFlags" : "not override",
+            "View" : true
+        }
+    ],
+    "iksadmin:menu:main" : [
+        {
+            "Id" : "iksadmin:option:sm",
+            "View" : true
+        },
+        {
+            "Id" : "iksadmin:option:bm",
+            "View" : true
+        }
+    ]
+}

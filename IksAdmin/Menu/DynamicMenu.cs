@@ -53,7 +53,7 @@ public class DynamicMenu : IDynamicMenu
         switch ((int)Type)
         {
             case -1: // [MM]
-                menu = Main.MenuApi!.NewMenu(MenuTitle(player), BackAction!);
+                menu = Main.MenuApi!.NewMenu(MenuTitle(player));
                 break;
             case 0:
                 menu = new ChatMenu(MenuTitle(player));
@@ -65,7 +65,7 @@ public class DynamicMenu : IDynamicMenu
                 menu = new CenterHtmlMenu(MenuTitle(player), Main.AdminApi.Plugin);
                 break;
             case 3: // [MM]
-                menu = Main.MenuApi!.NewMenuForcetype(MenuTitle(player), (MenuManager.MenuType)Type, BackAction!);
+                menu = Main.MenuApi!.NewMenuForcetype(MenuTitle(player), (MenuManager.MenuType)Type);
                 break;
             default:
                 menu = new CenterHtmlMenu(MenuTitle(player), Main.AdminApi.Plugin);
@@ -224,39 +224,39 @@ public class DynamicMenu : IDynamicMenu
 
     private string GetMenuColorString(CCSPlayerController player, MenuColors color)
     {
-        char[] chatColors = new char[] {
-            ChatColors.Default, ChatColors.White, ChatColors.DarkRed, ChatColors.Green, ChatColors.LightYellow, ChatColors.LightBlue, ChatColors.Olive, ChatColors.Lime, ChatColors.Red, ChatColors.LightPurple, ChatColors.Purple, ChatColors.Grey, ChatColors.Yellow, ChatColors.Gold, ChatColors.Silver, ChatColors.Blue, ChatColors.DarkBlue, ChatColors.BlueGrey, ChatColors.Magenta, ChatColors.LightRed, ChatColors.Orange, ChatColors.DarkRed
-        };
-        var menuType = GetThisMenuType(player);
-        if (menuType == MenuType.ChatMenu)
-        {
-            return $"{chatColors[(int)color]}" + "{value}";
-        } else if (menuType == MenuType.ButtonMenu)
-        {
-            string[] htmlColors = new string[] {
-                "<font color='white'>",
-                "<font color='white'>",
-                "<font color='darkred'>",
-                "<font color='green'>",
-                "<font color='lightyellow'>",
-                "<font color='lightblue'>",
-                "<font color='olive'>",
-                "<font color='lime'>",
-                "<font color='red'>",
-                "<font color='lightpurple'>",
-                "<font color='purple'>",
-                "<font color='grey'>",
-                "<font color='yellow'>",
-                "<font color='gold'>",
-                "<font color='silver'>",
-                "<font color='blue'>",
-                "<font color='darkblue'>",
-                "<font color='lightred'>",
-                "<font color='orange'>",
-                "<font color='darkred'>"
-            };
-            return $"{htmlColors[(int)color]}" + "{value}</font>";
-        }
+        // char[] chatColors = new char[] {
+        //     ChatColors.Default, ChatColors.White, ChatColors.DarkRed, ChatColors.Green, ChatColors.LightYellow, ChatColors.LightBlue, ChatColors.Olive, ChatColors.Lime, ChatColors.Red, ChatColors.LightPurple, ChatColors.Purple, ChatColors.Grey, ChatColors.Yellow, ChatColors.Gold, ChatColors.Silver, ChatColors.Blue, ChatColors.DarkBlue, ChatColors.BlueGrey, ChatColors.Magenta, ChatColors.LightRed, ChatColors.Orange, ChatColors.DarkRed
+        // };
+        // var menuType = GetThisMenuType(player);
+        // if (menuType == MenuType.ChatMenu)
+        // {
+        //     return $"{chatColors[(int)color]}" + "{value}";
+        // } else if (menuType == MenuType.ButtonMenu)
+        // {
+        //     string[] htmlColors = new string[] {
+        //         "<font color='white'>",
+        //         "<font color='white'>",
+        //         "<font color='darkred'>",
+        //         "<font color='green'>",
+        //         "<font color='lightyellow'>",
+        //         "<font color='lightblue'>",
+        //         "<font color='olive'>",
+        //         "<font color='lime'>",
+        //         "<font color='red'>",
+        //         "<font color='lightpurple'>",
+        //         "<font color='purple'>",
+        //         "<font color='grey'>",
+        //         "<font color='yellow'>",
+        //         "<font color='gold'>",
+        //         "<font color='silver'>",
+        //         "<font color='blue'>",
+        //         "<font color='darkblue'>",
+        //         "<font color='lightred'>",
+        //         "<font color='orange'>",
+        //         "<font color='darkred'>"
+        //     };
+        //     return $"{htmlColors[(int)color]}" + "{value}</font>";
+        // }
         
         return "{value}";
     }

@@ -1,0 +1,47 @@
+{
+  "TitleToTextInReasons": true,
+  "BlockedIdentifiers": [ 
+    "@all",
+    "@ct",
+    "@t",
+    "@players",
+    "@spec",
+    "@bot"
+  ],
+  "UnblockBlockedIdentifiers": [
+    "@all",
+    "@ct",
+    "@t",
+    "@players",
+    "@spec",
+    "@bot"
+  ],
+  "Reasons": [ // При прописывании команды например: 'css_gag iks 0 читы', конечная причина будет заменена на Text причины с соотвествующим Title
+    {
+      "Title": "Example reason title 1",
+      "Text": "Another text for reason", 
+      "MinTime": 0,
+      "MaxTime": 30,
+      "Duration": null,
+      "BanOnAllServers": false,
+      "HideFromMenu": false
+    },
+    {
+      "Title": "Example reason title 2",
+      "Text": "Example reason title 2",
+      "MinTime": 0,
+      "MaxTime": 0,
+      "Duration": 0,
+      "BanOnAllServers": true,
+      "HideFromMenu": false
+    }
+  ],
+  "Times": {
+    "60": "1 мин",
+    "3600": "1 час",
+    "86400": "1 день",
+    "604800": "1 неделя",
+    "2592000": "1 месяц",
+    "0": "Навсегда"
+  }
+}
