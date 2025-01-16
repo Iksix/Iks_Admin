@@ -126,6 +126,7 @@
     "MenuOption.Warns" : "Управление варнами",
     "MenuOption.Warns.Add" : "Выдать варн",
     "MenuOption.Warns.List" : "Список варнов",
+    "MenuTitle.Warns.List" : "Список варнов",
 
     "Error.OnlyServerCommand" : "{red}Команду может выполнить только сервер ✖",
     "Error.MustBeANumber" : "{red}Параметр должен быть числом!!! ✖",
