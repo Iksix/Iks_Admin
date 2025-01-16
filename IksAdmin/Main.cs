@@ -123,6 +123,11 @@ public class Main : BasePlugin
         var disconnected = AdminApi.DisconnectedPlayers.FirstOrDefault(x => x.SteamId == steamId64);
         AdminApi.DisconnectedPlayers.Remove(disconnected!);
         var ip = player!.GetIp();
+        var comms = player!.GetComms();
+        foreach (var comm in comms)
+        {
+            AdminApi.Comms.Remove(comm);
+        }
         Task.Run(async () => {
             await AdminApi.ReloadInfractions(steamId64, ip, true);
             Server.NextFrame(() =>

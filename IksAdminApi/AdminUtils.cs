@@ -53,7 +53,7 @@ public static class AdminUtils
 
     public static List<PlayerComm> GetComms(this CCSPlayerController player)
     {
-        return CoreApi.Comms.Where(x => x.SteamId == player.AuthorizedSteamID!.SteamId64.ToString()).ToList();
+        return CoreApi.Comms.Where(x => x.SteamId == player.GetSteamId()).ToList();
     }
     public static string GetDurationString(int seconds)
     {

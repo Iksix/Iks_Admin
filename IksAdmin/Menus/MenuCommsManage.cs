@@ -320,7 +320,7 @@ public static class MenuCommsManage
                     Helper.Print(caller, _localizer["Error.MustBeANumber"]);
                     return;
                 }
-                comm.Duration = timeInt;
+                comm.Duration = timeInt*60;
                 Task.Run(async () =>
                 {
                     await MutesFunctions.Mute(comm);
@@ -367,7 +367,7 @@ public static class MenuCommsManage
                     Helper.Print(caller, _localizer["Error.MustBeANumber"]);
                     return;
                 }
-                comm.Duration = timeInt;
+                comm.Duration = timeInt*60;
                 Task.Run(async () =>
                 {
                     await GagsFunctions.Gag(comm);
@@ -414,7 +414,7 @@ public static class MenuCommsManage
                     Helper.Print(caller, _localizer["Error.MustBeANumber"]);
                     return;
                 }
-                comm.Duration = timeInt;
+                comm.Duration = timeInt*60;
                 Task.Run(async () =>
                 {
                     await SilenceFunctions.Silence(comm);

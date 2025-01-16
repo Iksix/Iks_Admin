@@ -161,7 +161,7 @@ public static class MenuBansManage
                     Helper.Print(caller, _localizer["Error.MustBeANumber"]);
                     return;
                 }
-                ban.Duration = timeInt;
+                ban.Duration = timeInt*60;
                 Helper.Print(caller, _localizer["ActionSuccess.TimeSetted"]);
                 OpenBanTypeSelectMenu(caller, ban);
             });

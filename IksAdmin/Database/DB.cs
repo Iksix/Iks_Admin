@@ -49,8 +49,8 @@ create table if not exists iks_admins(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 insert into iks_admins(steam_id, name, flags, immunity, created_at, updated_at)
-select 'CONSOLE', 'CONSOLE', null, 0, unix_timestamp(), unix_timestamp()
-where not exists (select 1 from iks_admins where steam_id = 'CONSOLE');
+select 'CONSOLE', 'CONSOLE', null, 0, unix_timestamp(), unix_timestamp();
+DELETE from iks_admins where steam_id='CONSOLE' and id!=1;
 
 create table if not exists iks_admin_to_server(
     id int not null auto_increment primary key,
@@ -124,8 +124,7 @@ create table if not exists iks_groups_limitations(
     limitation_key varchar(64) not null,
     limitation_value varchar(32) not null,
     foreign key (group_id) references iks_groups(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
-            ");
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;");
         }
         catch (MySqlException e)
         {
