@@ -31,7 +31,7 @@ namespace IksAdmin;
 public class Main : BasePlugin
 {
     public override string ModuleName => "IksAdmin";
-    public override string ModuleVersion => "3.0";
+    public override string ModuleVersion => "3.0 V1";
     public override string ModuleAuthor => "iks [Discord: iks__]";
 
     public static IMenuApi MenuApi = null!;
@@ -1506,7 +1506,7 @@ public class AdminApi : IIksAdminApi
     public bool CanDoActionWithPlayer(string callerId, string targetId)
     {
         var callerAdmin = AdminUtils.ServerAdmin(callerId);
-        var targetAdmin = AdminUtils.ServerAdmin(callerId);
+        var targetAdmin = AdminUtils.ServerAdmin(targetId);
 
         if (targetAdmin == null || targetAdmin.IsDisabled) return true;
 
@@ -2510,8 +2510,11 @@ public class AdminApi : IIksAdminApi
         player = eventData.Get<CCSPlayerController>("player");
         announce = eventData.Get<bool>("announce");
         team = eventData.Get<int>("team");
-
-        player.SwitchTeam((CsTeam)team);
+        if (team == 3)
+        {
+            player.ChangeTeam((CsTeam)team);
+        } else
+            player.SwitchTeam((CsTeam)team);
         if (announce)
             MsgAnnounces.SwitchTeam(admin, player, team);
 

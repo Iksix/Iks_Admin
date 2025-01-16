@@ -47,7 +47,7 @@ public static class MenuUtils
         );
         if (nullOption)
         {
-            menu.AddMenuOption("null", "Nothing", (_, _) =>
+            menu.AddMenuOption("null", _localizer["Other.NullItem"], (_, _) =>
             {
                 action.Invoke(default, menu);
             });
@@ -74,7 +74,7 @@ public static class MenuUtils
         );
         if (nullOption)
         {
-            menu.AddMenuOption("null", "Nothing", (_, _) =>
+            menu.AddMenuOption("null", _localizer["Other.NullItem"], (_, _) =>
             {
                 action.Invoke(default, menu);
             });

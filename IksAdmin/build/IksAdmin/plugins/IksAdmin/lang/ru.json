@@ -204,7 +204,8 @@
     "Other.Minutes" : " мин.",
     "Other.Hours" : " час.",
     "Other.Days" : " дн.",
-    "Other.Never" : "Никогда",
+    "Other.Never" : "Навсегда",
+    "Other.NullItem" : "НЕТ",
 
     "Other.Team.CT" : "CT", // админ iks переместил игрока litler в команду CT
     "Other.Team.T" : "T", // админ iks переместил игрока litler в команду T

@@ -59,7 +59,7 @@ public static class AdminUtils
     {
         if (seconds == 0)
         {
-            return CoreApi.Localizer["Other.Days"];
+            return CoreApi.Localizer["Other.Never"];
         }
         // ищем seconds во всех конфигах с Times =)
         if (BansConfig.Config.Times.TryGetValue(seconds, out var time)) return time;
