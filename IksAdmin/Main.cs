@@ -2510,7 +2510,7 @@ public class AdminApi : IIksAdminApi
         player = eventData.Get<CCSPlayerController>("player");
         announce = eventData.Get<bool>("announce");
         team = eventData.Get<int>("team");
-        if (team == 3)
+        if (team == 1)
         {
             player.ChangeTeam((CsTeam)team);
         } else
