@@ -120,7 +120,7 @@ public static class MenuAM
     {
         var menu = _api.CreateMenu(
             Main.MenuId("am_edit"),
-            _localizer["MenuTitle." + "AM_edit"].AReplace(["name"], [admin!.Name]),
+            _localizer["MenuTitle." + "AM.Edit"].AReplace(["name"], [admin!.Name]),
             titleColor: MenuColors.Gold,
             backMenu: backMenu
         );
@@ -220,7 +220,7 @@ public static class MenuAM
     {
         var menu = _api.CreateMenu(
             Main.MenuId("am_edit_server_id"),
-            _localizer["MenuTitle." + "AM_edit_server_id"],
+            _localizer["MenuTitle." + "AM.Edit_ServerId"],
             titleColor: MenuColors.Gold
         );
         var serverIds = EditAdminServerIdBuffer[caller.Admin()!];
@@ -257,7 +257,7 @@ public static class MenuAM
     {
         var menu = _api.CreateMenu(
             Main.MenuId("am_add"),
-            _localizer["MenuTitle." + "AM_add"],
+            _localizer["MenuTitle." + "AM.Add"],
             titleColor: MenuColors.Gold,
             backMenu: backMenu
         );

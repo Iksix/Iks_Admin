@@ -832,10 +832,16 @@ public class AdminApi : IIksAdminApi
         await DBAdmins.RemoveServerIdsFromAdmin(adminId);
     }
 
-    public async Task<DBResult> DeleteAdmin(Admin actioneer, Admin admin)
+    public async Task<DBResult> DeleteAdmin(Admin actioneer, Admin admin, bool announce = true)
     {
         await DBAdmins.DeleteAdmin(admin.Id);
         await ReloadDataFromDBOnAllServers();
+        if (announce)
+        {
+            Server.NextFrame(() => {
+                MsgAnnounces.AdminDeleted(actioneer, admin);
+            });
+        }
         return new DBResult(null, 0);
     }
 

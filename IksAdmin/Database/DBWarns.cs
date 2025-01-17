@@ -96,7 +96,7 @@ public static class DBWarns
             await using var conn = new MySqlConnection(DB.ConnectionString);
             await conn.OpenAsync();
             warn.UpdatedAt = AdminUtils.CurrentTimestamp();
-            int id = await conn.QuerySingleAsync<int>(@"
+            await conn.QueryAsync(@"
             update iks_admins_warns set
             admin_id = @adminId,
             target_id = @targetId,
@@ -119,7 +119,7 @@ public static class DBWarns
                 deletedBy = warn.DeletedBy,
                 deletedAt = warn.DeletedAt
             });
-            return new DBResult(id, 0);
+            return new DBResult(warn.Id, 0);
         }
         catch (MySqlException e)
         {

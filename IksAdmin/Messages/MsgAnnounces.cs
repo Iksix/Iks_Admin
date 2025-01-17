@@ -154,9 +154,17 @@ public static class MsgAnnounces
                 .Replace("{admin}", AdminUtils.Admin(warn.AdminId)!.CurrentName)
                 .Replace("{name}", AdminUtils.Admin(warn.TargetId)!.CurrentName)
                 .Replace("{reason}", warn.Reason)
-                .Replace("{now}", AdminUtils.Admin(warn.TargetId)!.Warns.Count.ToString())
+                .Replace("{now}", (AdminUtils.Admin(warn.TargetId)!.Warns.Count - 1).ToString())
                 .Replace("{max}", _api.Config.MaxWarns.ToString())
                 .Replace("{id}", warn.Id.ToString()), tag: _localizer["Tag"]
+        );
+    }
+
+    public static void AdminDeleted(Admin actioneer, Admin admin)
+    {
+        AdminUtils.PrintToServer(_localizer["Announce.AM.Deleted"].Value
+                .Replace("{admin}", actioneer.CurrentName)
+                .Replace("{name}", admin.CurrentName)
         );
     }
 }

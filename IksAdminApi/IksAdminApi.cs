@@ -41,7 +41,7 @@ public interface IIksAdminApi
     /// Creates admin
     /// </summary>
     public Task<DBResult> CreateAdmin(Admin actioneer, Admin admin, int? serverId);
-    public Task<DBResult> DeleteAdmin(Admin actioneer, Admin admin);
+    public Task<DBResult> DeleteAdmin(Admin actioneer, Admin admin, bool announce = true);
     public Task<DBResult> UpdateAdmin(Admin actioneer, Admin admin);
     public Task<List<Admin>> GetAdminsBySteamId(string steamId, bool ignoreDeleted = true);
     /// <summary>
