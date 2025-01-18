@@ -17,7 +17,9 @@ public class DynamicMenu : IDynamicMenu
     public Action<CCSPlayerController>? BackAction {get; set;} = null;
     public PostSelectAction PostSelectAction {get; set;} = PostSelectAction.Nothing;
     public List<IDynamicMenuOption> Options {get; set;} = new();
+    private List<IDynamicMenuOption> _onOpenDeleteOptions {get; set;} = new(); // Нужно для пунктов созданых при onMenuOpenPre
     private bool _backOptionRendered = false;
+    private bool _onMenuOpenPre = false;
     public DynamicMenu(string id, string title, MenuType type = (MenuType)3, MenuColors titleColor = MenuColors.Default, PostSelectAction postSelectAction = PostSelectAction.Nothing, Action<CCSPlayerController>? backAction = null, IDynamicMenu? backMenu = null)
     {
         Id = id;
@@ -49,6 +51,11 @@ public class DynamicMenu : IDynamicMenu
             Type: {Type}
             useSortMenu: {useSortMenu}
         ");
+        foreach (var opt in _onOpenDeleteOptions)
+        {
+            Options.Remove(opt);
+        }
+        _onOpenDeleteOptions.Clear();
         IMenu menu;
         switch ((int)Type)
         {
@@ -73,7 +80,9 @@ public class DynamicMenu : IDynamicMenu
         }
         
         menu.PostSelectAction = PostSelectAction;
+        _onMenuOpenPre = true;
         var onMenuOpenPreResult = Main.AdminApi.OnMenuOpenPre(player, this, menu);
+        _onMenuOpenPre = false;
         if (!onMenuOpenPreResult)
         {
             return;
@@ -293,7 +302,11 @@ public class DynamicMenu : IDynamicMenu
         {
             AdminUtils.LogDebug($"Option \"{id}\" already exists.");
         }
-        Options.Add(new DynamicMenuOption(id, title, onExecute, color, disabled, viewFlags));
+        var option = new DynamicMenuOption(id, title, onExecute, color, disabled, viewFlags);
+        Options.Add(option);
+
+        if (_onMenuOpenPre)
+            _onOpenDeleteOptions.Add(option);
     }
 }
 

@@ -124,7 +124,7 @@ public static class CmdAdminManage
         if (!int.TryParse(args[0], out var adminId)) {
             throw new ArgumentException("id must be a number");
         }
-        var admin = AdminUtils.ServerAdmin(adminId);
+        var admin = AdminUtils.Admin(adminId);
         if (!_api.CanDoActionWithPlayer(caller.GetSteamId(), admin!.SteamId))
         {
             caller.Print(_localizer["ActionError.NotEnoughPermissionsForAction"]);
