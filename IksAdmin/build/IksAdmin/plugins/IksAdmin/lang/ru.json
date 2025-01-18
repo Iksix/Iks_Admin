@@ -27,11 +27,13 @@
     
     // admins_manage
     "MenuTitle.AM" : "Управление админами",
+    "MenuTitle.AM.Edit" : "Редактирование админа",
     "MenuOption.AM" : "Управление админами",
     "MenuOption.AM.Add" : "Добавить админа",
+    "MenuTitle.AM.Add" : "Добавление админа",
     "MenuOption.AM.Delete" : "Удалить админа",
     "MenuOption.AM.Edit" : "Редактировать админа",
-    "MenuOption.AM.Edit_ServerId" : "Выберите сервер",
+    "MenuTitle.AM.Edit_ServerId" : "Выберите сервер",
     "MenuOption.AM.Save" : "Сохранить админа",
     "Message.AM.VkSet" : "Напишите VK ID в чат: {red}!someId\n{red}!- {white}- для того что бы оставить пустым",
     "Message.AM.DiscordSet" : "Напишите Discord в чат: {red}!iks__\n{red}!- {white}- для того что бы оставить пустым",
