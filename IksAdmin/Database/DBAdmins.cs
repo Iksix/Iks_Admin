@@ -299,7 +299,7 @@ public static class DBAdmins
                 is_disabled = @disabled,
                 end_at = @endAt,
                 updated_at = unix_timestamp(),
-                deleted_at = null
+                deleted_at = @deletedAt
                 where id = @id 
             ", new {
                 id = admin.Id,
@@ -311,7 +311,8 @@ public static class DBAdmins
                 disabled = admin.Disabled,
                 discord = admin.Discord,
                 vk = admin.Vk,
-                endAt = admin.EndAt
+                endAt = admin.EndAt,
+                deletedAt = admin.DeletedAt
             });
             AdminUtils.LogDebug($"Admin updated in base ✔");
             var updatedAdmin = await GetAdmin(admin.SteamId);

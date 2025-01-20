@@ -801,6 +801,7 @@ public class AdminApi : IIksAdminApi
             {
                 // Если да то обновляем админа в базе
                 admin.Id = existingAdmin.Id;
+                admin.DeletedAt = null;
                 await UpdateAdmin(actioneer, admin);
                 return new DBResult(admin.Id, 1, "admin has been updated");
             }

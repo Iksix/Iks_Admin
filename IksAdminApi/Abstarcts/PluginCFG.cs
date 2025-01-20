@@ -6,10 +6,9 @@ namespace IksAdminApi;
 
 public abstract class PluginCFG<IPluginCFG>
 {
-    public IPluginCFG ReadOrCreate<IPluginCFG>(string fileName, IPluginCFG defaultConfig)
+    public IPluginCFG ReadOrCreate<IPluginCFG>(string path, IPluginCFG defaultConfig)
     {
-        var modulePath = AdminUtils.CoreInstance.ModuleDirectory;
-        var filePath = modulePath + $"/{fileName}.json";
+        var filePath = path;
         if (!File.Exists(filePath))
         {
             AdminUtils.LogDebug("Creating config file for " + filePath);

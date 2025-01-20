@@ -37,7 +37,7 @@ public class CoreConfig : PluginCFG<CoreConfig>, IPluginCFG
     public bool AutoUpdateDatabaseNames {get; set;} = false; // Обновлять ли ники админов в базе данных на текущие в стиме при подключении
     public void Set()
     {
-        Config = ReadOrCreate("configs/core", Config);
+        Config = ReadOrCreate(AdminUtils.CoreInstance.ModuleDirectory +"/configs/core.json", Config);
         AdminUtils.LogDebug("Core config loaded ✔");
     }
 }
