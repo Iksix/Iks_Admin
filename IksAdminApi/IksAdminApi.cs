@@ -142,6 +142,10 @@ public interface IIksAdminApi
     public event OptionExecuted OptionExecutedPre;
     public event OptionExecuted OptionExecutedPost;
 
+    public delegate HookResult OnCommandUsed(CCSPlayerController? caller, List<string> args, CommandInfo info);
+    public event OnCommandUsed OnCommandUsedPre;
+    public event OnCommandUsed OnCommandUsedPost;
+
     #region Punishment handlers
     
     public delegate HookResult DynamicEvent(EventData data);

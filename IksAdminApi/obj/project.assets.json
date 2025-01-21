@@ -2529,11 +2529,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj",
+      "projectUniqueName": "H:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj",
       "projectName": "IksAdminApi",
-      "projectPath": "E:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj",
+      "projectPath": "H:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj",
       "packagesPath": "C:\\Users\\iks\\.nuget\\packages\\",
-      "outputPath": "E:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\obj\\",
+      "outputPath": "H:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\iks\\AppData\\Roaming\\NuGet\\NuGet.Config"

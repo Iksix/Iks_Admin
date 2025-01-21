@@ -31,7 +31,7 @@ namespace IksAdmin;
 public class Main : BasePlugin
 {
     public override string ModuleName => "IksAdmin";
-    public override string ModuleVersion => "3.0 v3";
+    public override string ModuleVersion => "3.0 v4";
     public override string ModuleAuthor => "iks [Discord: iks__]";
 
     public static IMenuApi MenuApi = null!;
@@ -1110,6 +1110,8 @@ public class AdminApi : IIksAdminApi
     public event Action<AdminModule>? OnModuleUnload;
     public event Action<AdminModule>? OnModuleLoaded;
     public event Action<string, string>? OnFullConnect;
+    public event IIksAdminApi.OnCommandUsed OnCommandUsedPre;
+    public event IIksAdminApi.OnCommandUsed OnCommandUsedPost;
 
     public void OnFullConnectInvoke(string steamId, string ip)
     {
@@ -1250,7 +1252,13 @@ public class AdminApi : IIksAdminApi
             }
             try
             {
+                if (OnCommandUsedPre.Invoke(p, args, info) != HookResult.Continue)
+                {
+                    AdminUtils.LogDebug("Command execute stop by event handler");
+                    return;
+                }
                 onExecute.Invoke(p, args, info);
+                OnCommandUsedPost.Invoke(p, args, info);
             }
             catch (ArgumentException)
             {
@@ -1262,6 +1270,7 @@ public class AdminApi : IIksAdminApi
                 info.Reply(Localizer["Error.OtherCommandError"].Value.Replace("{usage}", usage), tagString);
                 AdminUtils.LogError(e.Message);
             }
+
             
         };
         var definition = new CommandDefinition("css_" + command, description, callback);

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "6sR4cItdDQw=",
+  "dgSpecHash": "KVLBFzWezV0=",
   "success": true,
-  "projectFilePath": "E:\\__iksAdmin\\Iks_Admin\\IksAdmin\\IksAdmin.csproj",
+  "projectFilePath": "H:\\__iksAdmin\\Iks_Admin\\IksAdmin\\IksAdmin.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\iks\\.nuget\\packages\\automapper\\12.0.0\\automapper.12.0.0.nupkg.sha512",
     "C:\\Users\\iks\\.nuget\\packages\\corercon\\5.4.1\\corercon.5.4.1.nupkg.sha512",

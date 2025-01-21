@@ -5,9 +5,11 @@ namespace IksAdminApi;
 public abstract class AdminModule : BasePlugin
 {
     public static IIksAdminApi Api { get; set; } = null!;
+    public static BasePlugin Instance {get; set;} = null!;
 
     public override void OnAllPluginsLoaded(bool hotReload)
     {
+        Instance = this;
         Api.EOnModuleLoaded(this);
         Api.SetCommandInititalizer(ModuleName);
         InitializeCommands();
