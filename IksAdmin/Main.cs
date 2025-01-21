@@ -1110,8 +1110,8 @@ public class AdminApi : IIksAdminApi
     public event Action<AdminModule>? OnModuleUnload;
     public event Action<AdminModule>? OnModuleLoaded;
     public event Action<string, string>? OnFullConnect;
-    public event IIksAdminApi.OnCommandUsed OnCommandUsedPre;
-    public event IIksAdminApi.OnCommandUsed OnCommandUsedPost;
+    public event IIksAdminApi.OnCommandUsed? OnCommandUsedPre;
+    public event IIksAdminApi.OnCommandUsed? OnCommandUsedPost;
 
     public void OnFullConnectInvoke(string steamId, string ip)
     {
@@ -1252,13 +1252,14 @@ public class AdminApi : IIksAdminApi
             }
             try
             {
-                if (OnCommandUsedPre.Invoke(p, args, info) != HookResult.Continue)
+                var onCommandUsedPre = OnCommandUsedPre?.Invoke(p, args, info) ?? HookResult.Continue;
+                if (onCommandUsedPre != HookResult.Continue)
                 {
                     AdminUtils.LogDebug("Command execute stop by event handler");
                     return;
                 }
                 onExecute.Invoke(p, args, info);
-                OnCommandUsedPost.Invoke(p, args, info);
+                OnCommandUsedPost?.Invoke(p, args, info);
             }
             catch (ArgumentException)
             {
