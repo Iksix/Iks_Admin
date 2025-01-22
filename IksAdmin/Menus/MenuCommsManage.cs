@@ -226,6 +226,9 @@ public static class MenuCommsManage
                 if (reason.Duration == null)
                 {
                     OpenMuteTimeSelectMenu(caller, target, reason.Text, menu);
+                } else {
+                    var comm = new PlayerComm(target, PlayerComm.MuteTypes.Mute, reason.Text, (int)reason.Duration*60, serverId: _api.ThisServer.Id);
+                    comm.AdminId = caller.Admin()!.Id;
                 }
             });
         }
@@ -263,6 +266,9 @@ public static class MenuCommsManage
                 if (reason.Duration == null)
                 {
                     OpenGagTimeSelectMenu(caller, target, reason.Text, menu);
+                } else {
+                    var comm = new PlayerComm(target, PlayerComm.MuteTypes.Gag, reason.Text, (int)reason.Duration*60, serverId: _api.ThisServer.Id);
+                    comm.AdminId = caller.Admin()!.Id;
                 }
             });
         }
@@ -299,6 +305,9 @@ public static class MenuCommsManage
                 if (reason.Duration == null)
                 {
                     OpenSilenceTimeSelectMenu(caller, target, reason.Text, menu);
+                } else {
+                    var comm = new PlayerComm(target, PlayerComm.MuteTypes.Silence, reason.Text, (int)reason.Duration*60, serverId: _api.ThisServer.Id);
+                    comm.AdminId = caller.Admin()!.Id;
                 }
             });
         }

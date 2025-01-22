@@ -137,6 +137,9 @@ public static class MenuBansManage
                 if (reason.Duration == null)
                 {
                     OpenTimeSelectMenu(caller, target, reason.Text, menu);
+                } else {
+                    var ban = new PlayerBan(target, reason.Text, (int)reason.Duration*60, serverId: _api.ThisServer.Id);
+                    ban.AdminId = admin.Id;
                 }
             });
         }

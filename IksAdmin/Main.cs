@@ -713,6 +713,7 @@ public class Main : BasePlugin
         var player = @event.Userid;
         if (player == null) return HookResult.Continue;
         if (player.IsBot) return HookResult.Continue;
+        if (player.AuthorizedSteamID == null) return HookResult.Continue;
         var steamId = player.AuthorizedSteamID!.SteamId64.ToString();
         if (KickOnFullConnect.ContainsKey(steamId))
         {
