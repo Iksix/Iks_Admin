@@ -230,9 +230,9 @@ public static class MenuCommsManage
                     var comm = new PlayerComm(target, PlayerComm.MuteTypes.Mute, reason.Text, (int)reason.Duration*60, serverId: _api.ThisServer.Id);
                     comm.AdminId = caller.Admin()!.Id;
                     Task.Run(async () =>
-                    {
-                        await _api.AddComm(comm);
-                    });
+                {
+                    await MutesFunctions.Mute(comm);
+                });
                     _api.CloseMenu(caller);
                 }
             });
@@ -275,9 +275,9 @@ public static class MenuCommsManage
                     var comm = new PlayerComm(target, PlayerComm.MuteTypes.Gag, reason.Text, (int)reason.Duration*60, serverId: _api.ThisServer.Id);
                     comm.AdminId = caller.Admin()!.Id;
                     Task.Run(async () =>
-                    {
-                        await _api.AddComm(comm);
-                    });
+                {
+                    await MutesFunctions.Mute(comm);
+                });
                     _api.CloseMenu(caller);
                 }
             });
@@ -320,7 +320,7 @@ public static class MenuCommsManage
                     comm.AdminId = caller.Admin()!.Id;
                     Task.Run(async () =>
                     {
-                        await _api.AddComm(comm);
+                        await MutesFunctions.Mute(comm);
                     });
                     _api.CloseMenu(caller);
                 }
