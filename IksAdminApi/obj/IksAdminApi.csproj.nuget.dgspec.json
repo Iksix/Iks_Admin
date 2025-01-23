@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "H:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj": {}
+    "E:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj": {}
   },
   "projects": {
-    "H:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj": {
+    "E:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "H:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj",
+        "projectUniqueName": "E:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj",
         "projectName": "IksAdminApi",
-        "projectPath": "H:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj",
-        "packagesPath": "C:\\Users\\iks\\.nuget\\packages\\",
-        "outputPath": "H:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\obj\\",
+        "projectPath": "E:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\IksAdminApi.csproj",
+        "packagesPath": "C:\\Users\\iputg\\.nuget\\packages\\",
+        "outputPath": "E:\\__iksAdmin\\Iks_Admin\\IksAdminApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\iks\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\iputg\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -64,7 +64,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.405/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

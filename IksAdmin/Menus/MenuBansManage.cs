@@ -140,6 +140,10 @@ public static class MenuBansManage
                 } else {
                     var ban = new PlayerBan(target, reason.Text, (int)reason.Duration*60, serverId: _api.ThisServer.Id);
                     ban.AdminId = admin.Id;
+                    Task.Run(async () => {
+                        await _api.AddBan(ban);
+                    });
+                    _api.CloseMenu(caller);
                 }
             });
         }
