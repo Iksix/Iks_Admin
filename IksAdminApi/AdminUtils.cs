@@ -62,10 +62,10 @@ public static class AdminUtils
             return CoreApi.Localizer["Other.Never"];
         }
         // ищем seconds во всех конфигах с Times =)
-        if (BansConfig.Config.Times.TryGetValue(seconds, out var time)) return time;
-        if (MutesConfig.Config.Times.TryGetValue(seconds, out time)) return time;
-        if (GagsConfig.Config.Times.TryGetValue(seconds, out time)) return time;
-        if (SilenceConfig.Config.Times.TryGetValue(seconds, out time)) return time;
+        if (BansConfig.Config.Times.TryGetValue(seconds/60, out var time)) return time;
+        if (MutesConfig.Config.Times.TryGetValue(seconds/60, out time)) return time;
+        if (GagsConfig.Config.Times.TryGetValue(seconds/60, out time)) return time;
+        if (SilenceConfig.Config.Times.TryGetValue(seconds/60, out time)) return time;
         if (seconds % 86400 == 0)
         {
             return $"{seconds / 86400}{CoreApi.Localizer["Other.Days"]}";

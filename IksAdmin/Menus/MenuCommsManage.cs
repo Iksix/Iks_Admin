@@ -366,7 +366,7 @@ public static class MenuCommsManage
             }
             menu.AddMenuOption("mute_time_" + time.Key, time.Value, (_, _) => {
                 _api.CloseMenu(caller);
-                comm.Duration = time.Key;
+                comm.Duration = time.Key*60;
                 Task.Run(async () =>
                 {
                     await MutesFunctions.Mute(comm);
@@ -413,7 +413,7 @@ public static class MenuCommsManage
             }
             menu.AddMenuOption("gag_time_" + time.Key, time.Value, (_, _) => {
                 _api.CloseMenu(caller);
-                comm.Duration = time.Key;
+                comm.Duration = time.Key*60;
                 Task.Run(async () =>
                 {
                     await GagsFunctions.Gag(comm);
@@ -460,7 +460,7 @@ public static class MenuCommsManage
             }
             menu.AddMenuOption("silence_time_" + time.Key, time.Value, (_, _) => {
                 _api.CloseMenu(caller);
-                comm.Duration = time.Key;
+                comm.Duration = time.Key*60;
                 Task.Run(async () =>
                 {
                     await SilenceFunctions.Silence(comm);
