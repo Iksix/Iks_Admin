@@ -74,6 +74,10 @@ public static class MenuAM
         {
             MenuUtils.OpenSelectPlayer(caller, "am_add", (t, m) =>
             {
+                AddAdminBuffer[caller.Admin()!] = new Admin(
+                    t.SteamId!, 
+                    t.PlayerName
+                );
                 OpenAdminAddMenu(caller, t, m);
             }, backMenu: menu);
         }, viewFlags: AdminUtils.GetCurrentPermissionFlags("admins_manage.add"));
