@@ -1007,8 +1007,10 @@ public class AdminApi : IIksAdminApi
         if (type == null) type = (MenuType)Config.MenuType;
         return new DynamicMenu(id, title, (MenuType)type, titleColor, postSelectAction, backAction, backMenu);
     }
-
-    
+    public IDynamicMenuOption CreateMenuOption(string id, string title, Action<CCSPlayerController, IDynamicMenuOption> onExecute, MenuColors? color = null, bool disabled = false, string viewFlags = "*")
+    {
+        return new DynamicMenuOption(id, title, onExecute, color, disabled, viewFlags);
+    }
 
     public void RegisterPermission(string key, string defaultFlags)
     {
