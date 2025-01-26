@@ -57,7 +57,7 @@ public class Main : BasePlugin
     public override void Load(bool hotReload)
     {
         AdminUtils.CoreInstance = this;
-        AdminApi = new AdminApi(this, Localizer, ModuleDirectory, DB.ConnectionString);
+        AdminApi = new AdminApi(this, Localizer, ModuleDirectory);
         AdminModule.Api = AdminApi;
         AdminUtils.CoreApi = AdminApi;
         AdminApi.OnModuleLoaded += OnModuleLoaded;
@@ -871,7 +871,7 @@ public class AdminApi : IIksAdminApi
     public List<PlayerInfo> DisconnectedPlayers {get; set;} = new();
     public List<AdminToServer> AdminsToServer {get; set;} = new();
 
-    public AdminApi(BasePlugin plugin, IStringLocalizer localizer, string moduleDirectory, string dbConnectionString)
+    public AdminApi(BasePlugin plugin, IStringLocalizer localizer, string moduleDirectory)
     {
         Plugin = plugin;
         SetConfigs();
@@ -885,7 +885,7 @@ public class AdminApi : IIksAdminApi
         DB.ConnectionString = builder.ConnectionString;
         Localizer = localizer;
         ModuleDirectory = moduleDirectory;
-        DbConnectionString = dbConnectionString;
+        DbConnectionString = builder.ConnectionString;
         Task.Run(async () => {
             await ReloadDataFromDb();
         });
