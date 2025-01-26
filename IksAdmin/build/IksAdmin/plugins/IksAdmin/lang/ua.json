@@ -213,5 +213,8 @@
 
     "Other.Team.CT" : "CT", // адмін iks перемістив гравця litler в команду CT
     "Other.Team.T" : "T", // адмін iks перемістив гравця litler в команду T
-    "Other.Team.Spec" : "SPEC" // адмін iks перемістив гравця litler в команду SPEC
+    "Other.Team.Spec" : "SPEC", // адмін iks перемістив гравця litler в команду SPEC
+
+    // v6
+    "Message.Muted" : "Ви не можете говорити!\n{red}Мут {white}закінчиться в {red}{time}"
 }

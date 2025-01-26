@@ -82,6 +82,7 @@ public class Main : BasePlugin
             MessageOnTick();
         });
         RegisterListener<Listeners.OnClientAuthorized>(OnAuthorized);
+        RegisterListener<Listeners.OnClientVoice>(OnClientVoice);
         AddTimer(5, () => {
             foreach (var comm in AdminApi.Comms.ToArray())
             {
@@ -103,7 +104,23 @@ public class Main : BasePlugin
             }
         }, TimerFlags.REPEAT);
     }
-    
+
+    private void OnClientVoice(int playerSlot)
+    {
+        var player = Utilities.GetPlayerFromSlot(playerSlot);
+        if (player == null || player.AuthorizedSteamID == null) return;
+        var mute = player.GetComms().GetMute();
+        var silence = player.GetComms().GetSilence();
+        if (mute != null)
+        {
+            player.Print(Localizer["Message.Muted"].AReplace(["time"], [Utils.GetDateString(mute.EndAt)]));
+        }
+        if (silence != null)
+        {
+            player.Print(Localizer["Message.Muted"].AReplace(["time"], [Utils.GetDateString(silence.EndAt)]));
+        }
+    }
+
     public static void MessageOnTick()
     {
         foreach (var msg in PlayersUtils.HtmlMessages)

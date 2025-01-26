@@ -213,6 +213,9 @@
 
     "Other.Team.CT" : "CT", // admin iks moved player litler to team CT
     "Other.Team.T" : "T", // admin iks moved player litler to team T
-    "Other.Team.Spec" : "SPEC" // admin iks moved player litler to team SPEC
+    "Other.Team.Spec" : "SPEC", // admin iks moved player litler to team SPEC
+
+    // v6
+    "Message.Muted" : "You can't talk!\n{red}Mutation {white}will end at {red}{time}"
     
 }
