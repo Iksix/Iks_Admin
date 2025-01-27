@@ -89,7 +89,7 @@
 - `css_respawn <#uid/#steamId/name/@...>` - Возродить игрока `"respawn"` `<k>`
 - `css_slay <#uid/#steamId/name/@...>` - Убить игрока `"slay"` `<k>`
 - `css_changeteam <#uid/#steamId/name/@...> <ct/t/spec>` - Сменить команду игрока(с убийством) `"changeteam"` `<k>`
-- `css_switchteam <#uid/#steamId/name/@...> <ct/t/spec>` - Сменить команду игрока(без убийства) `"changeteam"` `<k>`
+- `css_switchteam <#uid/#steamId/name/@...> <ct/t/spec>` - Сменить команду игрока(без убийства) `"switchteam"` `<k>`
 - `css_who <#uid/#steamId/name/@...>` - Кикнуть игрока `"kick"` `<b>`
 
 ### Управление админами `"admins_manage"`
