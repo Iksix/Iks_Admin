@@ -98,7 +98,7 @@
     - `css_am_add <steamId> <name> <time/0> <server_id/this> <flags> <immunity>` - Создать админа `"add"` `<z>`
     - `css_am_add_server_id <AdminID> <server_id/this>` - Добавить ServerID админу `"add"` `<z>`
     - `css_am_remove <id>` - Удалить админа `"delete"` `<z>`
-    - `css_am_list [all]` - Выводит список админов сервера, если all - то всех `"list"`
+    - `css_am_list [all]` - Выводит список админов сервера, если all - то всех `"list"` `<z>`
 - #### Управление варнами
     - `css_am_warn <SteamID> <time> <reason>` - Выдать варн админу `"warn_add"` `<z>`
     - `css_am_warns <Admin ID>` - Выводит все активные варны админа `"warn_list"` `<z>`
