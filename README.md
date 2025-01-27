@@ -91,7 +91,7 @@
 - `css_slay <#uid/#steamId/name/@...>` - Убить игрока `"slay"` `<k>`
 - `css_changeteam <#uid/#steamId/name/@...> <ct/t/spec>` - Сменить команду игрока(с убийством) `"changeteam"` `<k>`
 - `css_switchteam <#uid/#steamId/name/@...> <ct/t/spec>` - Сменить команду игрока(без убийства) `"switchteam"` `<k>`
-- `css_who <#uid/#steamId/name/@...>` - Кикнуть игрока `"kick"` `<b>`
+- `css_who <#uid/#steamId/name/@...>` - Просмотреть информацию об игроке `"who"` `<b>`
 
 ### Управление админами `"admins_manage"`
 - #### Добавление/удаление/редактирование админов
