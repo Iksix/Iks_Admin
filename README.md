@@ -1,4 +1,5 @@
 # IksAdmin 3.0
+Прога для обновления старой базы на новую: [тык*](https://github.com/Iksix/DbUpdaterApp/tree/main)
 ### Важно:
 Для корректной работы на MyArena нужно добавить айпи своих серверов в список разрешённых для отправки РКОНА, И ТАК ЖЕ НУЖНО ДОБАВЛЯТЬ АЙПИ САМОГО СЕРВЕРА НА КОТОРОМ ПРОИСХОДИТ НАСТРОЙКА ПОТОМУ ЧТО MYARENA НЕ ДАЁТ СЕРВЕРУ ОТПРАВЛЯТЬ РКОН САМОМУ СЕБЕ ПО ДЕФОЛТУ!!!
 # Навигация
@@ -26,6 +27,7 @@
 - Ограничения админа в снятии наказаний [_Общие права снятия наказаний_](https://github.com/Iksix/Iks_Admin/tree/master?tab=readme-ov-file#%D0%BE%D0%B1%D1%89%D0%B8%D0%B5-%D0%BF%D1%80%D0%B0%D0%B2%D0%B0-%D1%81%D0%BD%D1%8F%D1%82%D0%B8%D1%8F-%D0%BD%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0%D0%BD%D0%B8%D0%B9)
 ---
 # Команды
+- Флаг `z` - даёт все права, в независимости от их флага
 - В кавычках категории написана - `группа прав`
 - В кавычках команды написано - `право`
 - Команды с пометкой `(оффлайн)` - так же работают и на онлайн игрока
@@ -88,8 +90,8 @@
 - `css_respawn <#uid/#steamId/name/@...>` - Возродить игрока `"respawn"` `<k>`
 - `css_slay <#uid/#steamId/name/@...>` - Убить игрока `"slay"` `<k>`
 - `css_changeteam <#uid/#steamId/name/@...> <ct/t/spec>` - Сменить команду игрока(с убийством) `"changeteam"` `<k>`
-- `css_switchteam <#uid/#steamId/name/@...> <ct/t/spec>` - Сменить команду игрока(без убийства) `"changeteam"` `<k>`
-- `css_who <#uid/#steamId/name/@...>` - Кикнуть игрока `"kick"` `<b>`
+- `css_switchteam <#uid/#steamId/name/@...> <ct/t/spec>` - Сменить команду игрока(без убийства) `"switchteam"` `<k>`
+- `css_who <#uid/#steamId/name/@...>` - Просмотреть информацию об игроке `"who"` `<b>`
 
 ### Управление админами `"admins_manage"`
 - #### Добавление/удаление/редактирование админов
@@ -97,7 +99,7 @@
     - `css_am_add <steamId> <name> <time/0> <server_id/this> <flags> <immunity>` - Создать админа `"add"` `<z>`
     - `css_am_add_server_id <AdminID> <server_id/this>` - Добавить ServerID админу `"add"` `<z>`
     - `css_am_remove <id>` - Удалить админа `"delete"` `<z>`
-    - `css_am_list [all]` - Выводит список админов сервера, если all - то всех `"list"`
+    - `css_am_list [all]` - Выводит список админов сервера, если all - то всех `"list"` `<z>`
 - #### Управление варнами
     - `css_am_warn <SteamID> <time> <reason>` - Выдать варн админу `"warn_add"` `<z>`
     - `css_am_warns <Admin ID>` - Выводит все активные варны админа `"warn_list"` `<z>`
