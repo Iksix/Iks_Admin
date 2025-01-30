@@ -9,6 +9,12 @@ public abstract class PluginCFG<IPluginCFG>
     public IPluginCFG ReadOrCreate<IPluginCFG>(string path, IPluginCFG defaultConfig)
     {
         var filePath = path;
+        var directoryPath = Path.GetDirectoryName(filePath);
+        if (!Directory.Exists(directoryPath))
+        {
+            AdminUtils.LogDebug("Creating directory for " + filePath);
+            Directory.CreateDirectory(directoryPath!);
+        }
         if (!File.Exists(filePath))
         {
             AdminUtils.LogDebug("Creating config file for " + filePath);
