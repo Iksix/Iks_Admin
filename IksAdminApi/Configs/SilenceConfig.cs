@@ -39,7 +39,7 @@ public class SilenceConfig : PluginCFG<SilenceConfig>, IPluginCFG
     }
     public void Set()
     {
-        Config = ReadOrCreate<SilenceConfig>(AdminUtils.CoreInstance.ModuleDirectory + "/configs/silence.json", Config);
+        Config = ReadOrCreate<SilenceConfig>(AdminUtils.CoreInstance.ModuleDirectory + "../../configs/IksAdmin/silence.json", Config);
         AdminUtils.LogDebug("Silence config loaded ✔");
         AdminUtils.LogDebug("Reasons count " + Config.Reasons.Count);
     }

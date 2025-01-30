@@ -791,7 +791,7 @@ public class AdminApi : IIksAdminApi
     {
         get
         {
-            return AllAdmins.Where(x => x.Servers.Contains(ThisServer.Id) && x.DeletedAt == null).ToList();
+            return AllAdmins.Where(x => (x.Servers.Contains(ThisServer.Id) || x.Servers.Contains(-1) || Config.IgnoreAdminServers) && x.DeletedAt == null).ToList();
         }
     }
 
@@ -1820,13 +1820,8 @@ public class AdminApi : IIksAdminApi
     public void GagPlayerInGame(PlayerComm gag)
     {
         var player = PlayersUtils.GetControllerBySteamId(gag.SteamId);
-        if (player != null)
-        {
-            AdminUtils.LogDebug($"Gag player: {gag.Name} | {gag.SteamId} in game!");
-            Comms.Add(gag);
-        } else {
-            Main.InstantComm.Add(gag.SteamId, gag);
-        }
+        AdminUtils.LogDebug($"Gag player: {gag.Name} | {gag.SteamId} in game!");
+        Comms.Add(gag);
     }
     public void UnGagPlayerInGame(PlayerComm gag)
     {

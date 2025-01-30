@@ -12,7 +12,7 @@ public static class MenuSM
 
     public static void OpenRconMenu(CCSPlayerController caller, IDynamicMenu? backMenu = null)
     {
-        MenuUtils.SelectItem<ServerModel?>(caller, "rcon_server", "Name", _api.AllServers.Where(x => caller.Admin()!.Servers.Contains(x.Id)).ToList()!,
+        MenuUtils.SelectItem<ServerModel?>(caller, "rcon_server", "Name", _api.AllServers.Where(x => caller.Admin()!.Servers.Contains(x.Id) || caller.Admin()!.OnAllServers).ToList()!,
         (s, m) => {
             caller.Print(_localizer["Message.SM.Rcon.WriteCmd"]);
             _api.HookNextPlayerMessage(caller, cmd => {

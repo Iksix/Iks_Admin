@@ -1,3 +1,4 @@
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 
 namespace IksAdminApi;
@@ -59,6 +60,9 @@ public class Admin
         }
         return serverIds.ToArray();
     } }
+    public bool OnAllServers {get {
+        return Servers.Contains(-1);
+    }}
     public CCSPlayerController? Controller { get => PlayersUtils.GetControllerBySteamId(SteamId); } 
     public bool IsConsole { get => Id == 1;}
 

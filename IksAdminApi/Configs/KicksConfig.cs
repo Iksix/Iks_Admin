@@ -23,7 +23,7 @@ public class KicksConfig : PluginCFG<KicksConfig>, IPluginCFG
     }
     public void Set()
     {
-        Config = ReadOrCreate<KicksConfig>(AdminUtils.CoreInstance.ModuleDirectory + "/configs/kicks.json", Config);
+        Config = ReadOrCreate<KicksConfig>(AdminUtils.CoreInstance.ModuleDirectory + "../../configs/IksAdmin/kicks.json", Config);
         AdminUtils.LogDebug("Kicks config loaded ✔");
         AdminUtils.LogDebug("Reasons count " + Config.Reasons.Count);
     }
