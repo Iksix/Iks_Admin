@@ -31,7 +31,7 @@ namespace IksAdmin;
 public class Main : BasePlugin
 {
     public override string ModuleName => "IksAdmin";
-    public override string ModuleVersion => "3.0 v6";
+    public override string ModuleVersion => "3.0 v7";
     public override string ModuleAuthor => "iks [Discord: iks__]";
 
     public static IMenuApi MenuApi = null!;
@@ -741,6 +741,7 @@ public class Main : BasePlugin
         }
         if (InstantComm.TryGetValue(steamId, out var comm)) {
             AdminApi.ApplyCommForPlayer(comm);
+            InstantComm.Remove(steamId);
         }
         return HookResult.Continue;
     }

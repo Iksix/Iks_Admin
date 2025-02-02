@@ -54,7 +54,7 @@ public static class CmdBase
         {
             if (target != null && target.IsBot) return;
             var steamId = identity.Remove(0, 1);
-            var targetAdmin = AdminUtils.Admin(target?.GetSteamId() ?? steamId);
+            var targetAdmin = AdminUtils.ServerAdmin(target?.GetSteamId() ?? steamId);
             if (targetAdmin == null)
             {
                 caller.Print(_localizer["Message.CmdWho_NotAdmin"].AReplace(

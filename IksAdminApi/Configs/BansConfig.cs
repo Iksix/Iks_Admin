@@ -39,7 +39,7 @@ public class BansConfig : PluginCFG<BansConfig>, IPluginCFG
 
     public void Set()
     {
-        Config = ReadOrCreate<BansConfig>(AdminUtils.CoreInstance.ModuleDirectory + "../../configs/IksAdmin/bans.json", Config);
+        Config = ReadOrCreate<BansConfig>(AdminUtils.CoreInstance.ModuleDirectory + "/../../configs/plugins/IksAdmin/bans.json", Config);
         AdminUtils.LogDebug("Bans config loaded ✔");
         AdminUtils.LogDebug("Reasons count " + Config.Reasons.Count);
     }

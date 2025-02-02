@@ -40,7 +40,7 @@ public class GagsConfig : PluginCFG<GagsConfig>, IPluginCFG
 
     public void Set()
     {
-        Config = ReadOrCreate<GagsConfig>(AdminUtils.CoreInstance.ModuleDirectory + "../../configs/IksAdmin/gags.json", Config);
+        Config = ReadOrCreate<GagsConfig>(AdminUtils.CoreInstance.ModuleDirectory + "/../../configs/plugins/IksAdmin/gags.json", Config);
         AdminUtils.LogDebug("Gags config loaded ✔");
         AdminUtils.LogDebug("Reasons count " + Config.Reasons.Count);
     }

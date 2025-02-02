@@ -38,7 +38,7 @@ public class CoreConfig : PluginCFG<CoreConfig>, IPluginCFG
     public bool IgnoreAdminServers {get; set;} = false; // Если true - не важно какие севрера указаны у админа, у него всё равно будут права на этом сервере
     public void Set()
     {
-        Config = ReadOrCreate(AdminUtils.CoreInstance.ModuleDirectory +"../../configs/IksAdmin/core.json", Config);
+        Config = ReadOrCreate(AdminUtils.CoreInstance.ModuleDirectory +"/../../configs/plugins/IksAdmin/core.json", Config);
         AdminUtils.LogDebug("Core config loaded ✔");
     }
 }

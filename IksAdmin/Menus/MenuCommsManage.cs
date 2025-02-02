@@ -276,7 +276,7 @@ public static class MenuCommsManage
                     comm.AdminId = caller.Admin()!.Id;
                     Task.Run(async () =>
                 {
-                    await MutesFunctions.Mute(comm);
+                    await GagsFunctions.Gag(comm);
                 });
                     _api.CloseMenu(caller);
                 }
@@ -320,7 +320,7 @@ public static class MenuCommsManage
                     comm.AdminId = caller.Admin()!.Id;
                     Task.Run(async () =>
                     {
-                        await MutesFunctions.Mute(comm);
+                        await SilenceFunctions.Silence(comm);
                     });
                     _api.CloseMenu(caller);
                 }
