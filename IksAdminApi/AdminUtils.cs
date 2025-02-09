@@ -38,6 +38,9 @@ public static class AdminUtils
     }
     public static void LogError(string message)
     {
+        var data = new EventData("error");
+        data.Set("text", message);
+        data.Invoke(message);
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine("[Admin Error]: " + message);
         Console.ResetColor();
