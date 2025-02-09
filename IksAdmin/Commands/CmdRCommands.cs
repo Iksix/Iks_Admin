@@ -55,6 +55,9 @@ public static class CmdBansCmdRCommands
             serverId: Main.AdminApi.ThisServer.Id,
             banType: (sbyte)type
         );
+        if (BansConfig.Config.BanOnAllServers) {
+            ban.ServerId = null;
+        }
         ban.AdminId = admin.Id;
         Task.Run(async () => {
             if (name == "")
@@ -138,6 +141,13 @@ public static class CmdBansCmdRCommands
             time,
             serverId: Main.AdminApi.ThisServer.Id
         );
+        if (type == 0 && MutesConfig.Config.BanOnAllServers) {
+            comm.ServerId = null;
+        } else if (type == 1 && GagsConfig.Config.BanOnAllServers) {
+            comm.ServerId = null;
+        } else if (type == 2 && SilenceConfig.Config.BanOnAllServers) {
+            comm.ServerId = null;
+        }
         comm.AdminId = admin.Id;
         Task.Run(async () => {
             if (name == "")

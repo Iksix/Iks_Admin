@@ -28,7 +28,7 @@ public class SilenceConfig : PluginCFG<SilenceConfig>, IPluginCFG
         {60 * 24 * 30, "1 месяц"},        
         {0, "Навсегда"}        
     };
-    
+    public bool BanOnAllServers {get; set;} = false;
     public static bool HasReason(string reason)
     {
         return Config.Reasons.Any(x => x.Title.ToLower() == reason.ToLower() || x.Text.ToLower() == reason.ToLower());

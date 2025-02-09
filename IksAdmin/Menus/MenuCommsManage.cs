@@ -227,7 +227,10 @@ public static class MenuCommsManage
                 {
                     OpenMuteTimeSelectMenu(caller, target, reason.Text, menu);
                 } else {
-                    var comm = new PlayerComm(target, PlayerComm.MuteTypes.Mute, reason.Text, (int)reason.Duration*60, serverId: _api.ThisServer.Id);
+                    var comm = new PlayerComm(target, PlayerComm.MuteTypes.Mute, reason.Text, (int)reason.Duration, serverId: _api.ThisServer.Id);
+                    if (MutesConfig.Config.BanOnAllServers) {
+                        comm.ServerId = null;
+                    }
                     comm.AdminId = caller.Admin()!.Id;
                     Task.Run(async () =>
                 {
@@ -272,7 +275,10 @@ public static class MenuCommsManage
                 {
                     OpenGagTimeSelectMenu(caller, target, reason.Text, menu);
                 } else {
-                    var comm = new PlayerComm(target, PlayerComm.MuteTypes.Gag, reason.Text, (int)reason.Duration*60, serverId: _api.ThisServer.Id);
+                    var comm = new PlayerComm(target, PlayerComm.MuteTypes.Gag, reason.Text, (int)reason.Duration, serverId: _api.ThisServer.Id);
+                    if (GagsConfig.Config.BanOnAllServers) {
+                        comm.ServerId = null;
+                    }
                     comm.AdminId = caller.Admin()!.Id;
                     Task.Run(async () =>
                 {
@@ -316,7 +322,10 @@ public static class MenuCommsManage
                 {
                     OpenSilenceTimeSelectMenu(caller, target, reason.Text, menu);
                 } else {
-                    var comm = new PlayerComm(target, PlayerComm.MuteTypes.Silence, reason.Text, (int)reason.Duration*60, serverId: _api.ThisServer.Id);
+                    var comm = new PlayerComm(target, PlayerComm.MuteTypes.Silence, reason.Text, (int)reason.Duration, serverId: _api.ThisServer.Id);
+                    if (SilenceConfig.Config.BanOnAllServers) {
+                        comm.ServerId = null;
+                    }
                     comm.AdminId = caller.Admin()!.Id;
                     Task.Run(async () =>
                     {
@@ -335,6 +344,9 @@ public static class MenuCommsManage
         var times = config.Times;
         var admin = caller.Admin()!;
         var comm = new PlayerComm(target, 0, reason, 0, serverId: _api.ThisServer.Id);
+        if (MutesConfig.Config.BanOnAllServers) {
+            comm.ServerId = null;
+        }
         comm.AdminId = admin.Id;
         menu.AddMenuOption("own_mute_time" ,_localizer["MenuOption.Other.OwnTime"], (_, _) => {
             Helper.Print(caller, _localizer["Message.PrintOwnTime"]);
@@ -382,6 +394,9 @@ public static class MenuCommsManage
         var times = config.Times;
         var admin = caller.Admin()!;
         var comm = new PlayerComm(target, PlayerComm.MuteTypes.Gag, reason, 0, serverId: _api.ThisServer.Id);
+        if (GagsConfig.Config.BanOnAllServers) {
+            comm.ServerId = null;
+        }
         comm.AdminId = admin.Id;
         menu.AddMenuOption("own_gag_time" ,_localizer["MenuOption.Other.OwnTime"], (_, _) => {
             Helper.Print(caller, _localizer["Message.PrintOwnTime"]);
@@ -429,6 +444,9 @@ public static class MenuCommsManage
         var times = config.Times;
         var admin = caller.Admin()!;
         var comm = new PlayerComm(target, PlayerComm.MuteTypes.Silence, reason, 0, serverId: _api.ThisServer.Id);
+        if (SilenceConfig.Config.BanOnAllServers) {
+            comm.ServerId = null;
+        }
         comm.AdminId = admin.Id;
         menu.AddMenuOption("own_silence_time" ,_localizer["MenuOption.Other.OwnTime"], (_, _) => {
             Helper.Print(caller, _localizer["Message.PrintOwnTime"]);

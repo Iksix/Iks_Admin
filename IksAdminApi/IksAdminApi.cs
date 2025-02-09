@@ -36,6 +36,7 @@ public interface IIksAdminApi
     public ServerModel? GetServerByIp(string ip);
     public Dictionary<string, List<CommandModel>> RegistredCommands {get; set;}
     public List<AdminModule> LoadedModules {get; set;}
+    public void ReloadConfigs();
     // MENU ===
     /// <summary>
     /// Creates admin

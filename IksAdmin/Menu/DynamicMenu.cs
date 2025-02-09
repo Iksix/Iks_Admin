@@ -80,16 +80,11 @@ public class DynamicMenu : IDynamicMenu
         {
             return;
         }
-        if (_backOptionRendered)
-        {
-            Options.RemoveAt(0);
-            _backOptionRendered = false;
-        }
+
         if (BackAction != null) { // Отрисовка пункта 'Назад'
             Options.Insert(0, new DynamicMenuOption("back_btn", Main.AdminApi.Localizer["MenuOption.Other.Back"], (p, _) => {
                 BackAction.Invoke(p);
             }, null, false));
-            _backOptionRendered = true;
         }
         
         if (useSortMenu)

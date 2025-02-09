@@ -139,6 +139,9 @@ public static class MenuBansManage
                     OpenTimeSelectMenu(caller, target, reason.Text, menu);
                 } else {
                     var ban = new PlayerBan(target, reason.Text, (int)reason.Duration*60, serverId: _api.ThisServer.Id);
+                    if (BansConfig.Config.BanOnAllServers) {
+                        ban.ServerId = null;
+                    }
                     ban.AdminId = admin.Id;
                     Task.Run(async () => {
                         await BansFunctions.Ban(ban);
@@ -159,6 +162,9 @@ public static class MenuBansManage
         var admin = caller.Admin()!;
 
         var ban = new PlayerBan(target, reason, 0, serverId: _api.ThisServer.Id);
+        if (BansConfig.Config.BanOnAllServers) {
+            ban.ServerId = null;
+        }
         ban.AdminId = admin.Id;
         menu.AddMenuOption("own_ban_time" ,_localizer["MenuOption.Other.OwnTime"], (_, _) => {
             Helper.Print(caller, _localizer["Message.PrintOwnTime"]);

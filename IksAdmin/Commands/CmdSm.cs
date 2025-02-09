@@ -56,4 +56,15 @@ public static class CmdSm
             }); 
         });
     }
+
+    public static void ConfigReload(CCSPlayerController? caller, List<string> args, CommandInfo info)
+    {
+        _api.ReloadConfigs();
+        Task.Run(async () => {
+            await _api.ReloadDataFromDBOnAllServers();
+            Server.NextFrame(() => {
+                caller.Print("Configs and data reloaded");
+            });
+        });
+    }
 }

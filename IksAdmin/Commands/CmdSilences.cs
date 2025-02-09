@@ -20,16 +20,19 @@ public class CmdSilences
         var reason = string.Join(" ", args.Skip(2));
         Main.AdminApi.DoActionWithIdentity(caller, identity, (target, _) => 
         {
-            var mute = new PlayerComm(
+            var silence = new PlayerComm(
                 new PlayerInfo(target),
                 PlayerComm.MuteTypes.Silence,
                 reason,
                 timeInt,
                 serverId: Main.AdminApi.ThisServer.Id
             );
-            mute.AdminId = admin.Id;
+            if (SilenceConfig.Config.BanOnAllServers) {
+                silence.ServerId = null;
+            }
+            silence.AdminId = admin.Id;
             Task.Run(async () => {
-                await SilenceFunctions.Silence(mute);
+                await SilenceFunctions.Silence(silence);
             });
         }, blockedArgs: SilenceConfig.Config.BlockedIdentifiers);
     }
@@ -56,7 +59,7 @@ public class CmdSilences
                 if (playerSummaryResponse != null)
                     name = playerSummaryResponse!.PersonaName;
             }
-            var comm = new PlayerComm(
+            var silence = new PlayerComm(
                 steamId,
                 ip,
                 name,
@@ -65,8 +68,11 @@ public class CmdSilences
                 timeInt,
                 serverId: Main.AdminApi.ThisServer.Id
             );
-            comm.AdminId = adminId;
-            await SilenceFunctions.Silence(comm);
+            if (SilenceConfig.Config.BanOnAllServers) {
+                silence.ServerId = null;
+            }
+            silence.AdminId = adminId;
+            await SilenceFunctions.Silence(silence);
         });
     }
     public static void UnSilence(CCSPlayerController? caller, List<string> args, CommandInfo info)

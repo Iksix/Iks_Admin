@@ -22,6 +22,9 @@ public static class CmdBans
                 timeInt,
                 serverId: Main.AdminApi.ThisServer.Id
             );
+            if (BansConfig.Config.BanOnAllServers) {
+                ban.ServerId = null;
+            }
             ban.AdminId = caller.Admin()!.Id;
             Task.Run(async () => {
                 await BansFunctions.Ban(ban);
@@ -59,6 +62,9 @@ public static class CmdBans
                 timeInt,
                 serverId: Main.AdminApi.ThisServer.Id
             );
+            if (BansConfig.Config.BanOnAllServers) {
+                ban.ServerId = null;
+            }
             ban.AdminId = adminId;
             await BansFunctions.Ban(ban);
         });
@@ -99,6 +105,9 @@ public static class CmdBans
                 serverId: Main.AdminApi.ThisServer.Id,
                 banType: 2
             );
+            if (BansConfig.Config.BanOnAllServers) {
+                ban.ServerId = null;
+            }
             ban.AdminId = caller.Admin()!.Id;
             Task.Run(async () => {
                 await BansFunctions.Ban(ban);
@@ -137,6 +146,9 @@ public static class CmdBans
                 serverId: Main.AdminApi.ThisServer.Id,
                 banType: banType
             );
+            if (BansConfig.Config.BanOnAllServers) {
+                ban.ServerId = null;
+            }
             ban.AdminId = adminId;
             await BansFunctions.Ban(ban);
         });

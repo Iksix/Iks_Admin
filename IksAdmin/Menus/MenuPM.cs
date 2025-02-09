@@ -189,7 +189,7 @@ public static class MenuPM
     {
         MenuUtils.SelectItem<CCSPlayerController?>(caller, "kick", "PlayerName", PlayersUtils.GetOnlinePlayers().Where(x => _api.CanDoActionWithPlayer(caller.GetSteamId(), x.GetSteamId())).ToList()!,
                 (p, pmenu) => {
-                    var reasons = KicksConfig.Config.Reasons;
+                    var reasons = KicksConfig.Config.Reasons.ToList();
 
                     if (caller.HasPermissions("players_manage.kick_own_reason"))
                         reasons.Insert(0, new KickReason(_localizer["MenuOption.Other.OwnReason"]));

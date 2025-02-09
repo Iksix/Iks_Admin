@@ -21,6 +21,7 @@ public static class AdminUtils
     public static ConfigGetter GetConfigMethod = null!;
     public delegate Group? GetGroupFromIdMethod(int id);
     public static GetGroupFromIdMethod GetGroupFromIdFunc = null!;
+    public static string ConfigsDir {get => CoreApi.Plugin.ModuleDirectory + "/../../configs/plugins";}
     public static string[] BlockedIdentifiers(string key) 
     {
         return CoreApi.Config.BlockedIdentifiers.FirstOrDefault(x => x.Key == key).Value;

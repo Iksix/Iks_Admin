@@ -25,6 +25,9 @@ public class CmdGags
                 timeInt,
                 serverId: Main.AdminApi.ThisServer.Id
             );
+            if (GagsConfig.Config.BanOnAllServers) {
+                gag.ServerId = null;
+            }
             gag.AdminId = caller.Admin()!.Id;
             Task.Run(async () => {
                 await GagsFunctions.Gag(gag);
@@ -54,7 +57,7 @@ public class CmdGags
                 if (playerSummaryResponse != null)
                     name = playerSummaryResponse!.PersonaName;
             }
-            var ban = new PlayerComm(
+            var gag = new PlayerComm(
                 steamId,
                 ip,
                 name,
@@ -63,8 +66,11 @@ public class CmdGags
                 timeInt,
                 serverId: Main.AdminApi.ThisServer.Id
             );
-            ban.AdminId = adminId;
-            await GagsFunctions.Gag(ban);
+            if (GagsConfig.Config.BanOnAllServers) {
+                gag.ServerId = null;
+            }
+            gag.AdminId = adminId;
+            await GagsFunctions.Gag(gag);
         });
     }
     public static void Ungag(CCSPlayerController? caller, List<string> args, CommandInfo info)

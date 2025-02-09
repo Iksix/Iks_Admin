@@ -60,6 +60,10 @@ public class Admin
         }
         return serverIds.ToArray();
     } }
+
+    /// <summary>
+    /// Not working now
+    /// </summary>
     public bool OnAllServers {get {
         return Servers.Contains(-1);
     }}

@@ -27,6 +27,9 @@ public class CmdMutes
                 timeInt,
                 serverId: Main.AdminApi.ThisServer.Id
             );
+            if (MutesConfig.Config.BanOnAllServers) {
+                mute.ServerId = null;
+            }
             mute.AdminId = admin.Id;
             Task.Run(async () => {
                 await MutesFunctions.Mute(mute);
@@ -65,6 +68,9 @@ public class CmdMutes
                 timeInt,
                 serverId: Main.AdminApi.ThisServer.Id
             );
+            if (MutesConfig.Config.BanOnAllServers) {
+                mute.ServerId = null;
+            }
             mute.AdminId = adminId;
             await MutesFunctions.Mute(mute);
         });

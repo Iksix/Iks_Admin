@@ -18,7 +18,7 @@ public class GagsConfig : PluginCFG<GagsConfig>, IPluginCFG
         new CommReason("Example reason title 1", "Another text for reason", 0, 30, null, false),
         new CommReason("Example reason title 2", banOnAllServers: true, duration: 0),
     };
-
+    public bool BanOnAllServers {get; set;} = false;
     public Dictionary<int, string> Times {get; set;} = new()
     {
         {1, "1 мин"},

@@ -31,7 +31,7 @@ namespace IksAdmin;
 public class Main : BasePlugin
 {
     public override string ModuleName => "IksAdmin";
-    public override string ModuleVersion => "3.0 v7";
+    public override string ModuleVersion => "3.0 v10";
     public override string ModuleAuthor => "iks [Discord: iks__]";
 
     public static IMenuApi MenuApi = null!;
@@ -70,7 +70,7 @@ public class Main : BasePlugin
         AdminUtils.FindAdminByIdMethod = UtilsFunctions.FindAdminByIdMethod;
         AdminUtils.GetPremissions = UtilsFunctions.GetPermissions;
         AdminUtils.GetConfigMethod = UtilsFunctions.GetConfigMethod;
-        AdminApi.SetConfigs();
+        AdminApi.ReloadConfigs();
         Helper.SetSortMenus();
         AddCommandListener("say", OnSay);
         AddCommandListener("say_team", OnSay);
@@ -304,6 +304,7 @@ public class Main : BasePlugin
         AdminApi.RegisterPermission("servers_manage.reload_data", "z");
         AdminApi.RegisterPermission("servers_manage.rcon", "z");
         AdminApi.RegisterPermission("servers_manage.list", "z");
+        AdminApi.RegisterPermission("servers_manage.config", "z");
         // Other ===
         AdminApi.RegisterPermission("other.equals_immunity_action", "e"); // Разрешить взаймодействие с админами равными по иммунитету (Включая снятие наказаний если есть флаг blocks_manage.remove_immunity)
         AdminApi.RegisterPermission("other.admin_chat", "b");
@@ -322,6 +323,15 @@ public class Main : BasePlugin
             "servers_manage.list",
             "css_am_servers",
             CmdSm.Servers,
+            minArgs: 0,
+            whoCanExecute: CommandUsage.CLIENT_AND_SERVER
+        );
+        AdminApi.AddNewCommand(
+            "am_config_reload",
+            "Перезагружает все конфиги",
+            "servers_manage.config",
+            "css_am_config_reload",
+            CmdSm.ConfigReload,
             minArgs: 0,
             whoCanExecute: CommandUsage.CLIENT_AND_SERVER
         );
@@ -892,10 +902,9 @@ public class AdminApi : IIksAdminApi
     public AdminApi(BasePlugin plugin, IStringLocalizer localizer, string moduleDirectory)
     {
         Plugin = plugin;
-        SetConfigs();
-        Config = IksAdminApi.CoreConfig.Config;
+        ReloadConfigs();
         var builder = new MySqlConnectionStringBuilder();
-        builder.Password = Config.Password;
+        builder.Password = Config!.Password;
         builder.Server = Config.Host;
         builder.Database = Config.Database;
         builder.UserID = Config.User;
@@ -909,10 +918,11 @@ public class AdminApi : IIksAdminApi
         });
     }
 
-    public void SetConfigs()
+    public void ReloadConfigs()
     {
         new KicksConfig().Set();
         _adminConfig.Set();
+        Config = CoreConfig.Config;
         new BansConfig().Set();
         new MutesConfig().Set();
         new GagsConfig().Set();
