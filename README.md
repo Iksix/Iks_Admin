@@ -83,6 +83,7 @@
 - `css_rcon <ServerID> <CMD>` - Отправить ркон команду на сервер (можно узнать прописав `css_am_servers`) `"rcon"` `<z>`
 - `css_rban <steamId(admin)> <steamId(target)> <ip/-> <time> <type(0/1/2)> <reason> <announce(true/false)>` - Выполнить бан от имени администратора `"rcon"` `<z>`
 - `css_rcomm <steamId(admin)> <steamId(target)> <ip/-> <time> <type(0/1/2)> <reason> <announce(true/false)>` - Выполнить бан чата от имени администратора `"rcon"` `<z>`
+- `css_am_config_reload` Перезагрузка конфига `"config"` `<z>`
 
 ### Управление игроками `"players_manage"`
 - `css_kick <#uid/#steamId/name/@...> <reason>` - Кикнуть игрока `"kick"` `<k>`
