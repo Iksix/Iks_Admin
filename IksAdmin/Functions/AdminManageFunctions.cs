@@ -31,7 +31,7 @@ public static class AdminManageFunctions
             groupId,
             discord,
             vk,
-            endAt: time == 0 ? null : AdminUtils.CurrentTimestamp() + time
+            endAt: time == 0 ? null : AdminUtils.CurrentTimestamp() + time*60
         );
         Task.Run(async () =>
         {

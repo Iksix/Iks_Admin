@@ -112,7 +112,7 @@ public static class MenuBansManage
         menu.AddMenuOption(Main.GenerateOptionId("own_ban_reason") ,_localizer["MenuOption.Other.OwnReason"], (_, _) => {
             Helper.Print(caller, _localizer["Message.PrintOwnReason"]);
             _api.HookNextPlayerMessage(caller, reason => {
-                OpenTimeSelectMenu(caller, target, reason, menu);
+                OpenTimeSelectMenu(caller, target, new BanReason(reason, reason), menu);
             });
         }, viewFlags: AdminUtils.GetCurrentPermissionFlags("blocks_manage.own_ban_reason"));
 
@@ -136,9 +136,9 @@ public static class MenuBansManage
             menu.AddMenuOption(reason.Title, reason.Title, (_, _) => {
                 if (reason.Duration == null)
                 {
-                    OpenTimeSelectMenu(caller, target, reason.Text, menu);
+                    OpenTimeSelectMenu(caller, target, reason, menu);
                 } else {
-                    var ban = new PlayerBan(target, reason.Text, (int)reason.Duration*60, serverId: _api.ThisServer.Id);
+                    var ban = new PlayerBan(target, reason.Text, (int)reason.Duration, serverId: _api.ThisServer.Id);
                     if (BansConfig.Config.BanOnAllServers) {
                         ban.ServerId = null;
                     }
@@ -154,14 +154,14 @@ public static class MenuBansManage
         menu.Open(caller);
     }
 
-    private static void OpenTimeSelectMenu(CCSPlayerController caller, PlayerInfo target, string reason, IDynamicMenu? backMenu = null)
+    private static void OpenTimeSelectMenu(CCSPlayerController caller, PlayerInfo target, Reason reason, IDynamicMenu? backMenu = null)
     {
         var menu = _api.CreateMenu(Main.MenuId("bm_ban_time"), _localizer["MenuTitle.Other.SelectTime"], backMenu: backMenu);
         var config = BansConfig.Config;
         var times = config.Times;
         var admin = caller.Admin()!;
 
-        var ban = new PlayerBan(target, reason, 0, serverId: _api.ThisServer.Id);
+        var ban = new PlayerBan(target, reason.Text, 0, serverId: _api.ThisServer.Id);
         if (BansConfig.Config.BanOnAllServers) {
             ban.ServerId = null;
         }
@@ -191,6 +191,12 @@ public static class MenuBansManage
             {
                 if (time.Key < caller.Admin()!.MinBanTime)
                     continue;
+            }
+            if (reason.MinTime != 0 && time.Key > reason.MinTime) {
+                continue;
+            }
+            if (reason.MaxTime != 0 && time.Key > reason.MaxTime) {
+                continue;
             }
 
             menu.AddMenuOption("ban_time_" + time.Key, time.Value, (_, _) => {

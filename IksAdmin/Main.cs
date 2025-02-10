@@ -1245,16 +1245,6 @@ public class AdminApi : IIksAdminApi
         }
         var tagString = tag == null ? Localizer["Tag"] : tag;
         CommandCallback callback = (p, info) => {
-            if (p != null && p.Admin() != null && p.Admin()!.IsDisabledByWarns)
-            {
-                info.Reply(Localizer["ActionError.DisabledByWarns"]);
-                return;
-            }
-            if (p != null && p.Admin() != null && p.Admin()!.IsDisabledByEnd)
-            {
-                info.Reply(Localizer["ActionError.DisabledByEnd"]);
-                return;
-            }
             if (whoCanExecute == CommandUsage.CLIENT_ONLY && p == null)
             {
                 info.Reply("It's client only command ✖", tagString);
@@ -1266,13 +1256,26 @@ public class AdminApi : IIksAdminApi
                 return;
             }
             var perms = permission.Split(",");
+            bool forAll = false;
             foreach (var perm in perms)
             {
+                if (AdminUtils.GetCurrentPermissionFlags(perm) == "*")
+                    forAll = true;
                 if (!p.HasPermissions(perm))
                 {
                     info.Reply(notEnoughPermissionsMessage == null ? Localizer["Error.NotEnoughPermissions"] : notEnoughPermissionsMessage, tagString);
                     return;
                 }
+            }
+            if (p != null && p.Admin() != null && p.Admin()!.IsDisabledByWarns && !forAll)
+            {
+                info.Reply(Localizer["ActionError.DisabledByWarns"]);
+                return;
+            }
+            if (p != null && p.Admin() != null && p.Admin()!.IsDisabledByEnd && !forAll)
+            {
+                info.Reply(Localizer["ActionError.DisabledByEnd"]);
+                return;
             }
             
             var args = AdminUtils.GetArgsFromCommandLine(info.GetCommandString);
