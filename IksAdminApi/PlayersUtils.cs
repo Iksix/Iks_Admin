@@ -32,6 +32,13 @@ public static class PlayersUtils
     {
         AdminUtils.CoreApi.CloseMenu(player);
     }
+    /// <summary>
+    /// may cause errors
+    /// </summary>
+    public static CCSPlayerController? GetControllerBySteamIdUnsafe(string steamId)
+    {
+        return Utilities.GetPlayers().FirstOrDefault(x => x != null && !x.IsBot && x.SteamID.ToString() == steamId);
+    }
     public static CCSPlayerController? GetControllerBySteamId(string steamId)
     {
         return Utilities.GetPlayers().FirstOrDefault(x => x != null && x.IsValid && x.AuthorizedSteamID != null && x.AuthorizedSteamID.SteamId64.ToString() == steamId);

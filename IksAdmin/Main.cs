@@ -1152,6 +1152,8 @@ public class AdminApi : IIksAdminApi
     public event Action<string, string>? OnFullConnect;
     public event IIksAdminApi.OnCommandUsed? OnCommandUsedPre;
     public event IIksAdminApi.OnCommandUsed? OnCommandUsedPost;
+    public event Action<Admin, PlayerBan> SuccessUnban;
+    public event Action<Admin, PlayerComm> SuccessUnComm;
 
     public void OnFullConnectInvoke(string steamId, string ip)
     {
@@ -1478,6 +1480,7 @@ public class AdminApi : IIksAdminApi
             case 0:
                 ban.UnbannedBy = admin.Id;
                 ban.UnbanReason = reason;
+                SuccessUnban?.Invoke(admin, ban);
                 Server.NextFrame(() => {
                     if (announce)
                         MsgAnnounces.Unbanned(ban);
@@ -1491,7 +1494,7 @@ public class AdminApi : IIksAdminApi
         var onUnBanPost = OnUnBanPost?.Invoke(admin, ref steamId, ref reason, ref announce) ?? HookResult.Continue;
         if (onUnBanPost != HookResult.Continue)
         {
-            return new DBResult(null, -2, "stopped by event PRE");
+            return new DBResult(null, -2, "stopped by event POST");
         }
         
         return result;
@@ -1520,6 +1523,7 @@ public class AdminApi : IIksAdminApi
             case 0:
                 ban.UnbannedBy = admin.Id;
                 ban.UnbanReason = reason;
+                SuccessUnban?.Invoke(admin, ban);
                 Server.NextFrame(() => {
                     if (announce)
                         MsgAnnounces.Unbanned(ban);
@@ -1917,6 +1921,7 @@ public class AdminApi : IIksAdminApi
             case 0:
                 silence.UnbannedBy = admin.Id;
                 silence.UnbanReason = reason;
+                SuccessUnComm?.Invoke(admin, silence);
                 Server.NextFrame(() => {
                     UnSilencePlayerInGame(silence);
                     if (announce)
@@ -2189,6 +2194,7 @@ public class AdminApi : IIksAdminApi
             case 0:
                 gag.UnbannedBy = admin.Id;
                 gag.UnbanReason = reason;
+                SuccessUnComm?.Invoke(admin, gag);
                 Server.NextFrame(() => {
                     UnGagPlayerInGame(gag);
                     if (announce)
@@ -2328,6 +2334,7 @@ public class AdminApi : IIksAdminApi
             case 0:
                 mute.UnbannedBy = admin.Id;
                 mute.UnbanReason = reason;
+                SuccessUnComm?.Invoke(admin, mute);
                 Server.NextFrame(() => {
                     UnmutePlayerInGame(mute);
                     if (announce)

@@ -166,6 +166,7 @@ public interface IIksAdminApi
     public event UnBanHandler OnUnBanPost;
     public event UnBanHandler OnUnBanIpPre;
     public event UnBanHandler OnUnBanIpPost;
+    public event Action<Admin, PlayerBan> SuccessUnban; 
     
     public delegate HookResult CommHandler(PlayerComm comm, ref bool announce); 
     public event CommHandler OnCommPre;
@@ -174,6 +175,7 @@ public interface IIksAdminApi
     public delegate HookResult UnCommHandler(Admin admin, ref string steamId, ref string? reason, ref bool announce); 
     public event UnCommHandler OnUnCommPre;
     public event UnCommHandler OnUnCommPost;
+    public event Action<Admin, PlayerComm> SuccessUnComm; 
 
     #endregion
     
