@@ -222,9 +222,11 @@ public static class DBBans
             await conn.QueryAsync(@"
                 update iks_bans set 
                 unbanned_by = @adminId, 
-                unban_reason = @reason
+                unban_reason = @reason,
+                updated_at = @timestamp
                 where id = @banId
             ", new {
+                timestamp = AdminUtils.CurrentTimestamp(),
                 adminId = admin.Id,
                 banId = ban.Id,
                 reason

@@ -188,32 +188,32 @@ public static class MenuPM
     private static void OpenKickMenu(CCSPlayerController caller, IDynamicMenu menu)
     {
         MenuUtils.SelectItem<CCSPlayerController?>(caller, "kick", "PlayerName", PlayersUtils.GetOnlinePlayers().Where(x => _api.CanDoActionWithPlayer(caller.GetSteamId(), x.GetSteamId())).ToList()!,
-                (p, pmenu) => {
-                    var reasons = KicksConfig.Config.Reasons.ToList();
+            (p, pmenu) => {
+                var reasons = KicksConfig.Config.Reasons.ToList();
 
-                    if (caller.HasPermissions("players_manage.kick_own_reason"))
-                        reasons.Insert(0, new KickReason(_localizer["MenuOption.Other.OwnReason"]));
+                if (caller.HasPermissions("players_manage.kick_own_reason"))
+                    reasons.Insert(0, new KickReason(_localizer["MenuOption.Other.OwnReason"]));
 
-                    MenuUtils.SelectItem<KickReason?>(caller, "kick_reason", "Title", reasons!,
-                        (reason, rmenu) => {
+                MenuUtils.SelectItem<KickReason?>(caller, "kick_reason", "Title", reasons!,
+                    (reason, rmenu) => {
 
-                            if (reason!.Title == _localizer["MenuOption.Other.OwnReason"]) {
-                                caller.Print(_localizer["Message.PM.Kick.SetReason"].AReplace(["name"], [p!.PlayerName]));
-                                _api.HookNextPlayerMessage(caller, s => {
-                                    _api.Kick(caller.Admin()!, p!, s);
-                                    OpenKickMenu(caller, menu);
-                                });
-                                return;
-                            }
-                            _api.Kick(caller.Admin()!, p!, reason.Text);
-                            Server.NextFrame(() => {
+                        if (reason!.Title == _localizer["MenuOption.Other.OwnReason"]) {
+                            caller.Print(_localizer["Message.PM.Kick.SetReason"].AReplace(["name"], [p!.PlayerName]));
+                            _api.HookNextPlayerMessage(caller, s => {
+                                _api.Kick(caller.Admin()!, p!, s);
                                 OpenKickMenu(caller, menu);
                             });
-                        }, backMenu: pmenu, nullOption: false
-                    );
+                            return;
+                        }
+                        _api.Kick(caller.Admin()!, p!, reason.Text);
+                        Server.NextFrame(() => {
+                            OpenKickMenu(caller, menu);
+                        });
+                    }, backMenu: pmenu, nullOption: false
+                );
 
-                }, backMenu: menu, nullOption: false
-            );
+            }, backMenu: menu, nullOption: false
+        );
     }
     private static void OpenSlayMenu(CCSPlayerController caller, IDynamicMenu menu)
     {

@@ -203,7 +203,7 @@ public static class MenuCommsManage
         menu.AddMenuOption("own_reason" ,_localizer["MenuOption.Other.OwnReason"], (_, _) => {
             caller.Print( _localizer["Message.PrintOwnReason"]);
             _api.HookNextPlayerMessage(caller, reason => {
-                OpenMuteTimeSelectMenu(caller, target, reason, menu);
+                OpenMuteTimeSelectMenu(caller, target, new CommReason(reason, reason), menu);
             });
         }, viewFlags: AdminUtils.GetCurrentPermissionFlags("comms_manage.own_mute_reason"));
         foreach (var reason in reasons)
@@ -225,7 +225,7 @@ public static class MenuCommsManage
             menu.AddMenuOption(reason.Title, reason.Title, (_, _) => {
                 if (reason.Duration == null)
                 {
-                    OpenMuteTimeSelectMenu(caller, target, reason.Text, menu);
+                    OpenMuteTimeSelectMenu(caller, target, reason, menu);
                 } else {
                     var comm = new PlayerComm(target, PlayerComm.MuteTypes.Mute, reason.Text, (int)reason.Duration, serverId: _api.ThisServer.Id);
                     if (MutesConfig.Config.BanOnAllServers) {
@@ -251,7 +251,7 @@ public static class MenuCommsManage
         menu.AddMenuOption("own_reason" ,_localizer["MenuOption.Other.OwnReason"], (_, _) => {
             caller.Print( _localizer["Message.PrintOwnReason"]);
             _api.HookNextPlayerMessage(caller, reason => {
-                OpenGagTimeSelectMenu(caller, target, reason, menu);
+                OpenGagTimeSelectMenu(caller, target, new CommReason(reason, reason), menu);
             });
         }, viewFlags: AdminUtils.GetCurrentPermissionFlags("comms_manage.own_gag_reason"));
         foreach (var reason in reasons)
@@ -273,7 +273,7 @@ public static class MenuCommsManage
             menu.AddMenuOption(reason.Title, reason.Title, (_, _) => {
                 if (reason.Duration == null)
                 {
-                    OpenGagTimeSelectMenu(caller, target, reason.Text, menu);
+                    OpenGagTimeSelectMenu(caller, target, reason, menu);
                 } else {
                     var comm = new PlayerComm(target, PlayerComm.MuteTypes.Gag, reason.Text, (int)reason.Duration, serverId: _api.ThisServer.Id);
                     if (GagsConfig.Config.BanOnAllServers) {
@@ -298,7 +298,7 @@ public static class MenuCommsManage
         menu.AddMenuOption("own_reason" ,_localizer["MenuOption.Other.OwnReason"], (_, _) => {
             caller.Print( _localizer["Message.PrintOwnReason"]);
             _api.HookNextPlayerMessage(caller, reason => {
-                OpenSilenceTimeSelectMenu(caller, target, reason, menu);
+                OpenSilenceTimeSelectMenu(caller, target, new CommReason(reason, reason), menu);
             });
         }, viewFlags: AdminUtils.GetCurrentPermissionFlags("comms_manage.own_silence_reason"));
         foreach (var reason in reasons)
@@ -320,7 +320,7 @@ public static class MenuCommsManage
             menu.AddMenuOption(reason.Title, reason.Title, (_, _) => {
                 if (reason.Duration == null)
                 {
-                    OpenSilenceTimeSelectMenu(caller, target, reason.Text, menu);
+                    OpenSilenceTimeSelectMenu(caller, target, reason, menu);
                 } else {
                     var comm = new PlayerComm(target, PlayerComm.MuteTypes.Silence, reason.Text, (int)reason.Duration, serverId: _api.ThisServer.Id);
                     if (SilenceConfig.Config.BanOnAllServers) {
@@ -337,13 +337,13 @@ public static class MenuCommsManage
         }
         menu.Open(caller);
     }
-    private static void OpenMuteTimeSelectMenu(CCSPlayerController caller, PlayerInfo target, string reason, IDynamicMenu? backMenu = null)
+    private static void OpenMuteTimeSelectMenu(CCSPlayerController caller, PlayerInfo target, CommReason reason, IDynamicMenu? backMenu = null)
     {
         var menu = _api.CreateMenu(Main.MenuId("cm_mute_time"), _localizer["MenuTitle.Other.SelectTime"], backMenu: backMenu);
         var config = MutesConfig.Config;
         var times = config.Times;
         var admin = caller.Admin()!;
-        var comm = new PlayerComm(target, 0, reason, 0, serverId: _api.ThisServer.Id);
+        var comm = new PlayerComm(target, 0, reason.Text, 0, serverId: _api.ThisServer.Id);
         if (MutesConfig.Config.BanOnAllServers) {
             comm.ServerId = null;
         }
@@ -376,6 +376,12 @@ public static class MenuCommsManage
                 if (time.Key < caller.Admin()!.MinMuteTime)
                     continue;
             }
+            if (reason.MinTime != 0 && time.Key > reason.MinTime) {
+                continue;
+            }
+            if (reason.MaxTime != 0 && time.Key > reason.MaxTime) {
+                continue;
+            }
             menu.AddMenuOption("mute_time_" + time.Key, time.Value, (_, _) => {
                 _api.CloseMenu(caller);
                 comm.Duration = time.Key*60;
@@ -387,13 +393,13 @@ public static class MenuCommsManage
         }
         menu.Open(caller);
     }
-    private static void OpenGagTimeSelectMenu(CCSPlayerController caller, PlayerInfo target, string reason, IDynamicMenu? backMenu = null)
+    private static void OpenGagTimeSelectMenu(CCSPlayerController caller, PlayerInfo target, CommReason reason, IDynamicMenu? backMenu = null)
     {
         var menu = _api.CreateMenu(Main.MenuId("cm_gag_time"), _localizer["MenuTitle.Other.SelectTime"], backMenu: backMenu);
         var config = GagsConfig.Config;
         var times = config.Times;
         var admin = caller.Admin()!;
-        var comm = new PlayerComm(target, PlayerComm.MuteTypes.Gag, reason, 0, serverId: _api.ThisServer.Id);
+        var comm = new PlayerComm(target, PlayerComm.MuteTypes.Gag, reason.Text, 0, serverId: _api.ThisServer.Id);
         if (GagsConfig.Config.BanOnAllServers) {
             comm.ServerId = null;
         }
@@ -426,6 +432,12 @@ public static class MenuCommsManage
                 if (time.Key < caller.Admin()!.MinGagTime)
                     continue;
             }
+            if (reason.MinTime != 0 && time.Key > reason.MinTime) {
+                continue;
+            }
+            if (reason.MaxTime != 0 && time.Key > reason.MaxTime) {
+                continue;
+            }
             menu.AddMenuOption("gag_time_" + time.Key, time.Value, (_, _) => {
                 _api.CloseMenu(caller);
                 comm.Duration = time.Key*60;
@@ -437,13 +449,13 @@ public static class MenuCommsManage
         }
         menu.Open(caller);
     }
-    private static void OpenSilenceTimeSelectMenu(CCSPlayerController caller, PlayerInfo target, string reason, IDynamicMenu? backMenu = null)
+    private static void OpenSilenceTimeSelectMenu(CCSPlayerController caller, PlayerInfo target, CommReason reason, IDynamicMenu? backMenu = null)
     {
         var menu = _api.CreateMenu(Main.MenuId("cm_silence_time"), _localizer["MenuTitle.Other.SelectTime"], backMenu: backMenu);
         var config = SilenceConfig.Config;
         var times = config.Times;
         var admin = caller.Admin()!;
-        var comm = new PlayerComm(target, PlayerComm.MuteTypes.Silence, reason, 0, serverId: _api.ThisServer.Id);
+        var comm = new PlayerComm(target, PlayerComm.MuteTypes.Silence, reason.Text, 0, serverId: _api.ThisServer.Id);
         if (SilenceConfig.Config.BanOnAllServers) {
             comm.ServerId = null;
         }
@@ -475,6 +487,12 @@ public static class MenuCommsManage
             {
                 if (time.Key < caller.Admin()!.MinGagTime || time.Key < caller.Admin()!.MinMuteTime)
                     continue;
+            }
+            if (reason.MinTime != 0 && time.Key > reason.MinTime) {
+                continue;
+            }
+            if (reason.MaxTime != 0 && time.Key > reason.MaxTime) {
+                continue;
             }
             menu.AddMenuOption("silence_time_" + time.Key, time.Value, (_, _) => {
                 _api.CloseMenu(caller);

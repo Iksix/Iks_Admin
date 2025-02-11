@@ -181,9 +181,11 @@ public static class DBComms
             await conn.QueryAsync(@"
                 update iks_comms set 
                 unbanned_by = @adminId, 
-                unban_reason = @reason
+                unban_reason = @reason,
+                updated_at = @timestamp,
                 where id = @id
             ", new {
+                timestamp = AdminUtils.CurrentTimestamp(),
                 adminId = admin.Id,
                 id = comm.Id,
                 reason
