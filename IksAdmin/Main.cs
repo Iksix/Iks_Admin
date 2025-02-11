@@ -1409,8 +1409,13 @@ public class AdminApi : IIksAdminApi
                         if (announce)
                             MsgAnnounces.BanAdded(ban);
                         CCSPlayerController? player = null;
-                        if (ban.BanType == 0)
+                        if (ban.BanType == 0) {
                             player = PlayersUtils.GetControllerBySteamId(ban.SteamId!);
+                            if (player == null)
+                            {
+                                player = Utilities.GetPlayers().FirstOrDefault(x => x.SteamID.ToString() == ban.SteamId);
+                            }
+                        }
                         else 
                             player = PlayersUtils.GetControllerByIp(ban.Ip!);
                         if (player != null)
