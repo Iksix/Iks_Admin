@@ -89,4 +89,15 @@ public static class CmdBase
         _api.Plugin.AddTimer(1.4f, () => { Server.NextFrame(() => caller.ChangeTeam(CsTeam.None)); caller.Print(_localizer["Message.Hide_on"]); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
         _api.Plugin.AddTimer(2.0f, () => { Server.NextFrame(() => Server.ExecuteCommand("sv_disable_teamselect_menu 0")); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
     }
+
+    public static void Status(CCSPlayerController? caller, List<string> list, CommandInfo info)
+    {
+        var players =PlayersUtils.GetOnlinePlayers(true);
+        var str = "=== STATUS ===\n<UID> <\"name\"> <SteamId64> <slot>\n";
+        foreach (var player in players)
+        {
+            str += $"{player.UserId} \"{player.PlayerName}\" {(player.AuthorizedSteamID == null ? "BOT" : player.GetSteamId())} {player.Slot}\n";
+        }
+        info.ReplyToCommand(str);
+    }
 }

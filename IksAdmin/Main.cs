@@ -31,7 +31,7 @@ namespace IksAdmin;
 public class Main : BasePlugin
 {
     public override string ModuleName => "IksAdmin";
-    public override string ModuleVersion => "3.0 v10";
+    public override string ModuleVersion => "3.0 v11";
     public override string ModuleAuthor => "iks [Discord: iks__]";
 
     public static IMenuApi MenuApi = null!;
@@ -311,6 +311,7 @@ public class Main : BasePlugin
         AdminApi.RegisterPermission("other.reload_infractions", "z");
         AdminApi.RegisterPermission("other.cs_votekick_immunity", "b");
         AdminApi.RegisterPermission("other.hide", "b");
+        AdminApi.RegisterPermission("other.status", "*");
     }
     private void InitializeCommands()
     {
@@ -346,7 +347,15 @@ public class Main : BasePlugin
         );
 
         #endregion
-        
+         AdminApi.AddNewCommand(
+            "status",
+            "Выводит список серверов",
+            "other.status",
+            "css_status",
+            CmdBase.Status,
+            minArgs: 0,
+            whoCanExecute: CommandUsage.CLIENT_AND_SERVER
+        );
         AdminApi.AddNewCommand(
             "hide",
             "Скрывает админа в табе",

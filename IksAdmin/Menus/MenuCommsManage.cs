@@ -379,7 +379,7 @@ public static class MenuCommsManage
             if (reason.MinTime != 0 && time.Key > reason.MinTime) {
                 continue;
             }
-            if (reason.MaxTime != 0 && time.Key > reason.MaxTime) {
+            if (reason.MaxTime != 0 && (time.Key > reason.MaxTime || time.Key == 0)) {
                 continue;
             }
             menu.AddMenuOption("mute_time_" + time.Key, time.Value, (_, _) => {
@@ -435,7 +435,7 @@ public static class MenuCommsManage
             if (reason.MinTime != 0 && time.Key > reason.MinTime) {
                 continue;
             }
-            if (reason.MaxTime != 0 && time.Key > reason.MaxTime) {
+            if (reason.MaxTime != 0 && (time.Key > reason.MaxTime || time.Key == 0)) {
                 continue;
             }
             menu.AddMenuOption("gag_time_" + time.Key, time.Value, (_, _) => {
@@ -491,7 +491,7 @@ public static class MenuCommsManage
             if (reason.MinTime != 0 && time.Key > reason.MinTime) {
                 continue;
             }
-            if (reason.MaxTime != 0 && time.Key > reason.MaxTime) {
+            if (reason.MaxTime != 0 && (time.Key > reason.MaxTime || time.Key == 0)) {
                 continue;
             }
             menu.AddMenuOption("silence_time_" + time.Key, time.Value, (_, _) => {

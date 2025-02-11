@@ -40,9 +40,11 @@ public static class AdminUtils
     {
         if (CoreApi != null)
         {
-            var data = new EventData("error");
-            data.Set("text", message);
-            data.Invoke();
+            Server.NextFrame(() => {
+                var data = new EventData("error");
+                data.Insert("text", message);
+                data.Invoke();
+            });
         }
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine("[Admin Error]: " + message);

@@ -195,7 +195,7 @@ public static class MenuBansManage
             if (reason.MinTime != 0 && time.Key > reason.MinTime) {
                 continue;
             }
-            if (reason.MaxTime != 0 && time.Key > reason.MaxTime) {
+            if (reason.MaxTime != 0 && (time.Key > reason.MaxTime || time.Key == 0)) {
                 continue;
             }
 

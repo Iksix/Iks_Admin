@@ -182,7 +182,7 @@ public static class DBComms
                 update iks_comms set 
                 unbanned_by = @adminId, 
                 unban_reason = @reason,
-                updated_at = @timestamp,
+                updated_at = @timestamp
                 where id = @id
             ", new {
                 timestamp = AdminUtils.CurrentTimestamp(),
