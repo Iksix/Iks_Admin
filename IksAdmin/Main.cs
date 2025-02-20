@@ -31,7 +31,7 @@ namespace IksAdmin;
 public class Main : BasePlugin
 {
     public override string ModuleName => "IksAdmin";
-    public override string ModuleVersion => "3.0 v11";
+    public override string ModuleVersion => "3.0 v12";
     public override string ModuleAuthor => "iks [Discord: iks__]";
 
     public static IMenuApi MenuApi = null!;
@@ -1424,7 +1424,15 @@ public class AdminApi : IIksAdminApi
                             player = PlayersUtils.GetControllerBySteamId(ban.SteamId!);
                             if (player == null)
                             {
-                                player = Utilities.GetPlayers().FirstOrDefault(x => x.SteamID.ToString() == ban.SteamId);
+                                for (int i = 0; i < Server.MaxPlayers; i++)
+                                {
+                                    var controller = Utilities.GetPlayerFromSlot(i);
+
+                                    if (controller == null || controller.SteamID.ToString() != ban.SteamId)
+                                        continue;
+
+                                    player = controller;
+                                }
                             }
                         }
                         else 
