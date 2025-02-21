@@ -23,8 +23,14 @@
 - `"player" <CCSPlayerController>`
 - `"admin" <Admin>`
 - `"announce" <bool>`
-### "update_warn" - обновление варна (в бд)
+### `async` "update_warn" - обновление варна (в бд)
 - `"warn" <Warn>`
-### "create_warn_pre" - выдача варна
+### `async` "create_warn_pre" - выдача варна
 - `"warn" <Warn>`
 - `"announce" <bool>`
+### `async` "admin_create_pre" - выдача варна
+- `"actioneer" <Admin>`
+- `"new_admin" <Admin>`
+### `async` "admin_delete_post" - выдача варна
+- `"actioneer" <Admin>`
+- `"new_admin" <Admin>`

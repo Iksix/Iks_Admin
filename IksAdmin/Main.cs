@@ -646,7 +646,7 @@ public class Main : BasePlugin
             "css_kick <#uid/#steamId/name/@...> <reason>",
             CmdPm.Kick,
             minArgs: 2,
-            whoCanExecute: CommandUsage.CLIENT_ONLY
+            whoCanExecute: CommandUsage.CLIENT_AND_SERVER
         );
         AdminApi.AddNewCommand(
             "respawn",
@@ -655,7 +655,7 @@ public class Main : BasePlugin
             "css_respawn <#uid/#steamId/name/@...>",
             CmdPm.Respawn,
             minArgs: 1,
-            whoCanExecute: CommandUsage.CLIENT_ONLY
+            whoCanExecute: CommandUsage.CLIENT_AND_SERVER
         );
         AdminApi.AddNewCommand(
             "slay",
@@ -664,7 +664,7 @@ public class Main : BasePlugin
             "css_slay <#uid/#steamId/name/@...>",
             CmdPm.Slay,
             minArgs: 1,
-            whoCanExecute: CommandUsage.CLIENT_ONLY
+            whoCanExecute: CommandUsage.CLIENT_AND_SERVER
         );
         AdminApi.AddNewCommand(
             "changeteam",
@@ -673,7 +673,7 @@ public class Main : BasePlugin
             "css_changeteam <#uid/#steamId/name/@...> <ct/t/spec>",
             CmdPm.ChangeTeam,
             minArgs: 2,
-            whoCanExecute: CommandUsage.CLIENT_ONLY
+            whoCanExecute: CommandUsage.CLIENT_AND_SERVER
         );
         AdminApi.AddNewCommand(
             "switchteam",
@@ -682,7 +682,7 @@ public class Main : BasePlugin
             "css_switchteam <#uid/#steamId/name/@...> <ct/t/spec>",
             CmdPm.SwitchTeam,
             minArgs: 2,
-            whoCanExecute: CommandUsage.CLIENT_ONLY
+            whoCanExecute: CommandUsage.CLIENT_AND_SERVER
         );
         AdminApi.AddNewCommand(
             "who",
@@ -832,6 +832,15 @@ public class AdminApi : IIksAdminApi
             var admins = await DBAdmins.GetAllAdmins(serverId, false);
             var existingAdmin = admins.FirstOrDefault(x =>
                 x.SteamId == admin.SteamId && x.Servers.Contains((int)serverId!));
+            var eventData = new EventData("admin_create_pre");
+            eventData.Insert<Admin>("actioneer", actioneer);
+            eventData.Insert<Admin>("new_admin", admin);
+            if (eventData.Invoke() != HookResult.Continue)
+            {
+                return new DBResult(null, 2, "stopped by event handler");
+            }
+            actioneer = eventData.Get<Admin>("actioneer");
+            admin = eventData.Get<Admin>("new_admin");
             if (
                 // Проверка существует ли админ с таким же serverId как у добавляемого
                 existingAdmin != null
@@ -848,6 +857,7 @@ public class AdminApi : IIksAdminApi
             var newAdmin = await DBAdmins.AddAdminToBase(admin);
             await AddServerIdToAdmin(newAdmin.Id, serverId ?? ThisServer.Id);
             await ReloadDataFromDBOnAllServers();
+            eventData.Invoke("admin_create_post");
             return new DBResult(newAdmin.Id, 0, "Admin has been added");
         }
         catch (Exception e)
@@ -873,6 +883,17 @@ public class AdminApi : IIksAdminApi
 
     public async Task<DBResult> DeleteAdmin(Admin actioneer, Admin admin, bool announce = true)
     {
+        var eventData = new EventData("admin_delete_pre");
+        eventData.Insert<Admin>("actioneer", actioneer);
+        eventData.Insert<Admin>("new_admin", admin);
+        eventData.Insert<bool>("bool", announce);
+        if (eventData.Invoke() != HookResult.Continue)
+        {
+            return new DBResult(null, 2, "DeleteAdmin stopped by event handler");
+        }
+        actioneer = eventData.Get<Admin>("actioneer");
+        admin = eventData.Get<Admin>("new_admin");
+        announce = eventData.Get<bool>("announce");
         await DBAdmins.DeleteAdmin(admin.Id);
         await ReloadDataFromDBOnAllServers();
         if (announce)
@@ -881,6 +902,7 @@ public class AdminApi : IIksAdminApi
                 MsgAnnounces.AdminDeleted(actioneer, admin);
             });
         }
+        eventData.Invoke("admin_delete_post");
         return new DBResult(null, 0);
     }
 

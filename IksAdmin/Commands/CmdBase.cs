@@ -1,3 +1,7 @@
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
+using CoreRCON.Parsers.Standard;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
@@ -92,7 +96,23 @@ public static class CmdBase
 
     public static void Status(CCSPlayerController? caller, List<string> args, CommandInfo info)
     {
-        var players =PlayersUtils.GetOnlinePlayers(true);
+        var players = PlayersUtils.GetOnlinePlayers(true);
+        if (args.Count > 0 && args[0] == "json")
+        {
+            if (args.Count > 1 && args[1] == "offline")
+            {
+                JsonPlayersReturn(_api.DisconnectedPlayers.GetRange(0, Math.Min(30, _api.DisconnectedPlayers.Count())));
+                return;
+            }
+            var infos = new List<PlayerInfo>();
+            foreach (var player in players)
+            {
+                infos.Add(new PlayerInfo(player));
+            }
+            JsonPlayersReturn(infos);
+            return;
+        }
+        
         if (args.Count == 0)
         {
             var str = "=== STATUS ===\n<UID> <\"name\"> <SteamId64> <slot>\n";
@@ -110,5 +130,12 @@ public static class CmdBase
         }
 
         
+    }
+    private static void JsonPlayersReturn(List<PlayerInfo> infos)
+    {
+       var json = JsonSerializer.Serialize(infos, options: new JsonSerializerOptions() {
+        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All, UnicodeRanges.Cyrillic)
+       });
+       Server.PrintToConsole(json);
     }
 }
