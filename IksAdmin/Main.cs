@@ -351,7 +351,7 @@ public class Main : BasePlugin
             "status",
             "Выводит список серверов",
             "other.status",
-            "css_status",
+            "css_status [json] [offline]",
             CmdBase.Status,
             minArgs: 0,
             whoCanExecute: CommandUsage.CLIENT_AND_SERVER
