@@ -216,6 +216,10 @@
     "Other.Team.Spec" : "SPEC", // admin iks moved player litler to team SPEC
 
     // v6
-    "Message.Muted" : "You can't talk!\n{red}Mutation {white}will end at {red}{time}"
+    "Message.Muted" : "You can't talk!\n{red}Mutation {white}will end at {red}{time}",
+
+    // v12
+    "Other.LVoices" : "Last speaking players:",  
+    "Other.LVoicesTemplate" : "{white}{i}. {name} [{date}]" // params: {i}, {uid}, {steamId}, {name}, {date}
     
 }
