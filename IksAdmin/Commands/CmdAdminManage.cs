@@ -61,7 +61,7 @@ public static class CmdAdminManage
         AdminManageFunctions.AddFlag(caller, info, admin, flags);
         Task.Run(async () =>
         {
-            await _api.ReloadDataFromDBOnAllServers();
+            await _api.ReloadDataFromDb();
         });
     }
 

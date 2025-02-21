@@ -50,7 +50,7 @@ public static class MenuAM
         {
             Task.Run(async () =>
             {
-                await _api.ReloadDataFromDBOnAllServers();
+                await _api.ReloadDataFromDb();
                 caller.Print(_localizer["Message.SM.DataReloaded"]);
             });
         }, viewFlags: AdminUtils.GetCurrentPermissionFlags("servers_manage.reload_data"));

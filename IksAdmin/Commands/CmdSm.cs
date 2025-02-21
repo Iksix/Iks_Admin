@@ -61,7 +61,7 @@ public static class CmdSm
     {
         _api.ReloadConfigs();
         Task.Run(async () => {
-            await _api.ReloadDataFromDBOnAllServers();
+            await _api.ReloadDataFromDb();
             Server.NextFrame(() => {
                 caller.Print("Configs and data reloaded");
             });

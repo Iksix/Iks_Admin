@@ -105,6 +105,8 @@ public class Main : BasePlugin
         }, TimerFlags.REPEAT);
     }
 
+    private List<PlayerInfo> LastClientVoices = new();
+
     private void OnClientVoice(int playerSlot)
     {
         var player = Utilities.GetPlayerFromSlot(playerSlot);
@@ -856,7 +858,7 @@ public class AdminApi : IIksAdminApi
             // Если нет то добавляем админа и севрер айди к нему
             var newAdmin = await DBAdmins.AddAdminToBase(admin);
             await AddServerIdToAdmin(newAdmin.Id, serverId ?? ThisServer.Id);
-            await ReloadDataFromDBOnAllServers();
+            await ReloadDataFromDb();
             eventData.Invoke("admin_create_post");
             return new DBResult(newAdmin.Id, 0, "Admin has been added");
         }
@@ -895,7 +897,7 @@ public class AdminApi : IIksAdminApi
         admin = eventData.Get<Admin>("new_admin");
         announce = eventData.Get<bool>("announce");
         await DBAdmins.DeleteAdmin(admin.Id);
-        await ReloadDataFromDBOnAllServers();
+        await ReloadDataFromDb();
         if (announce)
         {
             Server.NextFrame(() => {
@@ -909,7 +911,7 @@ public class AdminApi : IIksAdminApi
     public async Task<DBResult> UpdateAdmin(Admin actioneer, Admin admin)
     {
         await DBAdmins.UpdateAdminInBase(admin);
-        await ReloadDataFromDBOnAllServers();
+        await ReloadDataFromDb();
         return new DBResult(admin.Id, 0, "Admin has been updated");
     }
     
@@ -960,11 +962,11 @@ public class AdminApi : IIksAdminApi
         new SilenceConfig().Set();
     }
 
-    public async Task ReloadDataFromDb(bool sendRcon = true)
+    public async Task ReloadDataFromDb(bool onAllServers = true)
     {
-        if (sendRcon)
+        if (onAllServers)
         {
-            await SendRconToAllServers("css_am_reload", true);
+            _ = SendRconToAllServers("css_am_reload", true);
         }
         var serverModel = new ServerModel(
                 Config.ServerId,
@@ -1198,10 +1200,6 @@ public class AdminApi : IIksAdminApi
     public async Task RefreshAdminsOnAllServers()
     {
         await Main.AdminApi.SendRconToAllServers("css_am_reload_admins");
-    }
-    public async Task ReloadDataFromDBOnAllServers()
-    {
-        await Main.AdminApi.SendRconToAllServers("css_am_reload");
     }
     
     public void HookNextPlayerMessage(CCSPlayerController player, Action<string> action)
@@ -2393,21 +2391,21 @@ public class AdminApi : IIksAdminApi
     public async Task<DBResult> CreateGroup(Group group)
     {
         var result = await DBGroups.AddGroup(group);
-        await ReloadDataFromDBOnAllServers();
+        await ReloadDataFromDb();
         return result;
     }
 
     public async Task<DBResult> UpdateGroup(Group group)
     {
         var result = await DBGroups.UpdateGroupInBase(group);
-        await ReloadDataFromDBOnAllServers();
+        await ReloadDataFromDb();
         return result;
     }
 
     public async Task<DBResult> DeleteGroup(Group group)
     {
         var result = await DBGroups.DeleteGroup(group);
-        await ReloadDataFromDBOnAllServers();
+        await ReloadDataFromDb();
         return result;
     }
 
@@ -2429,7 +2427,7 @@ public class AdminApi : IIksAdminApi
         var result = await warn.InsertToBase();
         if (result.ElementId != null) 
             Warns.Add(warn);
-        await ReloadDataFromDBOnAllServers();
+        await ReloadDataFromDb();
         if (eData.Invoke("create_warn_post") != HookResult.Continue)
         {
             return new DBResult(null, -2, "Stopped by event WARN");
@@ -2457,7 +2455,7 @@ public class AdminApi : IIksAdminApi
         if (exWarn != null)
             exWarn = warn;
         var result = await warn.UpdateInBase();
-        await ReloadDataFromDBOnAllServers();
+        await ReloadDataFromDb();
         return result;
     }
 
@@ -2473,7 +2471,7 @@ public class AdminApi : IIksAdminApi
         }
         warn = eData.Get<Warn>("warn");
         var result = await warn.UpdateInBase();
-        await ReloadDataFromDBOnAllServers();
+        await ReloadDataFromDb();
         Server.NextFrame(() =>
         {
             if (announce)

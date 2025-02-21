@@ -70,7 +70,6 @@ public interface IIksAdminApi
     /// </summary>
     /// <param name="sendRcon">Send rcon command to all servers?</param>
     public Task ReloadDataFromDb(bool sendRcon = true);
-    public Task ReloadDataFromDBOnAllServers();
     public Task<PlayerSummaries?> GetPlayerSummaries(ulong steamId);
     /// <summary>
     /// Automatically selects all players according to their identity: Name, #SteamID, @all...
