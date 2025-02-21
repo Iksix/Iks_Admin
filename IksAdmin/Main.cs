@@ -1475,7 +1475,7 @@ public class AdminApi : IIksAdminApi
                                 {
                                     var controller = Utilities.GetPlayerFromSlot(i);
 
-                                    if (controller == null || controller.SteamID.ToString() != ban.SteamId)
+                                    if (controller == null || !controller.IsValid || controller.IsBot || controller.SteamID.ToString() != ban.SteamId)
                                         continue;
 
                                     player = controller;
