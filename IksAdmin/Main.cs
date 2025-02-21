@@ -45,6 +45,10 @@ public class Main : BasePlugin
 
     // INSTANT PUNISHMENT ON CONNECT
     public static Dictionary<string, PlayerComm> InstantComm = new();
+    public static List<PlayerInfo> LastClientVoices = new();
+    public static Dictionary<string, int> LastClientVoicesTime = new();
+
+
 
     public static string MenuId(string id)
     {
@@ -105,12 +109,23 @@ public class Main : BasePlugin
         }, TimerFlags.REPEAT);
     }
 
-    private List<PlayerInfo> LastClientVoices = new();
-
     private void OnClientVoice(int playerSlot)
     {
         var player = Utilities.GetPlayerFromSlot(playerSlot);
         if (player == null || player.AuthorizedSteamID == null) return;
+        var info = new PlayerInfo(player);
+
+        LastClientVoices.Remove(LastClientVoices.FirstOrDefault(x => x.SteamId == player.GetSteamId())!);
+        LastClientVoices.Insert(0, info);
+        LastClientVoicesTime.Remove(player.GetSteamId());
+        LastClientVoicesTime.Add(player.GetSteamId(), AdminUtils.CurrentTimestamp());
+
+        if (LastClientVoices.Count() > 10)
+        {
+            var v = LastClientVoices[LastClientVoices.Count() - 1];
+            LastClientVoices.RemoveAt(LastClientVoices.Count() - 1);
+            LastClientVoicesTime.Remove(v.SteamId!);
+        }
         var mute = player.GetComms().GetMute();
         var silence = player.GetComms().GetSilence();
         if (mute != null)
@@ -314,6 +329,7 @@ public class Main : BasePlugin
         AdminApi.RegisterPermission("other.cs_votekick_immunity", "b");
         AdminApi.RegisterPermission("other.hide", "b");
         AdminApi.RegisterPermission("other.status", "*");
+        AdminApi.RegisterPermission("other.lvoices", "b");
     }
     private void InitializeCommands()
     {
@@ -349,12 +365,21 @@ public class Main : BasePlugin
         );
 
         #endregion
-         AdminApi.AddNewCommand(
+        AdminApi.AddNewCommand(
             "status",
             "Выводит список серверов",
             "other.status",
             "css_status [json] [offline]",
             CmdBase.Status,
+            minArgs: 0,
+            whoCanExecute: CommandUsage.CLIENT_AND_SERVER
+        );
+        AdminApi.AddNewCommand(
+            "lvoices",
+            "Список последних говоривших игроков",
+            "other.lvoices",
+            "css_lvoices",
+            CmdBase.LVoices,
             minArgs: 0,
             whoCanExecute: CommandUsage.CLIENT_AND_SERVER
         );
@@ -777,6 +802,8 @@ public class Main : BasePlugin
         if (player == null || player.IsBot || player.AuthorizedSteamID == null) return HookResult.Continue;
         AdminApi.DisconnectedPlayers.Insert(0, new PlayerInfo(player));
         KickOnFullConnect.Remove(player.GetSteamId());
+        LastClientVoicesTime.Remove(player.GetSteamId());
+        LastClientVoices.Remove(LastClientVoices.FirstOrDefault(x => x.SteamId == player.GetSteamId())!);
         KickOnFullConnectReason.Remove(player.GetSteamId());
         var comms = player.GetComms();
         foreach (var comm in comms)

@@ -216,6 +216,9 @@
     "Other.Team.Spec" : "SPEC", // админ iks переместил игрока litler в команду SPEC
     
     // v6
+    "Message.Muted" : "Вы не можете говорить!\n{red}Мут {white}закончится в {red}{time}",
 
-    "Message.Muted" : "Вы не можете говорить!\n{red}Мут {white}закончится в {red}{time}"
+    // v12
+    "Other.LVoices" : "Последние говорившие игроки:",
+    "Other.LVoicesTemplate" : "{white}{i}. {name} [{date}]" // params: {i}, {uid}, {steamId}, {name}, {date}
 }

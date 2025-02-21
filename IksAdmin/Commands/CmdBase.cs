@@ -4,6 +4,7 @@ using System.Text.Unicode;
 using CoreRCON.Parsers.Standard;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils;
 using IksAdmin.Functions;
@@ -137,5 +138,19 @@ public static class CmdBase
         Encoder = JavaScriptEncoder.Create(UnicodeRanges.All, UnicodeRanges.Cyrillic)
        });
        Server.PrintToConsole(json);
+    }
+
+    public static void LVoices(CCSPlayerController? caller, List<string> args, CommandInfo info)
+    {
+        caller.Print(_localizer["Other.LVoices"]);
+        var count = 1;
+        foreach (var player in Main.LastClientVoices)
+        {
+            caller.Print(_localizer["Other.LVoicesTemplate"].AReplace(
+                ["i", "uid", "name", "steamId", "date"],
+                [count, player.UserId, player.PlayerName, player.SteamId!, Utils.GetDateString(Main.LastClientVoicesTime[player.SteamId!], "HH:mm:ss")]
+            ));
+            count++;
+        }
     }
 }

@@ -7,6 +7,11 @@ public class Utils
         var dateTime = UnixTimeStampToDateTime( unixTimeStamp );
         return dateTime.ToString( "dd.MM.yyyy HH:mm:ss" );
     }
+    public static string GetDateString( int unixTimeStamp, string format = "dd.MM.yyyy HH:mm:ss" )
+    {
+        var dateTime = UnixTimeStampToDateTime( unixTimeStamp );
+        return dateTime.ToString( format );
+    }
     public static DateTime UnixTimeStampToDateTime( int unixTimeStamp )
     {
         // Unix timestamp is seconds past epoch
