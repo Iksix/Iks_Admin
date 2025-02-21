@@ -324,7 +324,6 @@ public class Main : BasePlugin
         AdminApi.RegisterPermission("servers_manage.config", "z");
         // Other ===
         AdminApi.RegisterPermission("other.equals_immunity_action", "e"); // Разрешить взаймодействие с админами равными по иммунитету (Включая снятие наказаний если есть флаг blocks_manage.remove_immunity)
-        AdminApi.RegisterPermission("other.admin_chat", "b");
         AdminApi.RegisterPermission("other.reload_infractions", "z");
         AdminApi.RegisterPermission("other.cs_votekick_immunity", "b");
         AdminApi.RegisterPermission("other.hide", "b");
@@ -367,7 +366,7 @@ public class Main : BasePlugin
         #endregion
         AdminApi.AddNewCommand(
             "status",
-            "Выводит список серверов",
+            "Выводит список игроков",
             "other.status",
             "css_status [json] [offline]",
             CmdBase.Status,

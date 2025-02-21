@@ -50,7 +50,6 @@
 - Возможность указывать своё время silence(а) `"comms_manage.own_silence_time"` `<g>`
 ### Основное
 - `css_admin` - Открыть админ меню `">*"`
-- `css_hide` - Скрывает админа в табе `"other.hide"` `<b>`
 - `css_reload_infractions <SteamID/IP(WITHOUT PORT)>` - Перезагрузить данные игрока `"other.reload_infractions"` `<z>`
 ### Управление блокировками `"blocks_manage"`
 - #### Выдача бана
@@ -105,6 +104,11 @@
     - `css_am_warn <SteamID> <time> <reason>` - Выдать варн админу `"warn_add"` `<z>`
     - `css_am_warns <Admin ID>` - Выводит все активные варны админа `"warn_list"` `<z>`
     - `css_am_warn_remove <Warn ID>` - Удалить варн `"warn_delete"` `<z>`
+### Другое `"others"`
+- `"other.equals_immunity_action"` `<e>` - Разрешает взаймодействие с админами равными по иммунитету (Включая снятие наказаний если есть флаг blocks_manage.remove_immunity)
+- `css_hide` - Скрывает админа в табе `"other.hide"` `<b>`
+- `css_status [json] [offline]` - Выводит список игроков, если с json то выводит в JSON формате, можно так же вывести последние 30 оффлайн игроков командой css_status json offline `"other.status"` `<*>`
+- `css_lvoices` - Выводит до 10 игроков которые последние использовали микрофон `"other.lvoices"` `<b>`
 ---
 # Ограничения групп, groups_limitations
 Плагин предоставляет функционал ограничения админ прав по группам.
