@@ -964,10 +964,7 @@ public class AdminApi : IIksAdminApi
 
     public async Task ReloadDataFromDb(bool onAllServers = true)
     {
-        if (onAllServers)
-        {
-            _ = SendRconToAllServers("css_am_reload", true);
-        }
+        
         var serverModel = new ServerModel(
                 Config.ServerId,
                 Config.ServerIp,
@@ -986,6 +983,10 @@ public class AdminApi : IIksAdminApi
             AdminUtils.LogDebug("Refresh Admins");
             await RefreshAdmins();
             Warns = await DBWarns.GetAllActive();
+            if (onAllServers)
+            {
+                _ = SendRconToAllServers("css_am_reload", true);
+            }
             Server.NextFrame(() => {
                 List<int> adminsSlots = new();
                 foreach (var admin in oldAdmins)
