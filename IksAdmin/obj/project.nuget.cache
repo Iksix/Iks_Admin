@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "TttphNrR8xc=",
+  "dgSpecHash": "AHEdQ3Vc/Tk=",
   "success": true,
   "projectFilePath": "E:\\__iksAdmin\\Iks_Admin\\IksAdmin\\IksAdmin.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\iputg\\.nuget\\packages\\automapper\\12.0.0\\automapper.12.0.0.nupkg.sha512",
     "C:\\Users\\iputg\\.nuget\\packages\\corercon\\5.4.1\\corercon.5.4.1.nupkg.sha512",
-    "C:\\Users\\iputg\\.nuget\\packages\\counterstrikesharp.api\\1.0.276\\counterstrikesharp.api.1.0.276.nupkg.sha512",
+    "C:\\Users\\iputg\\.nuget\\packages\\counterstrikesharp.api\\1.0.305\\counterstrikesharp.api.1.0.305.nupkg.sha512",
     "C:\\Users\\iputg\\.nuget\\packages\\dapper\\2.1.35\\dapper.2.1.35.nupkg.sha512",
     "C:\\Users\\iputg\\.nuget\\packages\\mcmaster.netcore.plugins\\1.4.0\\mcmaster.netcore.plugins.1.4.0.nupkg.sha512",
     "C:\\Users\\iputg\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",

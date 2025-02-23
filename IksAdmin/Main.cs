@@ -31,7 +31,7 @@ namespace IksAdmin;
 public class Main : BasePlugin
 {
     public override string ModuleName => "IksAdmin";
-    public override string ModuleVersion => "3.0 v12";
+    public override string ModuleVersion => "3.0 v13";
     public override string ModuleAuthor => "iks [Discord: iks__]";
 
     public static IMenuApi MenuApi = null!;
@@ -1055,10 +1055,10 @@ public class AdminApi : IIksAdminApi
         switch (comm.MuteType)
         {
             case 0:
-                GagPlayerInGame(comm);
+                MutePlayerInGame(comm);
                 break;
             case 1:
-                MutePlayerInGame(comm);
+                GagPlayerInGame(comm);
                 break;
             case 2:
                 SilencePlayerInGame(comm);
@@ -1068,7 +1068,7 @@ public class AdminApi : IIksAdminApi
 
     private void SilencePlayerInGame(PlayerComm comm)
     {
-        var player = PlayersUtils.GetControllerBySteamId(comm.SteamId);
+        var player = PlayersUtils.GetControllerBySteamIdUnsafe(comm.SteamId);
         if (player == null) return;
         player.VoiceFlags = VoiceFlags.Muted;
         Comms.Add(comm);
@@ -1076,6 +1076,7 @@ public class AdminApi : IIksAdminApi
 
     public void RemoveCommFromPlayer(PlayerComm comm)
     {
+
         switch (comm.MuteType)
         {
             case 0:
@@ -1468,19 +1469,7 @@ public class AdminApi : IIksAdminApi
                             MsgAnnounces.BanAdded(ban);
                         CCSPlayerController? player = null;
                         if (ban.BanType == 0) {
-                            player = PlayersUtils.GetControllerBySteamId(ban.SteamId!);
-                            if (player == null)
-                            {
-                                for (int i = 0; i < Server.MaxPlayers; i++)
-                                {
-                                    var controller = Utilities.GetPlayerFromSlot(i);
-
-                                    if (controller == null || !controller.IsValid || controller.IsBot || controller.SteamID.ToString() != ban.SteamId)
-                                        continue;
-
-                                    player = controller;
-                                }
-                            }
+                            player = PlayersUtils.GetControllerBySteamIdUnsafe(ban.SteamId!);
                         }
                         else 
                             player = PlayersUtils.GetControllerByIp(ban.Ip!);
@@ -1630,6 +1619,7 @@ public class AdminApi : IIksAdminApi
     public bool CanDoActionWithPlayer(string callerId, string targetId)
     {
         var callerAdmin = AdminUtils.ServerAdmin(callerId);
+        if (callerId.ToLower() == "console") return true;
         var targetAdmin = AdminUtils.ServerAdmin(targetId);
 
         if (targetAdmin == null || targetAdmin.IsDisabled) return true;
@@ -1882,7 +1872,14 @@ public class AdminApi : IIksAdminApi
 
     public void MutePlayerInGame(PlayerComm mute)
     {
-        var player = PlayersUtils.GetControllerBySteamId(mute.SteamId);
+        var players = Utilities.GetPlayers();
+        foreach (var p in players)
+        {
+            if (p.AuthorizedSteamID == null) continue;
+            AdminUtils.LogDebug(p.PlayerName);
+            AdminUtils.LogDebug(p.AuthorizedSteamID.SteamId64.ToString());
+        }
+        var player = PlayersUtils.GetControllerBySteamIdUnsafe(mute.SteamId);
         if (player != null)
         {
             AdminUtils.LogDebug($"Mute player: {mute.Name} | {mute.SteamId} in game!");
@@ -1906,7 +1903,7 @@ public class AdminApi : IIksAdminApi
     
     public void GagPlayerInGame(PlayerComm gag)
     {
-        var player = PlayersUtils.GetControllerBySteamId(gag.SteamId);
+        var player = PlayersUtils.GetControllerBySteamIdUnsafe(gag.SteamId);
         AdminUtils.LogDebug($"Gag player: {gag.Name} | {gag.SteamId} in game!");
         Comms.Add(gag);
     }

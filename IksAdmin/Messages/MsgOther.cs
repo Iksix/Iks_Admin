@@ -33,7 +33,7 @@ public static class MsgOther
                 ["id", "reason", "admin", "created", "duration", "end"],
                 [warn.Id, warn.Reason, AdminUtils.Admin(warn.AdminId)!.Name, 
                     Utils.GetDateString(warn.CreatedAt), 
-                    $"{(warn.Duration == 0 ? _localizer["Other.Never"] : warn.Duration + _localizer["Other.Minutes"])}", 
+                    AdminUtils.GetDurationString(warn.Duration), 
                     Utils.GetDateString(warn.EndAt)]
             );
         return warnTemplate;

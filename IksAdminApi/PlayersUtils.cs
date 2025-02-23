@@ -37,7 +37,14 @@ public static class PlayersUtils
     /// </summary>
     public static CCSPlayerController? GetControllerBySteamIdUnsafe(string steamId)
     {
-        return Utilities.GetPlayers().FirstOrDefault(x => x != null && !x.IsBot && x.SteamID.ToString() == steamId);
+        for (int i = 0; i < 72; i++)
+        {
+            var p = Utilities.GetPlayerFromSlot(i);
+            if (p == null) continue;
+            if (p.AuthorizedSteamID == null) continue;
+            if (p.AuthorizedSteamID.SteamId64.ToString() == steamId) return p;
+        }
+        return null;
     }
     public static CCSPlayerController? GetControllerBySteamId(string steamId)
     {
