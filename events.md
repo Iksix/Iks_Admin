@@ -28,9 +28,9 @@
 ### `async` "create_warn_pre" - выдача варна
 - `"warn" <Warn>`
 - `"announce" <bool>`
-### `async` "admin_create_pre" - выдача варна
+### `async` "admin_create_pre" - создание админа
 - `"actioneer" <Admin>`
 - `"new_admin" <Admin>`
-### `async` "admin_delete_post" - выдача варна
+### `async` "admin_delete_pre" - удаление админа
 - `"actioneer" <Admin>`
 - `"new_admin" <Admin>`
