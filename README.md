@@ -104,7 +104,7 @@
     - `css_am_warn <SteamID> <time> <reason>` - Выдать варн админу `"warn_add"` `<z>`
     - `css_am_warns <Admin ID>` - Выводит все активные варны админа `"warn_list"` `<z>`
     - `css_am_warn_remove <Warn ID>` - Удалить варн `"warn_delete"` `<z>`
-### Другое `"others"`
+### Другое `"other"`
 - `"equals_immunity_action"` `<e>` - Разрешает взаймодействие с админами равными по иммунитету (Включая снятие наказаний если есть флаг blocks_manage.remove_immunity)
 - `css_hide` - Скрывает админа в табе `"hide"` `<b>`
 - `css_status [json] [offline]` - Выводит список игроков, если с json то выводит в JSON формате, можно так же вывести последние 30 оффлайн игроков командой css_status json offline `"other.status"` `<*>`
