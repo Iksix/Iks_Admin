@@ -911,27 +911,37 @@ public class AdminApi : IIksAdminApi
 
     public async Task<DBResult> DeleteAdmin(Admin actioneer, Admin admin, bool announce = true)
     {
-        var eventData = new EventData("admin_delete_pre");
-        eventData.Insert<Admin>("actioneer", actioneer);
-        eventData.Insert<Admin>("new_admin", admin);
-        eventData.Insert<bool>("bool", announce);
-        if (eventData.Invoke() != HookResult.Continue)
+        try
         {
-            return new DBResult(null, 2, "DeleteAdmin stopped by event handler");
+            AdminUtils.LogDebug(actioneer.Name);
+            var eventData = new EventData("admin_delete_pre");
+            eventData.Insert<Admin>("actioneer", actioneer);
+            eventData.Insert<Admin>("new_admin", admin);
+            eventData.Insert<bool>("announce", announce);
+            if (eventData.Invoke() != HookResult.Continue)
+            {
+                return new DBResult(null, 2, "DeleteAdmin stopped by event handler");
+            }
+            actioneer = eventData.Get<Admin>("actioneer");
+            admin = eventData.Get<Admin>("new_admin");
+            announce = eventData.Get<bool>("announce");
+            await DBAdmins.DeleteAdmin(admin.Id);
+            await ReloadDataFromDb();
+            if (announce)
+            {
+                Server.NextFrame(() => {
+                    MsgAnnounces.AdminDeleted(actioneer, admin);
+                });
+            }
+            eventData.Invoke("admin_delete_post");
+            return new DBResult(null, 0);
         }
-        actioneer = eventData.Get<Admin>("actioneer");
-        admin = eventData.Get<Admin>("new_admin");
-        announce = eventData.Get<bool>("announce");
-        await DBAdmins.DeleteAdmin(admin.Id);
-        await ReloadDataFromDb();
-        if (announce)
+        catch (System.Exception e )
         {
-            Server.NextFrame(() => {
-                MsgAnnounces.AdminDeleted(actioneer, admin);
-            });
+            AdminUtils.LogError(e.ToString());
+            throw;
         }
-        eventData.Invoke("admin_delete_post");
-        return new DBResult(null, 0);
+        
     }
 
     public async Task<DBResult> UpdateAdmin(Admin actioneer, Admin admin)

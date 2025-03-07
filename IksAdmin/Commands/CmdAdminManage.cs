@@ -128,6 +128,7 @@ public static class CmdAdminManage
         if (!_api.CanDoActionWithPlayer(caller.GetSteamId(), admin!.SteamId))
         {
             caller.Print(_localizer["ActionError.NotEnoughPermissionsForAction"]);
+            return;
         }
         var callerAdmin = caller.Admin();
         Task.Run(async () => {

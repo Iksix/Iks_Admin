@@ -15,6 +15,7 @@ public static class AdminManageFunctions
     {
         int? groupId = null;
         if (groupName != null) {
+            AdminUtils.LogDebug($"Admin Group <{groupName}>");
             var group = Main.AdminApi.Groups.FirstOrDefault(x => x.Name == groupName);
             if (group == null) {
                 Helper.Reply(info, "Group not founded ✖");

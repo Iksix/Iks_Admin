@@ -83,7 +83,7 @@ public static class MenuAM
         }, viewFlags: AdminUtils.GetCurrentPermissionFlags("admins_manage.add"));
         menu.AddMenuOption("edit_this_server", _localizer["MenuOption.AM.Edit.ThisServer"], (_, _) =>
         {
-            MenuUtils.SelectItem<Admin?>(caller, "am_edit", "Name", _api.ServerAdmins!, (t, m) =>
+            MenuUtils.SelectItem<Admin?>(caller, "am_edit", "Name", _api.ServerAdmins!.Where(x => x.DeletedAt == null).ToList()!, (t, m) =>
             {
                 var newAdmin = new Admin(t!.Id, t.SteamId, t.Name, t.Flags, t.Immunity, t.GroupId, t.Discord, t.Vk, t.Disabled, t.EndAt, t.CreatedAt, t.UpdatedAt, t.DeletedAt);
                 EditAdminBuffer[caller.Admin()!] = newAdmin;
@@ -93,7 +93,7 @@ public static class MenuAM
         }, viewFlags: AdminUtils.GetCurrentPermissionFlags("admins_manage.edit"));
         menu.AddMenuOption("edit_all", _localizer["MenuOption.AM.Edit.All"], (_, _) =>
         {
-            MenuUtils.SelectItem<Admin?>(caller, "am_edit", "Name", _api.AllAdmins!, (t, m) =>
+            MenuUtils.SelectItem<Admin?>(caller, "am_edit", "Name", _api.AllAdmins!.Where(x => x.DeletedAt == null).ToList()!, (t, m) =>
             {
                 var newAdmin = new Admin(t!.Id, t.SteamId, t.Name, t.Flags, t.Immunity, t.GroupId, t.Discord, t.Vk, t.Disabled, t.EndAt, t.CreatedAt, t.UpdatedAt, t.DeletedAt);
                 EditAdminBuffer[caller.Admin()!] = newAdmin;

@@ -33,7 +33,7 @@ public static class CmdPm
         _api.DoActionWithIdentity(caller, identity,
             (target, _) =>
             {
-                if (target!.PawnIsAlive)
+                if (target!.PawnIsAlive && _api.CanDoActionWithPlayer(caller.GetSteamId(), target.GetSteamId()))
                 {
                     _api.Slay(caller.Admin()!, target);
                 }
