@@ -44,11 +44,12 @@ public interface IIksAdminApi
     public Task<DBResult> CreateAdmin(Admin actioneer, Admin admin, int? serverId);
     public Task<DBResult> DeleteAdmin(Admin actioneer, Admin admin, bool announce = true);
     public Task<DBResult> UpdateAdmin(Admin actioneer, Admin admin);
+    public Task<DBResult> UpdateAdmin(Admin actioneer, Admin admin, bool updateOnServers);
     public Task<List<Admin>> GetAdminsBySteamId(string steamId, bool ignoreDeleted = true);
     /// <summary>
     /// Adds server id for admin
     /// </summary>
-    public Task AddServerIdToAdmin(int adminId, int serverId);
+    public Task AddServerIdToAdmin(int adminId, int? serverId);
     /// <summary>
     /// Removes server id from admin
     /// </summary>

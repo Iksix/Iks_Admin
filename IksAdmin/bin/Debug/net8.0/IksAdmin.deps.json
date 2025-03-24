@@ -9,7 +9,7 @@
       "IksAdmin/1.0.0": {
         "dependencies": {
           "CoreRCON": "5.4.1",
-          "CounterStrikeSharp.API": "1.0.305",
+          "CounterStrikeSharp.API": "1.0.310",
           "IksAdminApi": "1.0.0",
           "SteamWebAPI2": "4.4.1",
           "Dapper": "2.1.35",
@@ -44,7 +44,7 @@
           }
         }
       },
-      "CounterStrikeSharp.API/1.0.305": {
+      "CounterStrikeSharp.API/1.0.310": {
         "dependencies": {
           "McMaster.NETCore.Plugins": "1.4.0",
           "Microsoft.CSharp": "4.7.0",
@@ -61,8 +61,8 @@
         },
         "runtime": {
           "lib/net8.0/CounterStrikeSharp.API.dll": {
-            "assemblyVersion": "1.0.305.0",
-            "fileVersion": "1.0.305.0"
+            "assemblyVersion": "1.0.310.0",
+            "fileVersion": "1.0.310.0"
           }
         }
       },
@@ -616,7 +616,7 @@
       },
       "IksAdminApi/1.0.0": {
         "dependencies": {
-          "CounterStrikeSharp.API": "1.0.305"
+          "CounterStrikeSharp.API": "1.0.310"
         },
         "runtime": {
           "IksAdminApi.dll": {
@@ -655,12 +655,12 @@
       "path": "corercon/5.4.1",
       "hashPath": "corercon.5.4.1.nupkg.sha512"
     },
-    "CounterStrikeSharp.API/1.0.305": {
+    "CounterStrikeSharp.API/1.0.310": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-WoeI/sQ85HM2UG0ADvtfm7JaWNSETPn4gwTvKTKdX7uRoNPavVuemW1jB7dCKQQMW/7So96FVL0qbqYhE91Jpw==",
-      "path": "counterstrikesharp.api/1.0.305",
-      "hashPath": "counterstrikesharp.api.1.0.305.nupkg.sha512"
+      "sha512": "sha512-Q2NcI+YXUM0zNTNA45CkURb8keq7SjwdfTlV8onrVKQe4IqemYHPPoxCZViHueZepPP6dg4oFgiknsdT3Bzoxg==",
+      "path": "counterstrikesharp.api/1.0.310",
+      "hashPath": "counterstrikesharp.api.1.0.310.nupkg.sha512"
     },
     "Dapper/2.1.35": {
       "type": "package",

@@ -1,0 +1,40 @@
+{
+  "TitleToTextInReasons": true,
+  "BanOnAllServers" : false,
+  "BlockedIdentifiers": [
+    "@all",
+    "@ct",
+    "@t",
+    "@players",
+    "@spec",
+    "@bot"
+  ],
+  "Reasons": [
+    {
+      "Title": "Example reason title 1",
+      "Text": "Another text for reason",
+      "MinTime": 0,
+      "MaxTime": 30,
+      "Duration": null,
+      "BanOnAllServers": false,
+      "HideFromMenu": false
+    },
+    {
+      "Title": "Example reason title 2",
+      "Text": "Example reason title 2",
+      "MinTime": 0,
+      "MaxTime": 0,
+      "Duration": 0,
+      "BanOnAllServers": true,
+      "HideFromMenu": false
+    }
+  ],
+  "Times": {
+    "1": "1 мин",
+    "60": "1 час",
+    "1440": "1 день",
+    "10080": "1 неделя",
+    "302400": "1 месяц",
+    "0": "Навсегда"
+  }
+}

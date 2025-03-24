@@ -18,6 +18,7 @@ public class BansConfig : PluginCFG<BansConfig>, IPluginCFG
         new BanReason("Example reason title 2", banOnAllServers: true, duration: 0),
     };
     public bool BanOnAllServers {get; set;} = false;
+    public bool AlwaysBanForIpAndSteamId {get; set;} = false; // Банить ли всегда по айпи и стим айди одновременно
 
     public Dictionary<int, string> Times {get; set;} = new()
     {

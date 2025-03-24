@@ -51,9 +51,9 @@ public class Admin
     public bool IsDisabledByEnd {get {
         return EndAt != null && EndAt < AdminUtils.CurrentTimestamp();
     }}
-    public int[] Servers { get  {
+    public int?[] Servers { get  {
         var a = AdminUtils.CoreApi.AdminsToServer.Where(x => x.AdminId == Id).ToArray();
-        List<int> serverIds = new();
+        List<int?> serverIds = new();
         foreach (var b in a)
         {
             serverIds.Add(b.ServerId);

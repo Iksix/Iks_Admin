@@ -36,6 +36,7 @@ public class CoreConfig : PluginCFG<CoreConfig>, IPluginCFG
     public bool UseOnlineAdminsName {get; set;} = false; // Использовать ли текущий ник админа если он онлайн (Для Announce)
     public bool AutoUpdateDatabaseNames {get; set;} = false; // Обновлять ли ники админов в базе данных на текущие в стиме при подключении
     public bool IgnoreAdminServers {get; set;} = false; // Если true - не важно какие севрера указаны у админа, у него всё равно будут права на этом сервере
+    public bool IgnoreExpiredAdminsInAmMenu {get; set;} = true; // Включает игнорирование истёкших админов в админ меню
     public void Set()
     {
         Config = ReadOrCreate(AdminUtils.CoreInstance.ModuleDirectory +"/../../configs/plugins/IksAdmin/core.json", Config);

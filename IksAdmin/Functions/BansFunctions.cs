@@ -8,6 +8,14 @@ public static class BansFunctions
     public static AdminApi AdminApi = Main.AdminApi;
     public static async Task Ban(PlayerBan ban)
     {
+        if (BansConfig.Config.BanOnAllServers) {
+            ban.ServerId = null;
+        }
+        
+        if (BansConfig.Config.AlwaysBanForIpAndSteamId && ban.SteamId != null && ban.Ip != null)
+        {
+            ban.BanType = 2;
+        }
         AdminUtils.LogDebug("Add ban... " + ban.SteamId);
         var result = await AdminApi.AddBan(ban);
         AdminUtils.LogDebug("Ban result: " + result.QueryStatus);

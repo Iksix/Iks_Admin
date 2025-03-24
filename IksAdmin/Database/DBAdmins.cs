@@ -68,7 +68,7 @@ public static class DBAdmins
             throw;
         }
     }
-    public static async Task AddServerIdToAdmin(int adminId, int serverId)
+    public static async Task AddServerIdToAdmin(int adminId, int? serverId)
     {
         try
         {

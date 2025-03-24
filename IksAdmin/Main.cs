@@ -31,7 +31,7 @@ namespace IksAdmin;
 public class Main : BasePlugin
 {
     public override string ModuleName => "IksAdmin";
-    public override string ModuleVersion => "3.0 v13";
+    public override string ModuleVersion => "3.0 v15";
     public override string ModuleAuthor => "iks [Discord: iks__]";
 
     public static IMenuApi MenuApi = null!;
@@ -174,7 +174,7 @@ public class Main : BasePlugin
                     var name = player!.PlayerName;
                     admin.Name = name;
                     Task.Run(async () => {
-                        await AdminApi.UpdateAdmin(AdminApi.ConsoleAdmin, admin);
+                        await AdminApi.UpdateAdmin(AdminApi.ConsoleAdmin, admin, false);
                     });
                 }
                 if (admin.Warns.Count >= AdminApi.Config.MaxWarns)
@@ -839,7 +839,7 @@ public class AdminApi : IIksAdminApi
     {
         get
         {
-            return AllAdmins.Where(x => (x.Servers.Contains(ThisServer.Id) || x.Servers.Contains(-1) || Config.IgnoreAdminServers) && x.DeletedAt == null).ToList();
+            return AllAdmins.Where(x => (x.Servers.Contains(ThisServer.Id) || x.Servers.Contains(null) || Config.IgnoreAdminServers) && x.DeletedAt == null).ToList();
         }
     }
 
@@ -894,7 +894,7 @@ public class AdminApi : IIksAdminApi
         }
     }
 
-    public async Task AddServerIdToAdmin(int adminId, int serverId)
+    public async Task AddServerIdToAdmin(int adminId, int? serverId)
     {
         await DBAdmins.AddServerIdToAdmin(adminId, serverId);
     }
@@ -950,6 +950,14 @@ public class AdminApi : IIksAdminApi
         await ReloadDataFromDb();
         return new DBResult(admin.Id, 0, "Admin has been updated");
     }
+    public async Task<DBResult> UpdateAdmin(Admin actioneer, Admin admin, bool updateOnServers)
+    {
+        await DBAdmins.UpdateAdminInBase(admin);
+        if (updateOnServers)
+            await ReloadDataFromDb();
+        return new DBResult(admin.Id, 0, "Admin has been updated");
+    }
+    
     
     public async Task<List<Admin>> GetAdminsBySteamId(string steamId, bool ignoreDeleted = true)
     {

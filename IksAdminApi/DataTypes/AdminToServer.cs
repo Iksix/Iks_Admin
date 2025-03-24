@@ -9,7 +9,7 @@ namespace IksAdminApi;
 public class AdminToServer
 {
     public int AdminId {get; set;}
-    public int ServerId {get; set;}
+    public int? ServerId {get; set;}
     Admin? Admin {get {
         return AdminUtils.Admin(AdminId);
     }}

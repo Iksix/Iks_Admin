@@ -13,7 +13,7 @@ public static class MenuAM
     static IStringLocalizer _localizer = _api.Localizer;
     public static Dictionary<Admin, Admin> AddAdminBuffer = new();
     public static Dictionary<Admin, Admin> EditAdminBuffer = new();
-    public static Dictionary<Admin, List<int>> EditAdminServerIdBuffer = new();
+    public static Dictionary<Admin, List<int?>> EditAdminServerIdBuffer = new();
 
     public static void OpenServersManageMenu(CCSPlayerController caller, IDynamicMenu backMenu)
     {
@@ -83,7 +83,12 @@ public static class MenuAM
         }, viewFlags: AdminUtils.GetCurrentPermissionFlags("admins_manage.add"));
         menu.AddMenuOption("edit_this_server", _localizer["MenuOption.AM.Edit.ThisServer"], (_, _) =>
         {
-            MenuUtils.SelectItem<Admin?>(caller, "am_edit", "Name", _api.ServerAdmins!.Where(x => x.DeletedAt == null).ToList()!, (t, m) =>
+            var adms = _api.ServerAdmins!.Where(x => x.DeletedAt == null).ToList()!;
+            if (_api.Config.IgnoreExpiredAdminsInAmMenu)
+            {
+                adms = adms.Where(x => !x.IsDisabledByEnd).ToList()!;
+            }
+            MenuUtils.SelectItem<Admin?>(caller, "am_edit", "Name", adms!, (t, m) =>
             {
                 var newAdmin = new Admin(t!.Id, t.SteamId, t.Name, t.Flags, t.Immunity, t.GroupId, t.Discord, t.Vk, t.Disabled, t.EndAt, t.CreatedAt, t.UpdatedAt, t.DeletedAt);
                 EditAdminBuffer[caller.Admin()!] = newAdmin;
@@ -93,7 +98,12 @@ public static class MenuAM
         }, viewFlags: AdminUtils.GetCurrentPermissionFlags("admins_manage.edit"));
         menu.AddMenuOption("edit_all", _localizer["MenuOption.AM.Edit.All"], (_, _) =>
         {
-            MenuUtils.SelectItem<Admin?>(caller, "am_edit", "Name", _api.AllAdmins!.Where(x => x.DeletedAt == null).ToList()!, (t, m) =>
+            var adms = _api.AllAdmins!.Where(x => x.DeletedAt == null).ToList()!;
+            if (_api.Config.IgnoreExpiredAdminsInAmMenu)
+            {
+                adms = adms.Where(x => !x.IsDisabledByEnd).ToList()!;
+            }
+            MenuUtils.SelectItem<Admin?>(caller, "am_edit", "Name", adms!, (t, m) =>
             {
                 var newAdmin = new Admin(t!.Id, t.SteamId, t.Name, t.Flags, t.Immunity, t.GroupId, t.Discord, t.Vk, t.Disabled, t.EndAt, t.CreatedAt, t.UpdatedAt, t.DeletedAt);
                 EditAdminBuffer[caller.Admin()!] = newAdmin;
@@ -129,6 +139,28 @@ public static class MenuAM
             backMenu: backMenu
         );
         var serverIds = EditAdminServerIdBuffer[caller.Admin()!];
+        menu.AddMenuOption("save", _localizer["MenuOption.AM.Save"], (_, _) =>
+        {
+            caller.Print(_localizer["Message.AM.AdminSave"]);
+            var serverIds = EditAdminServerIdBuffer[caller.Admin()!];
+            var cAdmin = caller.Admin()!;
+            Task.Run(async () =>
+            {
+                await _api.RemoveServerIdsFromAdmin(admin.Id);
+                foreach (var serverId in serverIds)
+                {
+                    await _api.AddServerIdToAdmin(admin.Id, serverId);
+                }
+                var result = await _api.UpdateAdmin(cAdmin, admin);
+                if (result.QueryStatus < 0)
+                {
+                    caller.Print(_localizer["ActionError.Other"]);
+                    AdminUtils.LogError(result.QueryMessage);
+                    return;
+                }
+                caller.Print(_localizer["Message.AM.AdminSaved"]);
+            });
+        });
         menu.AddMenuOption("name", _localizer["MenuOption.AM.Name"].AReplace(["value"], [admin.Name]), (_, _) =>
         {}, disabled: true);
         menu.AddMenuOption("steam_id", _localizer["MenuOption.AM.SteamId"].AReplace(["value"], [admin.SteamId]), (_, _) =>
@@ -195,28 +227,7 @@ public static class MenuAM
             });
         });
         
-        menu.AddMenuOption("save", _localizer["MenuOption.AM.Save"], (_, _) =>
-        {
-            caller.Print(_localizer["Message.AM.AdminSave"]);
-            var serverIds = EditAdminServerIdBuffer[caller.Admin()!];
-            var cAdmin = caller.Admin()!;
-            Task.Run(async () =>
-            {
-                await _api.RemoveServerIdsFromAdmin(admin.Id);
-                foreach (var serverId in serverIds)
-                {
-                    await _api.AddServerIdToAdmin(admin.Id, serverId);
-                }
-                var result = await _api.UpdateAdmin(cAdmin, admin);
-                if (result.QueryStatus < 0)
-                {
-                    caller.Print(_localizer["ActionError.Other"]);
-                    AdminUtils.LogError(result.QueryMessage);
-                    return;
-                }
-                caller.Print(_localizer["Message.AM.AdminSaved"]);
-            });
-        });
+       
         menu.Open(caller);
     }
 
@@ -274,6 +285,23 @@ public static class MenuAM
         }
 
         var admin = AddAdminBuffer[caller.Admin()!];
+
+        menu.AddMenuOption("save", _localizer["MenuOption.AM.Save"], (_, _) =>
+        {
+            caller.Print(_localizer["Message.AM.AdminSave"]);
+            var cAdmin = caller.Admin()!;
+            Task.Run(async () =>
+            {
+                var result = await _api.CreateAdmin(cAdmin, AddAdminBuffer[cAdmin!], _api.ThisServer.Id);
+                if (result.QueryStatus < 0)
+                {
+                    caller.Print(_localizer["ActionError.Other"]);
+                    AdminUtils.LogError(result.QueryMessage);
+                    return;
+                }
+                caller.Print(_localizer["Message.AM.AdminSaved"]);
+            });
+        });
         
         menu.AddMenuOption("name", _localizer["MenuOption.AM.Name"].AReplace(["value"], [target.PlayerName]), (_, _) =>
         {}, disabled: true);
@@ -337,22 +365,7 @@ public static class MenuAM
             });
         });
         
-        menu.AddMenuOption("save", _localizer["MenuOption.AM.Save"], (_, _) =>
-        {
-            caller.Print(_localizer["Message.AM.AdminSave"]);
-            var cAdmin = caller.Admin()!;
-            Task.Run(async () =>
-            {
-                var result = await _api.CreateAdmin(cAdmin, AddAdminBuffer[cAdmin!], _api.ThisServer.Id);
-                if (result.QueryStatus < 0)
-                {
-                    caller.Print(_localizer["ActionError.Other"]);
-                    AdminUtils.LogError(result.QueryMessage);
-                    return;
-                }
-                caller.Print(_localizer["Message.AM.AdminSaved"]);
-            });
-        });
+        
 
         menu.Open(caller);
     }

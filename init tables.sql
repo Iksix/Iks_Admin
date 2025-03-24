@@ -31,10 +31,6 @@ create table if not exists iks_admins(
     foreign key (group_id) references iks_groups(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-insert into iks_admins(steam_id, name, flags, immunity, created_at, updated_at)
-select 'CONSOLE', 'CONSOLE', null, 0, unix_timestamp(), unix_timestamp();
-DELETE from iks_admins where steam_id="CONSOLE" and id!=1;
-
 create table if not exists iks_admin_to_server(
     id int not null auto_increment primary key,
     admin_id int not null,

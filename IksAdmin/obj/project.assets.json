@@ -32,7 +32,7 @@
           "lib/netstandard2.0/CoreRCON.dll": {}
         }
       },
-      "CounterStrikeSharp.API/1.0.305": {
+      "CounterStrikeSharp.API/1.0.310": {
         "type": "package",
         "dependencies": {
           "McMaster.NETCore.Plugins": "1.4.0",
@@ -1004,7 +1004,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
-          "CounterStrikeSharp.Api": "1.0.305"
+          "CounterStrikeSharp.Api": "1.0.310"
         },
         "compile": {
           "bin/placeholder/IksAdminApi.dll": {}
@@ -1045,14 +1045,14 @@
         "logo.png"
       ]
     },
-    "CounterStrikeSharp.API/1.0.305": {
-      "sha512": "WoeI/sQ85HM2UG0ADvtfm7JaWNSETPn4gwTvKTKdX7uRoNPavVuemW1jB7dCKQQMW/7So96FVL0qbqYhE91Jpw==",
+    "CounterStrikeSharp.API/1.0.310": {
+      "sha512": "Q2NcI+YXUM0zNTNA45CkURb8keq7SjwdfTlV8onrVKQe4IqemYHPPoxCZViHueZepPP6dg4oFgiknsdT3Bzoxg==",
       "type": "package",
-      "path": "counterstrikesharp.api/1.0.305",
+      "path": "counterstrikesharp.api/1.0.310",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "counterstrikesharp.api.1.0.305.nupkg.sha512",
+        "counterstrikesharp.api.1.0.310.nupkg.sha512",
         "counterstrikesharp.api.nuspec",
         "lib/net8.0/CounterStrikeSharp.API.dll",
         "lib/net8.0/CounterStrikeSharp.API.runtimeconfig.json",
@@ -2794,7 +2794,7 @@
   "projectFileDependencyGroups": {
     "net8.0": [
       "CoreRcon >= 5.4.1",
-      "CounterStrikeSharp.Api >= 1.0.305",
+      "CounterStrikeSharp.Api >= 1.0.310",
       "IksAdminApi >= 1.0.0",
       "SteamWebAPI2 >= 4.4.1",
       "dapper >= 2.1.35",
@@ -2802,8 +2802,7 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\iputg\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\iks\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -2811,22 +2810,16 @@
       "projectUniqueName": "E:\\__iksAdmin\\Iks_Admin\\IksAdmin\\IksAdmin.csproj",
       "projectName": "IksAdmin",
       "projectPath": "E:\\__iksAdmin\\Iks_Admin\\IksAdmin\\IksAdmin.csproj",
-      "packagesPath": "C:\\Users\\iputg\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\iks\\.nuget\\packages\\",
       "outputPath": "E:\\__iksAdmin\\Iks_Admin\\IksAdmin\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\iputg\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\iks\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -2860,7 +2853,7 @@
           },
           "CounterStrikeSharp.Api": {
             "target": "Package",
-            "version": "[1.0.305, )"
+            "version": "[1.0.310, )"
           },
           "SteamWebAPI2": {
             "target": "Package",
@@ -2891,7 +2884,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.406/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.407/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -36,8 +36,9 @@ public static class MenuBansManage
     {
         var menu = _api.CreateMenu(Main.MenuId("bm_unban"), _localizer["MenuTitle.Unban"], backMenu: backMenu);
         var admin = caller.Admin()!;
-        
-        foreach (var ban in bans)
+        var arr = bans.ToList();
+        arr.Reverse();
+        foreach (var ban in arr)
         {
             var disableByPerms = false;
             if (ban.BanType == 1 && !caller.HasPermissions("blocks_manage.unban_ip"))
@@ -139,14 +140,8 @@ public static class MenuBansManage
                     OpenTimeSelectMenu(caller, target, reason, menu);
                 } else {
                     var ban = new PlayerBan(target, reason.Text, (int)reason.Duration, serverId: _api.ThisServer.Id);
-                    if (BansConfig.Config.BanOnAllServers) {
-                        ban.ServerId = null;
-                    }
                     ban.AdminId = admin.Id;
-                    Task.Run(async () => {
-                        await BansFunctions.Ban(ban);
-                    });
-                    _api.CloseMenu(caller);
+                    OpenBanTypeSelectMenu(caller, ban);
                 }
             });
         }
@@ -157,14 +152,10 @@ public static class MenuBansManage
     private static void OpenTimeSelectMenu(CCSPlayerController caller, PlayerInfo target, Reason reason, IDynamicMenu? backMenu = null)
     {
         var menu = _api.CreateMenu(Main.MenuId("bm_ban_time"), _localizer["MenuTitle.Other.SelectTime"], backMenu: backMenu);
-        var config = BansConfig.Config;
-        var times = config.Times;
+        var times = BansConfig.Config.Times;
         var admin = caller.Admin()!;
 
         var ban = new PlayerBan(target, reason.Text, 0, serverId: _api.ThisServer.Id);
-        if (BansConfig.Config.BanOnAllServers) {
-            ban.ServerId = null;
-        }
         ban.AdminId = admin.Id;
         menu.AddMenuOption("own_ban_time" ,_localizer["MenuOption.Other.OwnTime"], (_, _) => {
             Helper.Print(caller, _localizer["Message.PrintOwnTime"]);

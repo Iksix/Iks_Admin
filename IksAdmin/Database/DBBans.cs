@@ -100,9 +100,9 @@ public static class DBBans
                 where deleted_at is null
                 and ip = @ip
                 and unbanned_by is null
-                and end_at > unix_timestamp()
+                and (end_at > unix_timestamp() or end_at = 0)
                 and (server_id is null or server_id = @serverId)
-                and (ban_type=1 or ban_type=2)
+                and (ban_type = 1 or ban_type = 2)
             ", new {ip, serverId = Main.AdminApi.ThisServer.Id});
             return ban;
         }

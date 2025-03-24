@@ -1,0 +1,18 @@
+{
+  "TitleToTextInReasons": true,
+  "BlockedIdentifiers": [
+    "@all",
+    "@ct",
+    "@t",
+    "@players",
+    "@spec",
+    "@bot"
+  ],
+  "Reasons": [
+    {
+      "Title": "AFK",
+      "Text": "АФК",
+      "HideFromMenu": false
+    }
+  ]
+}

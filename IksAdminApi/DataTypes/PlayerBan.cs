@@ -72,6 +72,7 @@ public class PlayerBan
         Reason = reason; 
         ServerId = serverId;
         BanType = banType;
+
         if (AdminUtils.Config().MirrorsIp.Contains(Ip)) Ip = null;
     }
 
