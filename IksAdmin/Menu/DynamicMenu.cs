@@ -5,6 +5,7 @@ using IksAdminApi;
 using CounterStrikeSharp.API.Modules.Utils;
 using MenuType = IksAdminApi.MenuType;
 using CounterStrikeSharp.API.Core.Translations;
+using System.Diagnostics;
 
 namespace IksAdmin.Menu;
 
@@ -41,6 +42,12 @@ public class DynamicMenu : IDynamicMenu
 
     public void Open(CCSPlayerController player, bool useSortMenu = true)
     {
+        var watch = new Stopwatch();
+        watch.Start();
+        var pAdmin = player.Admin();
+        var adminFlags = pAdmin?.CurrentFlags.ToCharArray() ?? [];
+        Console.WriteLine("[IKSADMIN] GETTING: " + watch.ElapsedMilliseconds);
+
         AdminUtils.LogDebug($@"
             Open menu... :
             Player: {player.PlayerName} | [{player.AuthorizedSteamID!.SteamId64}]
@@ -105,12 +112,11 @@ public class DynamicMenu : IDynamicMenu
                     var viewFlags = sort.ViewFlags.ToLower() == "not override" ? option.ViewFlags : sort.ViewFlags;
                     if (!viewFlags.Contains("*"))
                     {
-                        if (player.Admin() == null)
+                        if (pAdmin == null)
                         {
                             options.Remove(option);
                             continue;
                         }
-                        var adminFlags = player.Admin()!.CurrentFlags.ToCharArray();
                         if (!adminFlags.Any(viewFlags.Contains) && !adminFlags.Contains('z'))
                         {
                             options.Remove(option);
@@ -132,11 +138,10 @@ public class DynamicMenu : IDynamicMenu
                     var viewFlags = option.ViewFlags; // Текущие ViewFlags опции
                     if (!viewFlags.Contains("*")) // Если не содержит *, то проверяем на ViewFlags админа
                     {
-                        if (player.Admin() == null)
+                        if (pAdmin == null)
                         {
                             continue;
                         }
-                        var adminFlags = player.Admin()!.CurrentFlags.ToCharArray();
                         if (!adminFlags.Any(viewFlags.Contains) && !adminFlags.Contains('z'))
                         {
                             continue;
@@ -162,11 +167,10 @@ public class DynamicMenu : IDynamicMenu
                 var viewFlags = option.ViewFlags; // Текущие ViewFlags опции
                 if (!viewFlags.Contains("*")) // Если не содержит *, то проверяем на ViewFlags админа
                 {
-                    if (player.Admin() == null)
+                    if (pAdmin == null)
                     {
                         continue;
                     }
-                    var adminFlags = player.Admin()!.CurrentFlags.ToCharArray();
                     if (!adminFlags.Any(viewFlags.Contains) && !adminFlags.Contains('z'))
                     {
                         continue;
@@ -184,6 +188,9 @@ public class DynamicMenu : IDynamicMenu
         menu.Open(player); 
         Main.AdminApi.OnMenuOpenPost(player, this, menu);
         Options = oldOptions;
+        watch.Stop();
+        Console.WriteLine("[IKSADMIN] DIAGNOSTIC: " + watch.ElapsedMilliseconds);
+
     }
 
     private string MenuTitle(CCSPlayerController player)

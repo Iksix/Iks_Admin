@@ -11,7 +11,7 @@ public static class UtilsFunctions
 {
     public static Admin? FindAdminByControllerMethod(CCSPlayerController player)
     {
-        return Main.AdminApi.ServerAdmins.FirstOrDefault(x => x.SteamId == player.AuthorizedSteamID!.SteamId64.ToString());
+        return Main.AdminApi.OnlineAdmins.FirstOrDefault(x => x.Key == player.AuthorizedSteamID!.SteamId64).Value;
     }
     public static Admin? FindAdminByIdMethod(int id)
     {

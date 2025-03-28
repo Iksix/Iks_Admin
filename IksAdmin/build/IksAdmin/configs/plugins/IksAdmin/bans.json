@@ -1,7 +1,8 @@
 {
-  "TitleToTextInReasons": true,
-  "BanOnAllServers" : false,
-  "BlockedIdentifiers": [
+  "TitleToTextInReasons": true, // Принудительно менять причину на текст ( То есть: !ban iks 0 Cheats - Причина будет [1.1] CHEATS )
+  "BanOnAllServers" : false, // Банить ли на все сервера
+  "AlwaysBanForIpAndSteamId" : false, // Всегда банит по айпи и стим айди независимо от типа бана ()
+  "BlockedIdentifiers": [ // Блокировка идентификаторов для команд (!ban @all - будет запрещенно)
     "@all",
     "@ct",
     "@t",
@@ -9,12 +10,21 @@
     "@spec",
     "@bot"
   ],
-  "Reasons": [
+  "Reasons": [ // При прописывании команды например: 'css_ban iks 0 читы', конечная причина будет заменена на Text причины с соотвествующим Title
+    {
+      "Title": "Cheats",
+      "Text": "[1.1] CHEATS",
+      "MinTime": 0, // Минимальное время бана (Те что меньше не будут отображаться в меню)
+      "MaxTime": 30, // Максимальное время бана (Те что больше не будут отображаться в меню)
+      "Duration": null, // Если NULL то админ выбирает время из Times
+      "BanOnAllServers": false, // Блокировка на всех серверах конкретно по этой причине (Не имеет смысла если BanOnAllServers=true)
+      "HideFromMenu": false // Скрыть ли пункт из меню
+    },
     {
       "Title": "Example reason title 1",
       "Text": "Another text for reason",
       "MinTime": 0,
-      "MaxTime": 30,
+      "MaxTime": 30, 
       "Duration": null,
       "BanOnAllServers": false,
       "HideFromMenu": false

@@ -800,6 +800,7 @@ public class Main : BasePlugin
         MenuPM.OnRoundEndChangeTeam.Remove(player!.Slot);
         if (player == null || player.IsBot || player.AuthorizedSteamID == null) return HookResult.Continue;
         AdminApi.DisconnectedPlayers.Insert(0, new PlayerInfo(player));
+        AdminApi.OnlineAdmins.Remove(player.AuthorizedSteamID.SteamId64);
         KickOnFullConnect.Remove(player.GetSteamId());
         LastClientVoicesTime.Remove(player.GetSteamId());
         LastClientVoices.Remove(LastClientVoices.FirstOrDefault(x => x.SteamId == player.GetSteamId())!);
@@ -829,19 +830,18 @@ public class Main : BasePlugin
 
 public class AdminApi : IIksAdminApi
 {
+
+    // Нужно для быстрого поиска админа по стим айди
+    // Кэширование крч
+    public Dictionary<ulong, Admin> OnlineAdmins {get; set;} = new();
+
     public IksAdminApi.CoreConfig Config { get; set; } 
     public BasePlugin Plugin { get; set; } 
     public IStringLocalizer Localizer { get; set; }
     public Dictionary<string, SortMenu[]> SortMenus { get; set; } = new();
     public string ModuleDirectory { get; set; }
 
-    public List<Admin> ServerAdmins
-    {
-        get
-        {
-            return AllAdmins.Where(x => (x.Servers.Contains(ThisServer.Id) || x.Servers.Contains(null) || Config.IgnoreAdminServers) && x.DeletedAt == null).ToList();
-        }
-    }
+    public Dictionary<ulong, Admin> ServerAdmins {get; set;} = new();
 
     public List<Admin> AllAdmins { get; set; } = new();
     public List<ServerModel> AllServers { get; set; } = new();
@@ -1035,12 +1035,12 @@ public class AdminApi : IIksAdminApi
                 List<int> adminsSlots = new();
                 foreach (var admin in oldAdmins)
                 {
-                    if (admin.Controller == null) return;
-                    adminsSlots.Add(admin.Controller.Slot);
+                    if (admin.Value.Controller == null) return;
+                    adminsSlots.Add(admin.Value.Controller.Slot);
                 }
                 foreach (var slot in adminsSlots)
                 {
-                    var adminWithSameSlot = ServerAdmins.FirstOrDefault(x => x.Controller != null && x.Controller.Slot == slot);
+                    var adminWithSameSlot = ServerAdmins.FirstOrDefault(x => x.Value.Controller != null && x.Value.Controller.Slot == slot).Value;
                     if (adminWithSameSlot == null || adminWithSameSlot.IsDisabled)
                     {
                         var player = Utilities.GetPlayerFromSlot(slot);
@@ -1866,6 +1866,7 @@ public class AdminApi : IIksAdminApi
         AdminUtils.LogDebug("Reload warns...");
         var admin = AdminUtils.Admin(steamId)!;
         AdminUtils.LogDebug("Admin id: " + admin.Id);
+        OnlineAdmins[ulong.Parse(admin.SteamId)] = admin;
         var warns = await GetAllWarnsForAdmin(admin);
         foreach (var warn in warns.ToList())
         {

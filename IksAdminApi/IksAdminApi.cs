@@ -20,7 +20,7 @@ public interface IIksAdminApi
     public string ModuleDirectory { get; set; }
     public Dictionary<string, SortMenu[]> SortMenus { get; set; }
     public Admin ConsoleAdmin {get; set;}
-    public List<Admin> ServerAdmins { get; }
+    public Dictionary<ulong, Admin> ServerAdmins { get; }
     public List<Admin> AllAdmins { get; set; }
     public List<ServerModel> AllServers { get; set; }
     public List<AdminToServer> AdminsToServer {get; set;}

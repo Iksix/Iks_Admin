@@ -192,6 +192,7 @@ public static class CmdAdminManage
             caller.Print("Server admins:", toConsole: true);
         }
         caller.Print("id | name | steamId | flags | immunity | group | serverIds | discord | vk | isDisabled", toConsole: true);
+        caller.Print("Admins:" + admins.Count, toConsole: true);
         foreach (var admin in admins)
         {
             caller.Print($"{admin.Id} | {admin.Name} | {admin.SteamId} | {admin.CurrentFlags} | {admin.CurrentImmunity} | {admin.Group?.Name ?? "NONE"} | {string.Join(";", admin.Servers)} | {admin.Discord ?? "NONE"} | {admin.Vk ?? "NONE"} | {admin.IsDisabled}",
