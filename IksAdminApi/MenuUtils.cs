@@ -64,6 +64,10 @@ public static class MenuUtils
 
         menu.Open(caller);
     }
+
+    /// <summary>
+    /// Select Item from list
+    /// </summary>
     public static void SelectItemDefault<T>(CCSPlayerController caller, string idPrefix, List<T> objects, Action<T?, IDynamicMenu> action, IDynamicMenu? backMenu = null, bool nullOption = true, string? customTitle = null)
     {
         var menu = _api.CreateMenu(

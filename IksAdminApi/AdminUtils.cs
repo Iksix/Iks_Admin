@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.UserMessages;
 using Microsoft.Extensions.Localization;
 
 namespace IksAdminApi;
@@ -154,11 +155,12 @@ public static class AdminUtils
     
     public static Admin? ServerAdmin(this PlayerInfo player)
     {
-        return CoreApi.ServerAdmins.FirstOrDefault(x => x.SteamId == player.SteamId);
+        if (!ulong.TryParse(player.SteamId, out var steamId)) return null;
+        return CoreApi.ServerAdmins.TryGetValue(steamId, out var admin) ? admin : null;
     }
     public static Admin? ServerAdmin(int id)
     {
-        return CoreApi.ServerAdmins.FirstOrDefault(x => x.Id == id);
+        return CoreApi.ServerAdmins.FirstOrDefault(x => x.Value.Id == id).Value;
     }
     public static Admin? Admin(int id)
     {
@@ -174,7 +176,9 @@ public static class AdminUtils
     {
         if (steamId.ToLower() == "console")
             return CoreApi.ConsoleAdmin;
-        return CoreApi.ServerAdmins.FirstOrDefault(x => x.SteamId == steamId);
+        if (!ulong.TryParse(steamId, out var uSteamId)) return null;
+
+        return CoreApi.ServerAdmins.TryGetValue(uSteamId, out var admin) ? admin : null;
     }
     public static bool IsAdmin(this CCSPlayerController player)
     {

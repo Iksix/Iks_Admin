@@ -203,6 +203,17 @@ public static class MenuBansManage
     {
         var menu = _api.CreateMenu(Main.MenuId("bm_ban_type"), _localizer["MenuTitle.BanType"]);
         var admin = caller.Admin();
+        
+        if (BansConfig.Config.AlwaysBanForIpAndSteamId)
+        {
+            _api.CloseMenu(caller);
+            ban.BanType = 2;
+            Task.Run(async () => {
+                await BansFunctions.Ban(ban);
+            });
+            return;
+        }
+
         menu.AddMenuOption(Main.GenerateOptionId("bm_ban_steam_id"), _localizer["MenuOption.BanSteamId"], (_, _) => {
             _api.CloseMenu(caller);
             Task.Run(async () => {

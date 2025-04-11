@@ -362,13 +362,23 @@ public static class DBAdmins
             AdminUtils.LogDebug("3/5 Console admin setted ✔");
             admins = admins.Where(x => x.SteamId.ToLower() != "console").ToList();
             Main.AdminApi.AllAdmins = await GetAllAdmins(ignoreDeleted: false);
+            var serverId = Main.AdminApi.Config.ServerId;
+            bool ignoreAdminServers = Main.AdminApi.Config.IgnoreAdminServers;
+            Main.AdminApi.ServerAdmins.Clear();
+            foreach (var admin in Main.AdminApi.AllAdmins)
+            {
+                if ((admin.Servers.Contains(serverId) || admin.Servers.Contains(null) || ignoreAdminServers) && admin.DeletedAt == null){
+                    if (ulong.TryParse(admin.SteamId, out var uSteamId))
+                        Main.AdminApi.ServerAdmins[uSteamId] = admin;
+                }
+            }
             AdminUtils.LogDebug("4/5 All admins setted ✔");
             AdminUtils.LogDebug("5/5 Server admins setted ✔");
             AdminUtils.LogDebug("Admins refreshed ✔");
             AdminUtils.LogDebug("---------------");
             AdminUtils.LogDebug("Server admins:");
             AdminUtils.LogDebug($"id | name | steamId | flags | immunity | group | serverIds | discord | vk | isDisabled");
-            foreach (var admin in Main.AdminApi.ServerAdmins)
+            foreach (var admin in Main.AdminApi.ServerAdmins.Values)
             {
                 AdminUtils.LogDebug($"{admin.Id} | {admin.Name} | {admin.SteamId} | {admin.CurrentFlags} | {admin.CurrentImmunity} | {admin.Group?.Name ?? "NONE"} | {string.Join(";", admin.Servers)} | {admin.Discord ?? "NONE"} | {admin.Vk ?? "NONE"} | {admin.IsDisabled}");
             }

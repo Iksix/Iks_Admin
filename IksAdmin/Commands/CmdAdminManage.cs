@@ -188,7 +188,7 @@ public static class CmdAdminManage
         }
         else
         {
-            admins = _api.ServerAdmins;
+            admins = _api.ServerAdmins.Values.ToList();
             caller.Print("Server admins:", toConsole: true);
         }
         caller.Print("id | name | steamId | flags | immunity | group | serverIds | discord | vk | isDisabled", toConsole: true);

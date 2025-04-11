@@ -800,7 +800,6 @@ public class Main : BasePlugin
         MenuPM.OnRoundEndChangeTeam.Remove(player!.Slot);
         if (player == null || player.IsBot || player.AuthorizedSteamID == null) return HookResult.Continue;
         AdminApi.DisconnectedPlayers.Insert(0, new PlayerInfo(player));
-        AdminApi.OnlineAdmins.Remove(player.AuthorizedSteamID.SteamId64);
         KickOnFullConnect.Remove(player.GetSteamId());
         LastClientVoicesTime.Remove(player.GetSteamId());
         LastClientVoices.Remove(LastClientVoices.FirstOrDefault(x => x.SteamId == player.GetSteamId())!);
@@ -831,9 +830,6 @@ public class Main : BasePlugin
 public class AdminApi : IIksAdminApi
 {
 
-    // Нужно для быстрого поиска админа по стим айди
-    // Кэширование крч
-    public Dictionary<ulong, Admin> OnlineAdmins {get; set;} = new();
 
     public IksAdminApi.CoreConfig Config { get; set; } 
     public BasePlugin Plugin { get; set; } 
@@ -1839,34 +1835,15 @@ public class AdminApi : IIksAdminApi
         AdminUtils.LogDebug("Has gag: " + comms.HasGag());
         AdminUtils.LogDebug("Has mute: " + comms.HasMute());
         AdminUtils.LogDebug("Has silence: " + comms.HasSilence());
-        AdminUtils.LogDebug("Getting admin data");
-        var admins = await GetAdminsBySteamId(steamId);
-        if (admins.Count == 0)
+        
+        if (!ServerAdmins.TryGetValue(ulong.Parse(steamId), out var admin))
         {
-            AdminUtils.LogDebug("Admin data is empty \u2716");
+            AdminUtils.LogDebug("PLAYER NOT ADMIN \u2716");
             return;
         }
 
-        List<int> correctIds = new(); // ID валидных админов
-        for (int i = 0; i < AllAdmins.Count; i++)
-        {
-            var a = AllAdmins[i];
-            var playerAdmin = admins.FirstOrDefault(x => x.Id == a.Id);
-            if (playerAdmin == null) continue;
-            AllAdmins[i] = playerAdmin;
-            correctIds.Add(playerAdmin.Id);
-            AdminUtils.LogDebug("Update ID on server: " + playerAdmin.Id);
-        }
-        var adminsForDelete = AllAdmins.Where(x => x.SteamId == steamId && !correctIds.Contains(x.Id)).ToList();
-        foreach (var adminForDelete in adminsForDelete)
-        {
-            AdminUtils.LogDebug("Remove non valid ids: " + adminForDelete.Id);
-            AllAdmins.Remove(adminForDelete);
-        }
         AdminUtils.LogDebug("Reload warns...");
-        var admin = AdminUtils.Admin(steamId)!;
         AdminUtils.LogDebug("Admin id: " + admin.Id);
-        OnlineAdmins[ulong.Parse(admin.SteamId)] = admin;
         var warns = await GetAllWarnsForAdmin(admin);
         foreach (var warn in warns.ToList())
         {

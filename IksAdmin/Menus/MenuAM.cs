@@ -83,7 +83,7 @@ public static class MenuAM
         }, viewFlags: AdminUtils.GetCurrentPermissionFlags("admins_manage.add"));
         menu.AddMenuOption("edit_this_server", _localizer["MenuOption.AM.Edit.ThisServer"], (_, _) =>
         {
-            var adms = _api.ServerAdmins!.Where(x => x.DeletedAt == null).ToList()!;
+            var adms = _api.ServerAdmins.Values!.Where(x => x.DeletedAt == null).ToList()!;
             if (_api.Config.IgnoreExpiredAdminsInAmMenu)
             {
                 adms = adms.Where(x => !x.IsDisabledByEnd).ToList()!;
@@ -113,7 +113,7 @@ public static class MenuAM
         }, viewFlags: AdminUtils.GetCurrentPermissionFlags("admins_manage.edit"));
         menu.AddMenuOption("delete", _localizer["MenuOption.AM.Delete"], (_, _) =>
         {
-            MenuUtils.SelectItem<Admin?>(caller, "am_delete", "Name", _api.ServerAdmins!, (t, m) =>
+            MenuUtils.SelectItem<Admin?>(caller, "am_delete", "Name", _api.ServerAdmins!.Values.ToList()!, (t, m) =>
             {
                 var cAdmin = caller.Admin();
                 Task.Run(async () =>

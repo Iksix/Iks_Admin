@@ -21,7 +21,7 @@ public static class MenuWarns
         menu.AddMenuOption("add",  _localizer["MenuOption.Warns.Add"], (_, _) =>
         {
             MenuUtils.SelectItem<Admin?>(caller, "warn_add", "Name", 
-                _api.ServerAdmins.Where(x => _api.CanDoActionWithPlayer(caller.GetSteamId(), x.SteamId)).ToList()!,
+                _api.ServerAdmins.Values.Where(x => _api.CanDoActionWithPlayer(caller.GetSteamId(), x.SteamId)).ToList()!,
                 (a, m) =>
                 {
                     caller.Print(_localizer["Message.GL.ReasonSet"]);
@@ -57,7 +57,7 @@ public static class MenuWarns
         menu.AddMenuOption("list",  _localizer["MenuOption.Warns.List"], (_, _) =>
         {
             MenuUtils.SelectItem<Admin?>(caller, "warn_list_admin", "Name", 
-                _api.ServerAdmins!.Where(x => x.Warns.Count > 0).ToList()!,
+                _api.ServerAdmins.Values!.Where(x => x.Warns.Count > 0).ToList()!,
                 (a, m) =>
                 {
                     SelectWarnMenu(caller, a!, m, backMenu);
