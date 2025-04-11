@@ -211,6 +211,7 @@ public class Main : BasePlugin
                 Console.WriteLine($"Removing command from {module.ModuleName} [{command.Command}]");
                 CommandManager.RemoveCommand(command.Definition);
             }
+            AdminApi.RegistredCommands.Remove(commands.Key);
         }
         AdminApi.LoadedModules.Remove(module);
     }

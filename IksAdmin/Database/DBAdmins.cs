@@ -367,7 +367,7 @@ public static class DBAdmins
             Main.AdminApi.ServerAdmins.Clear();
             foreach (var admin in Main.AdminApi.AllAdmins)
             {
-                if ((admin.Servers.Contains(serverId) || admin.Servers.Contains(null) || ignoreAdminServers) && admin.DeletedAt == null){
+                if ((admin.Servers.Contains(serverId) || admin.OnAllServers|| ignoreAdminServers) && admin.DeletedAt == null){
                     if (ulong.TryParse(admin.SteamId, out var uSteamId))
                         Main.AdminApi.ServerAdmins[uSteamId] = admin;
                 }

@@ -60,12 +60,8 @@ public class Admin
         }
         return serverIds.ToArray();
     } }
-
-    /// <summary>
-    /// Not working now
-    /// </summary>
     public bool OnAllServers {get {
-        return Servers.Contains(-1);
+        return Servers.Contains(null);
     }}
     public CCSPlayerController? Controller { get => PlayersUtils.GetControllerBySteamId(SteamId); } 
     public bool IsConsole { get => Id == 1;}

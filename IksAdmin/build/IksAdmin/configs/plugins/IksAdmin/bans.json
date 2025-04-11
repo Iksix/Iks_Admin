@@ -1,7 +1,7 @@
 {
   "TitleToTextInReasons": true, // Принудительно менять причину на текст ( То есть: !ban iks 0 Cheats - Причина будет [1.1] CHEATS )
   "BanOnAllServers" : false, // Банить ли на все сервера
-  "AlwaysBanForIpAndSteamId" : false, // Всегда банит по айпи и стим айди независимо от типа бана ()
+  "AlwaysBanForIpAndSteamId" : false, // Всегда банит по айпи и стим айди независимо от типа бана
   "BlockedIdentifiers": [ // Блокировка идентификаторов для команд (!ban @all - будет запрещенно)
     "@all",
     "@ct",
