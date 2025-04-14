@@ -36,6 +36,8 @@ public interface IIksAdminApi
     public ServerModel? GetServerByIp(string ip);
     public Dictionary<string, List<CommandModel>> RegistredCommands {get; set;}
     public List<AdminModule> LoadedModules {get; set;}
+
+    public List<Admin> HidenAdmins { get; }
     public void ReloadConfigs();
     // MENU ===
     /// <summary>

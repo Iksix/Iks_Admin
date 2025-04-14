@@ -81,11 +81,14 @@ public static class CmdBase
         if (HidenPlayers.Contains(caller))
         {
             HidenPlayers.Remove(caller);
+            _api.HidenAdmins.Remove(caller.Admin()!);
             caller.Print(_localizer["Message.Hide_off"]);
             caller.ChangeTeam(CsTeam.Spectator);
             return;
         }
         HidenPlayers.Add(caller);
+        _api.HidenAdmins.Remove(caller.Admin()!);
+        _api.HidenAdmins.Add(caller.Admin()!);
         FirstMessage.Add(caller);
         Server.ExecuteCommand("sv_disable_teamselect_menu 1");
         if (caller.PlayerPawn.Value != null && caller.PawnIsAlive)

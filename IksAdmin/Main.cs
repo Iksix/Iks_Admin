@@ -459,8 +459,8 @@ public class Main : BasePlugin
             "am_add",
             "Создать админа",
             "admins_manage.add",
-            "css_am_add <steamId> <name> <time/0> <server_id/this> <groupName>\n" +
-            "css_am_add <steamId> <name> <time/0> <server_id/this> <flags> <immunity>",
+            "css_am_add <steamId> <name> <time/0> <server_id/this/all> <groupName>\n" +
+            "css_am_add <steamId> <name> <time/0> <server_id/this/all> <flags> <immunity>",
             CmdAdminManage.Add,
             minArgs: 5 
         );
@@ -738,6 +738,7 @@ public class Main : BasePlugin
             return HookResult.Continue;
         }
         CmdBase.HidenPlayers.Remove(player);
+        AdminApi.HidenAdmins.Remove(player.Admin()!);
         player.Print(Localizer["Message.Hide_off"]);
         return HookResult.Continue;
     }
@@ -805,6 +806,8 @@ public class Main : BasePlugin
         LastClientVoicesTime.Remove(player.GetSteamId());
         LastClientVoices.Remove(LastClientVoices.FirstOrDefault(x => x.SteamId == player.GetSteamId())!);
         KickOnFullConnectReason.Remove(player.GetSteamId());
+        CmdBase.HidenPlayers.Remove(player);
+        AdminApi.HidenAdmins.Remove(player.Admin()!);
         var comms = player.GetComms();
         foreach (var comm in comms)
         {
@@ -972,6 +975,8 @@ public class AdminApi : IIksAdminApi
 
     public List<PlayerInfo> DisconnectedPlayers {get; set;} = new();
     public List<AdminToServer> AdminsToServer {get; set;} = new();
+
+    public List<Admin> HidenAdmins => new();
 
     public AdminApi(BasePlugin plugin, IStringLocalizer localizer, string moduleDirectory)
     {

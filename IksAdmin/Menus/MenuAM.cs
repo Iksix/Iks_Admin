@@ -243,13 +243,19 @@ public static class MenuAM
         {
             OpenAdminEditMenu(caller, admin, backMenu);
         };
-
+        menu.AddMenuOption("all", $"ALL {(serverIds.Contains(null)  ? "+" : "-")}",
+        (p, m) =>
+        {
+            serverIds.Clear();
+            serverIds.Add(null);
+            OpenServerIdEditMenu(caller, admin, backMenu);
+        });
         foreach (var serverId in _api.AllServers.Select(x => x.Id))
         {
             bool adminHas = serverIds.Contains(serverId);
             var server = _api.GetServerById(serverId);
             if (server == null) continue;
-            menu.AddMenuOption(serverId.ToString(), $"{server.Name} {(adminHas ? "+" : "-")}",
+            menu.AddMenuOption(serverId.ToString(), $"{server.Name} {(adminHas  ? "+" : "-")}",
                 (p, m) =>
                 {
                     if (adminHas)
@@ -261,7 +267,7 @@ public static class MenuAM
                         serverIds.Add(serverId);
                     }
                     OpenServerIdEditMenu(caller, admin, backMenu);
-                });
+                }, disabled: serverIds.Contains(null));
         }
         
         menu.Open(caller);

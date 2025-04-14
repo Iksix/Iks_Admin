@@ -24,7 +24,11 @@ public static class CmdAdminManage
         {
             throw new ArgumentException("Time must be a number");
         }
-        int? serverId = args[3] == "this" ? _api.ThisServer.Id : int.Parse(args[3]);
+        int? serverId = null;
+        
+        if (args[3] != "all")
+            serverId = args[3] == "this" ? _api.ThisServer.Id : int.Parse(args[3]);
+
         switch (args.Count)
         {
             case 5:
