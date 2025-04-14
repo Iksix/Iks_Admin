@@ -95,8 +95,8 @@
 
 ### Управление админами `"admins_manage"`
 - #### Добавление/удаление/редактирование админов
-    - `css_am_add <steamId> <name> <time/0> <server_id/this> <groupName>` - Создать админа `"add"` `<z>`
-    - `css_am_add <steamId> <name> <time/0> <server_id/this> <flags> <immunity>` - Создать админа `"add"` `<z>`
+    - `css_am_add <steamId> <name> <time/0> <server_id/this/all> <groupName>` - Создать админа `"add"` `<z>`
+    - `css_am_add <steamId> <name> <time/0> <server_id/this/all> <flags> <immunity>` - Создать админа `"add"` `<z>`
     - `css_am_add_server_id <AdminID> <server_id/this>` - Добавить ServerID админу `"add"` `<z>`
     - `css_am_remove <id>` - Удалить админа `"delete"` `<z>`
     - `css_am_list [all]` - Выводит список админов сервера, если all - то всех `"list"` `<z>`
