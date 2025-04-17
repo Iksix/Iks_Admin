@@ -37,6 +37,7 @@ public class CoreConfig : PluginCFG<CoreConfig>, IPluginCFG
     public bool AutoUpdateDatabaseNames {get; set;} = false; // Обновлять ли ники админов в базе данных на текущие в стиме при подключении
     public bool IgnoreAdminServers {get; set;} = false; // Если true - не важно какие севрера указаны у админа, у него всё равно будут права на этом сервере
     public bool IgnoreExpiredAdminsInAmMenu {get; set;} = true; // Включает игнорирование истёкших админов в админ меню
+    public int PunishmentMessagesType {get; set;} = 0; // 0 - Сообщение о наказании(Бан/Мут/Гаг) отправляется всем игрокам, 1 - только Админу и Цели, 2 - Только Админам и Цели  
     public void Set()
     {
         Config = ReadOrCreate(AdminUtils.CoreInstance.ModuleDirectory +"/../../configs/plugins/IksAdmin/core.json", Config);

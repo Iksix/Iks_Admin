@@ -1,3 +1,4 @@
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 using IksAdminApi;
@@ -9,80 +10,143 @@ public static class MsgAnnounces
 {
     private static AdminApi _api = Main.AdminApi;
     private static IStringLocalizer _localizer = _api.Localizer;
+
+    private static void PrintPunishment(string msg, Admin admin, string targetId, string targetIp)
+    {
+        switch (_api.Config.PunishmentMessagesType)
+        {
+            case 0:
+                AdminUtils.PrintToServer(msg);
+                break;
+            case 1:
+                {
+                    var adminController = admin.Controller;
+                    if (adminController != null)
+                    {
+                        adminController.Print(msg);
+                    }
+                    var target = targetId != string.Empty ? PlayersUtils.GetControllerBySteamId(targetId) : PlayersUtils.GetControllerByIp(targetIp);
+                    if (target != null)
+                    {
+                        target.Print(msg);
+                    }
+                }
+                break;
+            case 2:
+                {
+                    var admins = Utilities.GetPlayers().Where(x => x.Admin != null);
+                    foreach (var player in admins)
+                    {
+                        player.Print(msg);
+                    }
+                    var target = targetId != string.Empty ? PlayersUtils.GetControllerBySteamId(targetId) : PlayersUtils.GetControllerByIp(targetIp);
+                    if (target != null)
+                    {
+                        target.Print(msg);
+                    }
+                }
+                break;
+        }
+    }
+
     public static void BanAdded(PlayerBan ban)
     {
         var str = ban.BanType == 0 ? _localizer["Announce.BanAdded"] : _localizer["Announce.BanAddedIp"];
-        AdminUtils.PrintToServer(str.Value
+        PrintPunishment(str.Value
             .Replace("{admin}", ban.Admin!.CurrentName)
             .Replace("{name}", ban.NameString)
             .Replace("{reason}", ban.Reason)
             .Replace("{ip}", ban.IpString)
-            .Replace("{duration}", AdminUtils.GetDurationString(ban.Duration)), tag: _localizer["Tag"]
+            .Replace("{duration}", AdminUtils.GetDurationString(ban.Duration)),
+            ban.Admin,
+            ban.SteamId ?? string.Empty,
+            ban.IpString
         );
     }
     public static void Unbanned(PlayerBan ban)
     {
-        AdminUtils.PrintToServer(_localizer["Announce.Unbanned"].Value
+        PrintPunishment(_localizer["Announce.Unbanned"].Value
             .Replace("{admin}", ban.UnbannedByAdmin!.CurrentName)
             .Replace("{name}", ban.NameString)
             .Replace("{reason}", ban.UnbanReason)
-            .Replace("{duration}", AdminUtils.GetDurationString(ban.Duration)), tag: _localizer["Tag"]
-        );
+            .Replace("{duration}", AdminUtils.GetDurationString(ban.Duration)),
+            ban.UnbannedByAdmin,
+            "",
+            ""
+            );
     }
 
     public static void GagAdded(PlayerComm gag)
     {
-        AdminUtils.PrintToServer(_localizer["Announce.GagAdded"].Value
+        PrintPunishment(_localizer["Announce.GagAdded"].Value
             .Replace("{admin}", gag.Admin!.CurrentName)
             .Replace("{name}", gag.Name)
             .Replace("{reason}", gag.Reason)
-            .Replace("{duration}", AdminUtils.GetDurationString(gag.Duration)), tag: _localizer["Tag"]
+            .Replace("{duration}", AdminUtils.GetDurationString(gag.Duration)),
+            gag.Admin,
+            gag.SteamId,
+            gag.Ip ?? ""
         );
     }
     public static void UnGagged(PlayerComm gag)
     {
-        AdminUtils.PrintToServer(_localizer["Announce.UnGagged"].Value
+         PrintPunishment(_localizer["Announce.UnGagged"].Value
             .Replace("{admin}", gag.UnbannedByAdmin!.CurrentName)
             .Replace("{name}", gag.Name)
             .Replace("{reason}", gag.UnbanReason)
-            .Replace("{duration}", AdminUtils.GetDurationString(gag.Duration)), tag: _localizer["Tag"]
+            .Replace("{duration}", AdminUtils.GetDurationString(gag.Duration)),
+            gag.UnbannedByAdmin,
+            gag.SteamId,
+            gag.Ip ?? ""
         );
     }
 
     public static void MuteAdded(PlayerComm mute)
     {
-        AdminUtils.PrintToServer(_localizer["Announce.MuteAdded"].Value
+        PrintPunishment(_localizer["Announce.MuteAdded"].Value
             .Replace("{admin}", mute.Admin!.CurrentName)
             .Replace("{name}", mute.Name)
             .Replace("{reason}", mute.Reason)
-            .Replace("{duration}", AdminUtils.GetDurationString(mute.Duration)), tag: _localizer["Tag"]
+            .Replace("{duration}", AdminUtils.GetDurationString(mute.Duration)),
+            mute.Admin,
+            mute.SteamId,
+            mute.Ip ?? ""
         );
     }
-     public static void UnMuted(PlayerComm gag)
+     public static void UnMuted(PlayerComm mute)
     {
-        AdminUtils.PrintToServer(_localizer["Announce.UnMuted"].Value
-            .Replace("{admin}", gag.UnbannedByAdmin!.CurrentName)
-            .Replace("{name}", gag.Name)
-            .Replace("{reason}", gag.UnbanReason)
-            .Replace("{duration}", AdminUtils.GetDurationString(gag.Duration)), tag: _localizer["Tag"]
+        PrintPunishment(_localizer["Announce.UnMuted"].Value
+            .Replace("{admin}", mute.UnbannedByAdmin!.CurrentName)
+            .Replace("{name}", mute.Name)
+            .Replace("{reason}", mute.UnbanReason)
+            .Replace("{duration}", AdminUtils.GetDurationString(mute.Duration)),
+            mute.UnbannedByAdmin,
+            mute.SteamId,
+            mute.Ip ?? ""
         );
     }
     public static void SilenceAdded(PlayerComm comm)
     {
-        AdminUtils.PrintToServer(_localizer["Announce.SilenceAdded"].Value
-                .Replace("{admin}", comm.Admin!.CurrentName)
-                .Replace("{name}", comm.Name)
-                .Replace("{reason}", comm.Reason)
-                .Replace("{duration}", AdminUtils.GetDurationString(comm.Duration)), tag: _localizer["Tag"]
+        PrintPunishment(_localizer["Announce.SilenceAdded"].Value
+            .Replace("{admin}", comm.Admin!.CurrentName)
+            .Replace("{name}", comm.Name)
+            .Replace("{reason}", comm.Reason)
+            .Replace("{duration}", AdminUtils.GetDurationString(comm.Duration)),
+            comm.Admin,
+            comm.SteamId,
+            comm.Ip ?? ""
         );
     }
     public static void UnSilenced(PlayerComm comm)
     {
-        AdminUtils.PrintToServer(_localizer["Announce.UnSilenced"].Value
-                .Replace("{admin}", comm.UnbannedByAdmin!.CurrentName)
-                .Replace("{name}", comm.Name)
-                .Replace("{reason}", comm.UnbanReason)
-                .Replace("{duration}", AdminUtils.GetDurationString(comm.Duration)), tag: _localizer["Tag"]
+        PrintPunishment(_localizer["Announce.UnSilenced"].Value
+            .Replace("{admin}", comm.UnbannedByAdmin!.CurrentName)
+            .Replace("{name}", comm.Name)
+            .Replace("{reason}", comm.UnbanReason)
+            .Replace("{duration}", AdminUtils.GetDurationString(comm.Duration)),
+            comm.UnbannedByAdmin,
+            comm.SteamId,
+            comm.Ip ?? ""
         );
     }
 
