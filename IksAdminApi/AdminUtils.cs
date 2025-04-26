@@ -3,6 +3,7 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.UserMessages;
+using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Localization;
 
 namespace IksAdminApi;
@@ -106,6 +107,7 @@ public static class AdminUtils
         if (admin.HasPermissions("other.equals_immunity_action") && admin.HasPermissions("blocks_manage.remove_immunity") && bannedBy.CurrentImmunity <= admin.CurrentImmunity) return true;
         return false;
     }
+    
     public static bool CanUnComm(Admin admin, PlayerComm comm)
     {
         var bannedBy = comm.Admin;
@@ -233,8 +235,12 @@ public static class AdminUtils
             }
             foreach (var str in message.Split("\n"))
             {
-                if (toConsole) player.PrintToConsole($" {tag ?? CoreApi.Localizer["Tag"]} {str}");
-                else player.PrintToChat($" {tag ?? CoreApi.Localizer["Tag"]} {str}");
+                var res = str
+                        .Replace("{asilver}", ChatColors.Silver.ToString())
+                        .Replace("{abluegrey}", ChatColors.BlueGrey.ToString())
+                    ;
+                if (toConsole) player.PrintToConsole($" {tag ?? CoreApi.Localizer["Tag"]} {res}");
+                else player.PrintToChat($" {tag ?? CoreApi.Localizer["Tag"]} {res}");
             }
 
             eventData.Invoke("print_to_player_post");
@@ -271,7 +277,11 @@ public static class AdminUtils
         if (message.Trim() == "") return;
         foreach (var str in message.Split("\n"))
         {
-            Server.PrintToChatAll($" {tag} {str}");
+            var res = str
+                        .Replace("{asilver}", ChatColors.Silver.ToString())
+                        .Replace("{abluegrey}", ChatColors.BlueGrey.ToString())
+                    ;
+            Server.PrintToChatAll($" {tag} {res}");
         }
     }
     public static void Reply(this CommandInfo info, string message, string? tag = null)
@@ -279,7 +289,11 @@ public static class AdminUtils
         if (message.Trim() == "") return;
         foreach (var str in message.Split("\n"))
         {
-            info.ReplyToCommand($" {tag ?? CoreApi.Localizer["Tag"]} {str}");
+            var res = str
+                    .Replace("{asilver}", ChatColors.Silver.ToString())
+                    .Replace("{abluegrey}", ChatColors.BlueGrey.ToString())
+                ;
+            info.ReplyToCommand($" {tag ?? CoreApi.Localizer["Tag"]} {res}");
         }
     }
     /// <returns>Возвращает строку из текущих флагов по праву(ex: "admin_manage.add") (учитывая замену в кфг)</returns>

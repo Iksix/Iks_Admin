@@ -31,7 +31,7 @@ namespace IksAdmin;
 public class Main : BasePlugin
 {
     public override string ModuleName => "IksAdmin";
-    public override string ModuleVersion => "3.0 v15";
+    public override string ModuleVersion => "3.0 v16";
     public override string ModuleAuthor => "iks [Discord: iks__]";
 
     public static IMenuApi MenuApi = null!;

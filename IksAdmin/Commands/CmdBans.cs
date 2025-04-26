@@ -7,6 +7,7 @@ namespace IksAdmin.Commands;
 
 public static class CmdBans
 {
+    private static IIksAdminApi _api = Main.AdminApi;
     public static void Ban(CCSPlayerController? caller, List<string> args, CommandInfo info)
     {
         //css_ban <#uid/#steamId/name> <time> <reason>
@@ -14,13 +15,18 @@ public static class CmdBans
         var time = args[1];
         if (!int.TryParse(time, out int timeInt)) throw new ArgumentException("Time is not a number");
         var reason = string.Join(" ", args.Skip(2));
-        Main.AdminApi.DoActionWithIdentity(caller, identity, (target, _) => 
+        _api.DoActionWithIdentity(caller, identity, (target, _) => 
         {
+            if (!_api.CanDoActionWithPlayer(caller.GetSteamId(), target.GetSteamId()))
+            {
+                caller.Print(_api.Localizer["ActionError.NotEnoughPermissionsForAction"]);
+                return;
+            }
             var ban = new PlayerBan(
                 new PlayerInfo(target),
                 reason,
                 timeInt,
-                serverId: Main.AdminApi.ThisServer.Id
+                serverId: _api.ThisServer.Id
             );
             if (BansConfig.Config.BanOnAllServers) {
                 ban.ServerId = null;
@@ -42,15 +48,20 @@ public static class CmdBans
         string? name = null;
         string? ip = null;
         var target = PlayersUtils.GetControllerBySteamId(steamId);
+        if (!_api.CanDoActionWithPlayer(caller.GetSteamId(), steamId))
+        {
+            caller.Print(_api.Localizer["ActionError.NotEnoughPermissionsForAction"]);
+            return;
+        }
         if (target != null)
         {
             ip = target.GetIp();
         }
         var adminId = caller.Admin()!.Id;
         Task.Run(async () => {
-            if (Main.AdminApi.Config.WebApiKey != "") 
+            if (_api.Config.WebApiKey != "") 
             {
-                var playerSummaryResponse = await Main.AdminApi.GetPlayerSummaries(ulong.Parse(steamId));
+                var playerSummaryResponse = await _api.GetPlayerSummaries(ulong.Parse(steamId));
                 if (playerSummaryResponse != null)
                     name = playerSummaryResponse!.PersonaName;
             }
@@ -60,7 +71,7 @@ public static class CmdBans
                 name,
                 reason,
                 timeInt,
-                serverId: Main.AdminApi.ThisServer.Id
+                serverId: _api.ThisServer.Id
             );
             if (BansConfig.Config.BanOnAllServers) {
                 ban.ServerId = null;
@@ -96,13 +107,18 @@ public static class CmdBans
         var time = args[1];
         if (!int.TryParse(time, out int timeInt)) throw new ArgumentException("Time is not a number");
         var reason = string.Join(" ", args.Skip(2));
-        Main.AdminApi.DoActionWithIdentity(caller, identity, (target, _) => 
+        _api.DoActionWithIdentity(caller, identity, (target, _) => 
         {
+            if (!_api.CanDoActionWithPlayer(caller.GetSteamId(), target.GetSteamId()))
+            {
+                caller.Print(_api.Localizer["ActionError.NotEnoughPermissionsForAction"]);
+                return;
+            }
             var ban = new PlayerBan(
                 new PlayerInfo(target),
                 reason,
                 timeInt,
-                serverId: Main.AdminApi.ThisServer.Id,
+                serverId: _api.ThisServer.Id,
                 banType: 2
             );
             if (BansConfig.Config.BanOnAllServers) {
@@ -129,12 +145,17 @@ public static class CmdBans
         if (target != null)
         {
             steamId = target.AuthorizedSteamID!.SteamId64.ToString();
+            if (!_api.CanDoActionWithPlayer(caller.GetSteamId(), target.GetSteamId()))
+            {
+                caller.Print(_api.Localizer["ActionError.NotEnoughPermissionsForAction"]);
+                return;
+            }
         }
         sbyte banType = steamId == null ? (sbyte)1 : (sbyte)2;
         Task.Run(async () => {
-            if (Main.AdminApi.Config.WebApiKey != "") 
+            if (_api.Config.WebApiKey != "") 
             {
-                var playerSummaryResponse = await Main.AdminApi.GetPlayerSummaries(ulong.Parse(steamId));
+                var playerSummaryResponse = await _api.GetPlayerSummaries(ulong.Parse(steamId));
                 name = playerSummaryResponse!.PersonaName;
             }
             var ban = new PlayerBan(
@@ -143,7 +164,7 @@ public static class CmdBans
                 name,
                 reason,
                 timeInt,
-                serverId: Main.AdminApi.ThisServer.Id,
+                serverId: _api.ThisServer.Id,
                 banType: banType
             );
             if (BansConfig.Config.BanOnAllServers) {
