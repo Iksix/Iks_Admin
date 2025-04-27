@@ -220,6 +220,11 @@
 
     // v12
     "Other.LVoices" : "Останні гравці, що говорили:",  
-    "Other.LVoicesTemplate" : "{white}{i}. {name} [{date}]" // params: {i}, {uid}, {steamId}, {name}, {date}
+    "Other.LVoicesTemplate" : "{white}{i}. {name} [{date}]", // params: {i}, {uid}, {steamId}, {name}, {date}
+
+    // v16
+    "Announce.Rename": "Адмін {red}{admin}{white} перейменував гравця {red}{name}{white} на {red}{newName}{white}!",
+    "Message.OnRename": "Введіть новий нік гравця: !s1mple",
+    "MenuOption.PM.Rename": "Перейменувати гравця"
 
 }

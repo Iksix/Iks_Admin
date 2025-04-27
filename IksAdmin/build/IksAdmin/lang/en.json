@@ -220,6 +220,11 @@
 
     // v12
     "Other.LVoices" : "Last speaking players:",  
-    "Other.LVoicesTemplate" : "{white}{i}. {name} [{date}]" // params: {i}, {uid}, {steamId}, {name}, {date}
+    "Other.LVoicesTemplate" : "{white}{i}. {name} [{date}]", // params: {i}, {uid}, {steamId}, {name}, {date}
+
+    // v16
+    "Announce.Rename": "Admin {red}{admin}{white} renamed player {red}{name}{white} to {red}{newName}{white}!",
+    "Message.OnRename": "Enter the player's new nickname: !s1mple",
+    "MenuOption.PM.Rename": "Rename player"
     
 }

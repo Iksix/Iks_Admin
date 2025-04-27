@@ -23,7 +23,7 @@ public static class CmdBans
                 return;
             }
             var ban = new PlayerBan(
-                new PlayerInfo(target),
+                new PlayerInfo(target!),
                 reason,
                 timeInt,
                 serverId: _api.ThisServer.Id
@@ -115,7 +115,7 @@ public static class CmdBans
                 return;
             }
             var ban = new PlayerBan(
-                new PlayerInfo(target),
+                new PlayerInfo(target!),
                 reason,
                 timeInt,
                 serverId: _api.ThisServer.Id,
@@ -155,7 +155,7 @@ public static class CmdBans
         Task.Run(async () => {
             if (_api.Config.WebApiKey != "") 
             {
-                var playerSummaryResponse = await _api.GetPlayerSummaries(ulong.Parse(steamId));
+                var playerSummaryResponse = await _api.GetPlayerSummaries(ulong.Parse(steamId!));
                 name = playerSummaryResponse!.PersonaName;
             }
             var ban = new PlayerBan(

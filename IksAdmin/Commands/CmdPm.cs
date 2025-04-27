@@ -16,7 +16,7 @@ public static class CmdPm
         var identity = args[0];
         var reason = args[1];
         _api.DoActionWithIdentity(caller, identity,
-            (target, _) =>
+            (target, identityType) =>
             {
                 if (target!.IsBot || _api.CanDoActionWithPlayer(caller.GetSteamId(), target.GetSteamId()))
                 {
@@ -31,8 +31,14 @@ public static class CmdPm
         // css_slay <#uid/#steamId/name/@...>
         var identity = args[0];
         _api.DoActionWithIdentity(caller, identity,
-            (target, _) =>
+            (target, identityType) =>
             {
+                if (!target!.IsBot && !_api.CanDoActionWithPlayer(caller.GetSteamId(), target.GetSteamId()))
+                {
+                    if (identityType is IdentityType.Name or IdentityType.UserId or IdentityType.SteamId)
+                        caller.Print(_api.Localizer["ActionError.NotEnoughPermissionsForAction"]);
+                    return;
+                }
                 if (target!.PawnIsAlive && _api.CanDoActionWithPlayer(caller.GetSteamId(), target.GetSteamId()))
                 {
                     _api.Slay(caller.Admin()!, target);
@@ -46,9 +52,15 @@ public static class CmdPm
         // css_respawn <#uid/#steamId/name/@...> [alive also(true/false*)]
         var identity = args[0];
         _api.DoActionWithIdentity(caller, identity,
-            (target, type) =>
+            (target, identityType) =>
             {
-                if (!target!.PawnIsAlive || (args.Count > 1 && args[1] == "true") || (type is IdentityType.Name or IdentityType.UserId or IdentityType.SteamId))
+                if (!target!.IsBot && !_api.CanDoActionWithPlayer(caller.GetSteamId(), target.GetSteamId()))
+                {
+                    if (identityType is IdentityType.Name or IdentityType.UserId or IdentityType.SteamId)
+                        caller.Print(_api.Localizer["ActionError.NotEnoughPermissionsForAction"]);
+                    return;
+                }
+                if (!target!.PawnIsAlive || (args.Count > 1 && args[1] == "true") || (identityType is IdentityType.Name or IdentityType.UserId or IdentityType.SteamId))
                 {
                     _api.Respawn(caller.Admin()!, target);
                 }
@@ -67,8 +79,14 @@ public static class CmdPm
             _ => throw new ArgumentException("invalid team")
         };
         _api.DoActionWithIdentity(caller, identity,
-            (target, _) =>
+            (target, identityType) =>
             {
+                if (!target!.IsBot && !_api.CanDoActionWithPlayer(caller.GetSteamId(), target.GetSteamId()))
+                {
+                    if (identityType is IdentityType.Name or IdentityType.UserId or IdentityType.SteamId)
+                        caller.Print(_api.Localizer["ActionError.NotEnoughPermissionsForAction"]);
+                    return;
+                }
                 _api.ChangeTeam(caller.Admin()!, target, teamNum);
             },
             blockedArgs: AdminUtils.BlockedIdentifiers("css_changeteam")
@@ -85,11 +103,36 @@ public static class CmdPm
             _ => throw new ArgumentException("invalid team")
         };
         _api.DoActionWithIdentity(caller, identity,
-            (target, _) =>
+            (target, identityType) =>
             {
+                if (!target!.IsBot && !_api.CanDoActionWithPlayer(caller.GetSteamId(), target.GetSteamId()))
+                {
+                    if (identityType is IdentityType.Name or IdentityType.UserId or IdentityType.SteamId)
+                        caller.Print(_api.Localizer["ActionError.NotEnoughPermissionsForAction"]);
+                    return;
+                }
                 _api.SwitchTeam(caller.Admin()!, target!, teamNum);
             },
             blockedArgs: AdminUtils.BlockedIdentifiers("css_switchteam")
+        );
+    }
+
+    public static void Rename(CCSPlayerController? caller, List<string> args, CommandInfo info)
+    {
+        var identity = args[0];
+        var name = string.Join(" ", args.Skip(1));
+        _api.DoActionWithIdentity(caller, identity,
+            (target, identityType) =>
+            {
+                if (!target!.IsBot && !_api.CanDoActionWithPlayer(caller.GetSteamId(), target.GetSteamId()))
+                {
+                    if (identityType is IdentityType.Name or IdentityType.UserId or IdentityType.SteamId)
+                        caller.Print(_api.Localizer["ActionError.NotEnoughPermissionsForAction"]);
+                    return;
+                }
+                _api.Rename(caller.Admin()!, target!, name);
+            },
+            blockedArgs: AdminUtils.BlockedIdentifiers("css_rename")
         );
     }
 }

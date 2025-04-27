@@ -317,6 +317,7 @@ public class Main : BasePlugin
         AdminApi.RegisterPermission("players_manage.switchteam", "k");
         AdminApi.RegisterPermission("players_manage.slay", "k");
         AdminApi.RegisterPermission("players_manage.respawn", "k");
+        AdminApi.RegisterPermission("players_manage.rename", "k");
         AdminApi.RegisterPermission("players_manage.who", "b");
         // SERVERS MANAGE === 
         AdminApi.RegisterPermission("servers_manage.reload_data", "z");
@@ -672,6 +673,15 @@ public class Main : BasePlugin
             "players_manage.kick",
             "css_kick <#uid/#steamId/name/@...> <reason>",
             CmdPm.Kick,
+            minArgs: 2,
+            whoCanExecute: CommandUsage.CLIENT_AND_SERVER
+        );
+        AdminApi.AddNewCommand(
+            "kick",
+            "Переименовать игрока",
+            "players_manage.rename",
+            "css_rename <#uid/#steamId/name/@...> <new name>",
+            CmdPm.Rename,
             minArgs: 2,
             whoCanExecute: CommandUsage.CLIENT_AND_SERVER
         );
@@ -2640,5 +2650,33 @@ public class AdminApi : IIksAdminApi
             MsgAnnounces.SwitchTeam(admin, player, team);
 
         eventData.Invoke("s_team_player_post");
+    }
+
+    public void Rename(Admin admin, CCSPlayerController player, string name, bool announce = true)
+    {
+        AdminUtils.LogDebug($"Switch team for player {player.PlayerName}...");
+        var eventData = new EventData("rename_player_pre");
+        eventData.Insert("admin", admin);
+        eventData.Insert("player", player);
+        eventData.Insert("name", name);
+        eventData.Insert("announce", announce);
+        if (eventData.Invoke() != HookResult.Continue)
+        {
+            AdminUtils.LogDebug("Stopped by event PRE");
+            return;
+        }
+
+        admin = eventData.Get<Admin>("admin");
+        player = eventData.Get<CCSPlayerController>("player");
+        name = eventData.Get<string>("name");
+        announce = eventData.Get<bool>("announce");
+        
+        player.PlayerName = name;
+        Utilities.SetStateChanged(player, "CBasePlayerController", "m_iszPlayerName");
+        
+        if (announce)
+            MsgAnnounces.Rename(admin, player, name);
+
+        eventData.Invoke("rename_player_post");
     }
 }

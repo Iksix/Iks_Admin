@@ -220,5 +220,10 @@
 
     // v12
     "Other.LVoices" : "Последние говорившие игроки:",
-    "Other.LVoicesTemplate" : "{white}{i}. {name} [{date}]" // params: {i}, {uid}, {steamId}, {name}, {date}
+    "Other.LVoicesTemplate" : "{white}{i}. {name} [{date}]", // params: {i}, {uid}, {steamId}, {name}, {date}
+    
+    // v16
+    "Announce.Rename": "Админ {red}{admin}{white} переименовал игрока {red}{name}{white} в {red}{newName}{white}!",
+    "Message.OnRename": "Введите новый ник игрока: !s1mple",
+    "MenuOption.PM.Rename": "Переименовать игрока"
 }

@@ -38,6 +38,9 @@ public static class MenuPM
             OpenRespawnMenu(caller, menu);
         }, viewFlags: AdminUtils.GetCurrentPermissionFlags("players_manage.respawn"));
         
+        menu.AddMenuOption("rename", _localizer["MenuOption.PM.Rename"], (_, _) => {
+            OpenRenameMenu(caller, menu);
+        }, viewFlags: AdminUtils.GetCurrentPermissionFlags("players_manage.rename"));
         
         menu.Open(caller);
     }
@@ -235,6 +238,18 @@ public static class MenuPM
                     _api.Respawn(caller.Admin()!, p!);
                 _api.Plugin.AddTimer(0.1f, () => {
                     OpenRespawnMenu(caller, menu);
+                });
+            }, backMenu: menu, nullOption: false
+        );
+    }
+    private static void OpenRenameMenu(CCSPlayerController caller, IDynamicMenu menu)
+    {
+        MenuUtils.SelectItem<CCSPlayerController?>(caller, "respawn", "PlayerName", PlayersUtils.GetOnlinePlayers(true).Where(x => (x.IsBot || _api.CanDoActionWithPlayer(caller.GetSteamId(), x.GetSteamId())) && !x.PawnIsAlive).ToList()!,
+            (p, pmenu) => {
+                caller.Print(_api.Localizer["Message.OnRename"]);
+                _api.HookNextPlayerMessage(caller, s =>
+                {
+                    _api.Rename(caller.Admin()!, p!, s);
                 });
             }, backMenu: menu, nullOption: false
         );

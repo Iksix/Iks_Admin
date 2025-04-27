@@ -34,7 +34,7 @@ public static class MsgAnnounces
                 break;
             case 2:
                 {
-                    var admins = Utilities.GetPlayers().Where(x => x.Admin != null);
+                    var admins = Utilities.GetPlayers().Where(x => x.Admin() != null);
                     foreach (var player in admins)
                     {
                         player.Print(msg);
@@ -229,6 +229,14 @@ public static class MsgAnnounces
         AdminUtils.PrintToServer(_localizer["Announce.AM.Deleted"].Value
                 .Replace("{admin}", actioneer.CurrentName)
                 .Replace("{name}", admin.CurrentName)
+        );
+    }
+
+    public static void Rename(Admin admin, CCSPlayerController player, string name)
+    {
+        AdminUtils.PrintToServer(_localizer["Announce.Rename"].AReplace(
+            ["admin", "name", "newName"],
+            [admin.CurrentName, player.PlayerName, name])
         );
     }
 }

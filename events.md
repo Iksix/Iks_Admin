@@ -23,6 +23,11 @@
 - `"player" <CCSPlayerController>`
 - `"admin" <Admin>`
 - `"announce" <bool>`
+### "rename_player_pre" - переименовать игрока
+- `"admin" <Admin>`
+- `"player" <CCSPlayerController>`
+- `"name" <string>`
+- `"announce" <bool>`
 ### `async` "update_warn" - обновление варна (в бд)
 - `"warn" <Warn>`
 ### `async` "create_warn_pre" - выдача варна
