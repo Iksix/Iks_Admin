@@ -85,6 +85,7 @@
 - `css_am_config_reload` Перезагрузка конфига `"config"` `<z>`
 
 ### Управление игроками `"players_manage"`
+- `css_rename <#uid/#steamId/name/@...> <new name>` - Сменить имя игрока `"rename"` `<k>`
 - `css_kick <#uid/#steamId/name/@...> <reason>` - Кикнуть игрока `"kick"` `<k>`
 - Возможность вводить свою причину кика - `"kick_own_reason"` `<k>`
 - `css_respawn <#uid/#steamId/name/@...>` - Возродить игрока `"respawn"` `<k>`
