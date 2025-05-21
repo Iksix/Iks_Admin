@@ -22,6 +22,7 @@
     <Target Name="ExportDllsAfterBuild" AfterTargets="Build">
         <ItemGroup>
             <SelectedDlls Include="$(TargetPath)"/>
+            <SelectedDlls Include="$(OutputPath)\IksAdminApi.dll"/>
             <SelectedDlls Include="$(OutputPath)\AutoMapper.dll"/>
             <SelectedDlls Include="$(OutputPath)\CoreRcon.dll"/>
             <SelectedDlls Include="$(OutputPath)\Dapper.dll"/>
@@ -33,9 +34,34 @@
             <SelectedDlls Include="$(OutputPath)\System.IO.Pipelines.dll"/>
         </ItemGroup>
 
-        <MakeDir Directories="$(OutputPath)\bundle"/>
+        <ItemGroup>
+            <SharedDlls Include="$(OutputPath)\IksAdminApi.dll"/>
+        </ItemGroup>
 
-        <Copy SourceFiles="@(SelectedDlls)" DestinationFolder="$(OutputPath)\bundle" SkipUnchangedFiles="true"/>
+        <ItemGroup>
+            <LanguageFiles Include="$(MSBuildProjectDirectory)\lang\**\*"/>
+            <ConfigFiles Include="$(MSBuildProjectDirectory)\configs\**\*"/>
+            <SortMenuConfigFile Include="$(MSBuildProjectDirectory)\sortmenus.json"/>
+        </ItemGroup>
+
+        <MakeDir Directories="$(OutputPath)\bundle"/>
+        <MakeDir Directories="$(OutputPath)\bundle\plugins\$(MSBuildProjectName)"/>
+        <MakeDir Directories="$(OutputPath)\bundle\plugins\$(MSBuildProjectName)\lang"/>
+        <MakeDir Directories="$(OutputPath)\bundle\shared\IksAdminApi"/>
+        <MakeDir Directories="$(OutputPath)\bundle\configs\plugins\$(MSBuildProjectName)"/>
+
+        <Copy SourceFiles="@(SelectedDlls)" DestinationFolder="$(OutputPath)\bundle\plugins\$(MSBuildProjectName)" SkipUnchangedFiles="true"/>
+        <Copy SourceFiles="@(SharedDlls)" DestinationFolder="$(OutputPath)\bundle\shared\IksAdminApi" SkipUnchangedFiles="true"/>
+        <Copy SourceFiles="@(LanguageFiles)"
+              DestinationFolder="$(OutputPath)\bundle\plugins\$(MSBuildProjectName)\lang\%(RecursiveDir)"
+              SkipUnchangedFiles="true"/>
+        <Copy SourceFiles="@(ConfigFiles)"
+              DestinationFolder="$(OutputPath)\bundle\configs\plugins\$(MSBuildProjectName)\%(RecursiveDir)"
+              SkipUnchangedFiles="true"/>
+        <Copy SourceFiles="@(SortMenuConfigFile)"
+              DestinationFolder="$(OutputPath)\bundle\plugins\$(MSBuildProjectName)"
+              SkipUnchangedFiles="true"/>
+
     </Target>
 
 
