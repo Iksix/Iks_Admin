@@ -9,15 +9,6 @@
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CoreRcon" Version="5.4.1" />
-    <PackageReference Include="dapper" Version="2.1.35" />
-    <PackageReference Include="mysqlconnector" Version="2.3.7" />
-    <PackageReference Include="SteamWebAPI2" Version="4.4.1" />
-    <ProjectReference Include="..\IksAdminApi\IksAdminApi.csproj" />
-    <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.310" />
-    <Reference Include="../RequirmentsApi/MenuManagerApi.dll" />
-  </ItemGroup>
     <ItemGroup>
         <PackageReference Include="CoreRcon" Version="5.4.1"/>
         <PackageReference Include="dapper" Version="2.1.35"/>
@@ -31,8 +22,6 @@
     <Target Name="ExportDllsAfterBuild" AfterTargets="Build">
         <ItemGroup>
             <SelectedDlls Include="$(TargetPath)"/>
-<!--            <SelectedDlls Include="$(OutputPath)\$(AssemblyName).pdb"/>-->
-<!--            <SelectedDlls Include="$(OutputPath)\$(AssemblyName).deps.json"/>-->
             <SelectedDlls Include="$(OutputPath)\AutoMapper.dll"/>
             <SelectedDlls Include="$(OutputPath)\CoreRcon.dll"/>
             <SelectedDlls Include="$(OutputPath)\Dapper.dll"/>
