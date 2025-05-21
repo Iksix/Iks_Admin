@@ -1,7 +1,7 @@
 /.idea
-/ExampleModules/WithDynamicEvent/bin
-/ExampleModules/WithDynamicEvent/obj
-/IksAdmin/bin
-/IksAdmin/obj
-/IksAdminApi/bin
-/IksAdminApi/obj
+bin/
+obj/
+
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
