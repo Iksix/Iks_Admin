@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.294" />
+    <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.310" />
     <ProjectReference Include="../../IksAdminApi/IksAdminApi.csproj" />
   </ItemGroup>
 
