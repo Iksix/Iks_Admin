@@ -1,68 +1,68 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
-        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    </PropertyGroup>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="CoreRcon" Version="5.4.1"/>
+    <PackageReference Include="dapper" Version="2.1.35"/>
+    <PackageReference Include="mysqlconnector" Version="2.3.7"/>
+    <PackageReference Include="SteamWebAPI2" Version="4.4.1"/>
+    <ProjectReference Include="..\IksAdminApi\IksAdminApi.csproj"/>
+    <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.310"/>
+    <Reference Include="../RequirmentsApi/MenuManagerApi.dll"/>
+  </ItemGroup>
+
+  <Target Name="ExportDllsAfterBuild" AfterTargets="Build">
     <ItemGroup>
-        <PackageReference Include="CoreRcon" Version="5.4.1"/>
-        <PackageReference Include="dapper" Version="2.1.35"/>
-        <PackageReference Include="mysqlconnector" Version="2.3.7"/>
-        <PackageReference Include="SteamWebAPI2" Version="4.4.1"/>
-        <ProjectReference Include="..\IksAdminApi\IksAdminApi.csproj"/>
-        <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.310"/>
-        <Reference Include="../RequirmentsApi/MenuManagerApi.dll"/>
+      <SelectedDlls Include="$(TargetPath)"/>
+      <SelectedDlls Include="$(OutputPath)\IksAdminApi.dll"/>
+      <SelectedDlls Include="$(OutputPath)\AutoMapper.dll"/>
+      <SelectedDlls Include="$(OutputPath)\CoreRcon.dll"/>
+      <SelectedDlls Include="$(OutputPath)\Dapper.dll"/>
+      <SelectedDlls Include="$(OutputPath)\MenuManagerApi.dll"/>
+      <SelectedDlls Include="$(OutputPath)\MySqlConnector.dll"/>
+      <SelectedDlls Include="$(OutputPath)\Newtonsoft.Json.dll"/>
+      <SelectedDlls Include="$(OutputPath)\Steam.Models.dll"/>
+      <SelectedDlls Include="$(OutputPath)\SteamWebAPI2.dll"/>
+      <SelectedDlls Include="$(OutputPath)\System.IO.Pipelines.dll"/>
     </ItemGroup>
 
-    <Target Name="ExportDllsAfterBuild" AfterTargets="Build">
-        <ItemGroup>
-            <SelectedDlls Include="$(TargetPath)"/>
-            <SelectedDlls Include="$(OutputPath)\IksAdminApi.dll"/>
-            <SelectedDlls Include="$(OutputPath)\AutoMapper.dll"/>
-            <SelectedDlls Include="$(OutputPath)\CoreRcon.dll"/>
-            <SelectedDlls Include="$(OutputPath)\Dapper.dll"/>
-            <SelectedDlls Include="$(OutputPath)\MenuManagerApi.dll"/>
-            <SelectedDlls Include="$(OutputPath)\MySqlConnector.dll"/>
-            <SelectedDlls Include="$(OutputPath)\Newtonsoft.Json.dll"/>
-            <SelectedDlls Include="$(OutputPath)\Steam.Models.dll"/>
-            <SelectedDlls Include="$(OutputPath)\SteamWebAPI2.dll"/>
-            <SelectedDlls Include="$(OutputPath)\System.IO.Pipelines.dll"/>
-        </ItemGroup>
+    <ItemGroup>
+      <SharedDlls Include="$(OutputPath)\IksAdminApi.dll"/>
+    </ItemGroup>
 
-        <ItemGroup>
-            <SharedDlls Include="$(OutputPath)\IksAdminApi.dll"/>
-        </ItemGroup>
+    <ItemGroup>
+      <LanguageFiles Include="$(MSBuildProjectDirectory)\lang\**\*"/>
+      <ConfigFiles Include="$(MSBuildProjectDirectory)\configs\**\*"/>
+      <SortMenuConfigFile Include="$(MSBuildProjectDirectory)\sortmenus.json"/>
+    </ItemGroup>
 
-        <ItemGroup>
-            <LanguageFiles Include="$(MSBuildProjectDirectory)\lang\**\*"/>
-            <ConfigFiles Include="$(MSBuildProjectDirectory)\configs\**\*"/>
-            <SortMenuConfigFile Include="$(MSBuildProjectDirectory)\sortmenus.json"/>
-        </ItemGroup>
+    <MakeDir Directories="$(OutputPath)\bundle"/>
+    <MakeDir Directories="$(OutputPath)\bundle\plugins\$(MSBuildProjectName)"/>
+    <MakeDir Directories="$(OutputPath)\bundle\plugins\$(MSBuildProjectName)\lang"/>
+    <MakeDir Directories="$(OutputPath)\bundle\shared\IksAdminApi"/>
+    <MakeDir Directories="$(OutputPath)\bundle\configs\plugins\$(MSBuildProjectName)"/>
 
-        <MakeDir Directories="$(OutputPath)\bundle"/>
-        <MakeDir Directories="$(OutputPath)\bundle\plugins\$(MSBuildProjectName)"/>
-        <MakeDir Directories="$(OutputPath)\bundle\plugins\$(MSBuildProjectName)\lang"/>
-        <MakeDir Directories="$(OutputPath)\bundle\shared\IksAdminApi"/>
-        <MakeDir Directories="$(OutputPath)\bundle\configs\plugins\$(MSBuildProjectName)"/>
+    <Copy SourceFiles="@(SelectedDlls)" DestinationFolder="$(OutputPath)\bundle\plugins\$(MSBuildProjectName)" SkipUnchangedFiles="true"/>
+    <Copy SourceFiles="@(SharedDlls)" DestinationFolder="$(OutputPath)\bundle\shared\IksAdminApi" SkipUnchangedFiles="true"/>
+    <Copy SourceFiles="@(LanguageFiles)"
+          DestinationFolder="$(OutputPath)\bundle\plugins\$(MSBuildProjectName)\lang\%(RecursiveDir)"
+          SkipUnchangedFiles="true"/>
+    <Copy SourceFiles="@(ConfigFiles)"
+          DestinationFolder="$(OutputPath)\bundle\configs\plugins\$(MSBuildProjectName)\%(RecursiveDir)"
+          SkipUnchangedFiles="true"/>
+    <Copy SourceFiles="@(SortMenuConfigFile)"
+          DestinationFolder="$(OutputPath)\bundle\plugins\$(MSBuildProjectName)"
+          SkipUnchangedFiles="true"/>
 
-        <Copy SourceFiles="@(SelectedDlls)" DestinationFolder="$(OutputPath)\bundle\plugins\$(MSBuildProjectName)" SkipUnchangedFiles="true"/>
-        <Copy SourceFiles="@(SharedDlls)" DestinationFolder="$(OutputPath)\bundle\shared\IksAdminApi" SkipUnchangedFiles="true"/>
-        <Copy SourceFiles="@(LanguageFiles)"
-              DestinationFolder="$(OutputPath)\bundle\plugins\$(MSBuildProjectName)\lang\%(RecursiveDir)"
-              SkipUnchangedFiles="true"/>
-        <Copy SourceFiles="@(ConfigFiles)"
-              DestinationFolder="$(OutputPath)\bundle\configs\plugins\$(MSBuildProjectName)\%(RecursiveDir)"
-              SkipUnchangedFiles="true"/>
-        <Copy SourceFiles="@(SortMenuConfigFile)"
-              DestinationFolder="$(OutputPath)\bundle\plugins\$(MSBuildProjectName)"
-              SkipUnchangedFiles="true"/>
-
-    </Target>
+  </Target>
 
 
 </Project>
