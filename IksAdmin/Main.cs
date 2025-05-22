@@ -677,7 +677,7 @@ public class Main : BasePlugin
             whoCanExecute: CommandUsage.CLIENT_AND_SERVER
         );
         AdminApi.AddNewCommand(
-            "kick",
+            "rename",
             "Переименовать игрока",
             "players_manage.rename",
             "css_rename <#uid/#steamId/name/@...> <new name>",
@@ -986,7 +986,8 @@ public class AdminApi : IIksAdminApi
     public List<PlayerInfo> DisconnectedPlayers {get; set;} = new();
     public List<AdminToServer> AdminsToServer {get; set;} = new();
 
-    public List<Admin> HidenAdmins => new();
+    public List<Admin> HidenAdmins { get; set; } = new();
+  
 
     public AdminApi(BasePlugin plugin, IStringLocalizer localizer, string moduleDirectory)
     {
@@ -2671,11 +2672,12 @@ public class AdminApi : IIksAdminApi
         name = eventData.Get<string>("name");
         announce = eventData.Get<bool>("announce");
         
+        if (announce)
+            MsgAnnounces.Rename(admin, player, name);
         player.PlayerName = name;
         Utilities.SetStateChanged(player, "CBasePlayerController", "m_iszPlayerName");
         
-        if (announce)
-            MsgAnnounces.Rename(admin, player, name);
+        
 
         eventData.Invoke("rename_player_post");
     }
