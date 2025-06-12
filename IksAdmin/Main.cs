@@ -868,32 +868,47 @@ public class AdminApi : IIksAdminApi
         try
         {
             var admins = await DBAdmins.GetAllAdmins(serverId, false);
+
             var existingAdmin = admins.FirstOrDefault(x =>
-                x.SteamId == admin.SteamId && x.Servers.Contains((int)serverId!));
+                x.SteamId == admin.SteamId && (serverId == null ? true : x.Servers.Contains(serverId)));
+
             var eventData = new EventData("admin_create_pre");
             eventData.Insert<Admin>("actioneer", actioneer);
             eventData.Insert<Admin>("new_admin", admin);
+
             if (eventData.Invoke() != HookResult.Continue)
             {
                 return new DBResult(null, 2, "stopped by event handler");
             }
+
             actioneer = eventData.Get<Admin>("actioneer");
             admin = eventData.Get<Admin>("new_admin");
+
             if (
                 // Проверка существует ли админ с таким же serverId как у добавляемого
                 existingAdmin != null
             )
             {
                 // Если да то обновляем админа в базе
+
+                
                 admin.Id = existingAdmin.Id;
                 admin.DeletedAt = null;
                 await UpdateAdmin(actioneer, admin);
+
+                // Но нужна доп. проверка если serverId null
+                if (serverId == null && !existingAdmin.Servers.Contains(serverId))
+                {
+                    await RemoveServerIdsFromAdmin(existingAdmin.Id);
+                    await AddServerIdToAdmin(existingAdmin.Id, null);
+                }
+                await ReloadDataFromDb();
                 return new DBResult(admin.Id, 1, "admin has been updated");
             }
 
             // Если нет то добавляем админа и севрер айди к нему
             var newAdmin = await DBAdmins.AddAdminToBase(admin);
-            await AddServerIdToAdmin(newAdmin.Id, serverId ?? ThisServer.Id);
+            await AddServerIdToAdmin(newAdmin.Id, serverId);
             await ReloadDataFromDb();
             eventData.Invoke("admin_create_post");
             return new DBResult(newAdmin.Id, 0, "Admin has been added");
@@ -1899,7 +1914,7 @@ public class AdminApi : IIksAdminApi
             Comms.Add(mute);
             player.VoiceFlags = VoiceFlags.Muted;
         } else {
-            Main.InstantComm.Add(mute.SteamId, mute);
+            // Main.InstantComm.Add(mute.SteamId, mute); // Нужна была как заглушка, потому что раньше я не мог получить контроллер игрока сразу после авторизации
         }
     }
     public void UnmutePlayerInGame(PlayerComm mute)
@@ -1911,6 +1926,7 @@ public class AdminApi : IIksAdminApi
             player.VoiceFlags = VoiceFlags.Normal;
         }
         var exComm = Comms.GetMute();
+        Main.InstantComm.Remove(mute.SteamId);
         Comms.Remove(exComm!);
     }
     

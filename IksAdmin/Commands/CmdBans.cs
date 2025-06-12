@@ -153,7 +153,7 @@ public static class CmdBans
         }
         sbyte banType = steamId == null ? (sbyte)1 : (sbyte)2;
         Task.Run(async () => {
-            if (_api.Config.WebApiKey != "") 
+            if (_api.Config.WebApiKey != "" && steamId != null) 
             {
                 var playerSummaryResponse = await _api.GetPlayerSummaries(ulong.Parse(steamId!));
                 name = playerSummaryResponse!.PersonaName;
