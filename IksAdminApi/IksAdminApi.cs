@@ -37,7 +37,7 @@ public interface IIksAdminApi
     public Dictionary<string, List<CommandModel>> RegistredCommands {get; set;}
     public List<AdminModule> LoadedModules {get; set;}
 
-    public List<Admin> HidenAdmins { get; }
+    public List<Admin> HidenAdmins { get; set; }
     public void ReloadConfigs();
     // MENU ===
     /// <summary>

@@ -42,11 +42,8 @@ public class DynamicMenu : IDynamicMenu
 
     public void Open(CCSPlayerController player, bool useSortMenu = true)
     {
-        var watch = new Stopwatch();
-        watch.Start();
         var pAdmin = player.Admin();
         var adminFlags = pAdmin?.CurrentFlags.ToCharArray() ?? [];
-        Console.WriteLine("[IKSADMIN] GETTING: " + watch.ElapsedMilliseconds);
 
         AdminUtils.LogDebug($@"
             Open menu... :
@@ -188,8 +185,6 @@ public class DynamicMenu : IDynamicMenu
         menu.Open(player); 
         Main.AdminApi.OnMenuOpenPost(player, this, menu);
         Options = oldOptions;
-        watch.Stop();
-        Console.WriteLine("[IKSADMIN] DIAGNOSTIC: " + watch.ElapsedMilliseconds);
 
     }
 

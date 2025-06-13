@@ -677,7 +677,7 @@ public class Main : BasePlugin
             whoCanExecute: CommandUsage.CLIENT_AND_SERVER
         );
         AdminApi.AddNewCommand(
-            "kick",
+            "rename",
             "Переименовать игрока",
             "players_manage.rename",
             "css_rename <#uid/#steamId/name/@...> <new name>",
@@ -868,32 +868,47 @@ public class AdminApi : IIksAdminApi
         try
         {
             var admins = await DBAdmins.GetAllAdmins(serverId, false);
+
             var existingAdmin = admins.FirstOrDefault(x =>
-                x.SteamId == admin.SteamId && x.Servers.Contains((int)serverId!));
+                x.SteamId == admin.SteamId && (serverId == null ? true : x.Servers.Contains(serverId)));
+
             var eventData = new EventData("admin_create_pre");
             eventData.Insert<Admin>("actioneer", actioneer);
             eventData.Insert<Admin>("new_admin", admin);
+
             if (eventData.Invoke() != HookResult.Continue)
             {
                 return new DBResult(null, 2, "stopped by event handler");
             }
+
             actioneer = eventData.Get<Admin>("actioneer");
             admin = eventData.Get<Admin>("new_admin");
+
             if (
                 // Проверка существует ли админ с таким же serverId как у добавляемого
                 existingAdmin != null
             )
             {
                 // Если да то обновляем админа в базе
+
+                
                 admin.Id = existingAdmin.Id;
                 admin.DeletedAt = null;
                 await UpdateAdmin(actioneer, admin);
+
+                // Но нужна доп. проверка если serverId null
+                if (serverId == null && !existingAdmin.Servers.Contains(serverId))
+                {
+                    await RemoveServerIdsFromAdmin(existingAdmin.Id);
+                    await AddServerIdToAdmin(existingAdmin.Id, null);
+                }
+                await ReloadDataFromDb();
                 return new DBResult(admin.Id, 1, "admin has been updated");
             }
 
             // Если нет то добавляем админа и севрер айди к нему
             var newAdmin = await DBAdmins.AddAdminToBase(admin);
-            await AddServerIdToAdmin(newAdmin.Id, serverId ?? ThisServer.Id);
+            await AddServerIdToAdmin(newAdmin.Id, serverId);
             await ReloadDataFromDb();
             eventData.Invoke("admin_create_post");
             return new DBResult(newAdmin.Id, 0, "Admin has been added");
@@ -986,7 +1001,8 @@ public class AdminApi : IIksAdminApi
     public List<PlayerInfo> DisconnectedPlayers {get; set;} = new();
     public List<AdminToServer> AdminsToServer {get; set;} = new();
 
-    public List<Admin> HidenAdmins => new();
+    public List<Admin> HidenAdmins { get; set; } = new();
+  
 
     public AdminApi(BasePlugin plugin, IStringLocalizer localizer, string moduleDirectory)
     {
@@ -1898,7 +1914,7 @@ public class AdminApi : IIksAdminApi
             Comms.Add(mute);
             player.VoiceFlags = VoiceFlags.Muted;
         } else {
-            Main.InstantComm.Add(mute.SteamId, mute);
+            // Main.InstantComm.Add(mute.SteamId, mute); // Нужна была как заглушка, потому что раньше я не мог получить контроллер игрока сразу после авторизации
         }
     }
     public void UnmutePlayerInGame(PlayerComm mute)
@@ -1910,6 +1926,7 @@ public class AdminApi : IIksAdminApi
             player.VoiceFlags = VoiceFlags.Normal;
         }
         var exComm = Comms.GetMute();
+        Main.InstantComm.Remove(mute.SteamId);
         Comms.Remove(exComm!);
     }
     
@@ -2671,11 +2688,12 @@ public class AdminApi : IIksAdminApi
         name = eventData.Get<string>("name");
         announce = eventData.Get<bool>("announce");
         
+        if (announce)
+            MsgAnnounces.Rename(admin, player, name);
         player.PlayerName = name;
         Utilities.SetStateChanged(player, "CBasePlayerController", "m_iszPlayerName");
         
-        if (announce)
-            MsgAnnounces.Rename(admin, player, name);
+        
 
         eventData.Invoke("rename_player_post");
     }

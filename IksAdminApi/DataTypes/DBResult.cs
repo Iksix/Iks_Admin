@@ -14,6 +14,4 @@ public class DBResult
         QueryMessage = insertMessage.ToLower();
         AdminUtils.LogDebug($"DB RESULT CREATED: \nelementId:{elementId}\nqueryStatus:{queryStatus}\ninsertMessage:{insertMessage}");
     }
-    
-
 }

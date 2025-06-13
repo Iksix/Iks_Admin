@@ -244,7 +244,7 @@ public static class MenuPM
     }
     private static void OpenRenameMenu(CCSPlayerController caller, IDynamicMenu menu)
     {
-        MenuUtils.SelectItem<CCSPlayerController?>(caller, "respawn", "PlayerName", PlayersUtils.GetOnlinePlayers(true).Where(x => (x.IsBot || _api.CanDoActionWithPlayer(caller.GetSteamId(), x.GetSteamId())) && !x.PawnIsAlive).ToList()!,
+        MenuUtils.SelectItem<CCSPlayerController?>(caller, "respawn", "PlayerName", PlayersUtils.GetOnlinePlayers(true).Where(x => x.IsBot || _api.CanDoActionWithPlayer(caller.GetSteamId(), x.GetSteamId()) ).ToList()!,
             (p, pmenu) => {
                 caller.Print(_api.Localizer["Message.OnRename"]);
                 _api.HookNextPlayerMessage(caller, s =>
