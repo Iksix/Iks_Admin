@@ -6,6 +6,9 @@ using CounterStrikeSharp.API.Modules.Utils;
 using MenuType = IksAdminApi.MenuType;
 using CounterStrikeSharp.API.Core.Translations;
 using System.Diagnostics;
+using ScreenMenu = CS2ScreenMenuAPI;
+using CS2ScreenMenuAPI;
+using IMenu = CounterStrikeSharp.API.Modules.Menu.IMenu;
 
 namespace IksAdmin.Menu;
 
@@ -54,7 +57,8 @@ public class DynamicMenu : IDynamicMenu
             useSortMenu: {useSortMenu}
         ");
 
-        IMenu menu;
+        IMenu menu = default!;
+        ScreenMenu.Menu screenMenu = default!;
         switch ((int)Type)
         {
             case -1: // [MM]
@@ -72,12 +76,32 @@ public class DynamicMenu : IDynamicMenu
             case 3: // [MM]
                 menu = Main.MenuApi!.NewMenuForcetype(MenuTitle(player), (MenuManager.MenuType)Type);
                 break;
+            case 4: // [SCREEN MENU API]
+                screenMenu = new ScreenMenu.Menu(player, Main.AdminApi.Plugin)
+                {
+                    Title = MenuTitle(player)
+                };
+                break;
             default:
                 menu = new CenterHtmlMenu(MenuTitle(player), Main.AdminApi.Plugin);
                 break;
         }
+
+
+        if ((int)Type != 4)
+        {
+            menu.PostSelectAction = PostSelectAction;
+        } else {
+            screenMenu.PostSelect = (int)PostSelectAction switch
+            {
+                0 => PostSelect.Close,
+                1 => PostSelect.Reset,
+                2 => PostSelect.Nothing,
+                _ => PostSelect.Nothing
+            };
+        }
         
-        menu.PostSelectAction = PostSelectAction;
+
         var oldOptions = Options.ToList();
         var onMenuOpenPreResult = Main.AdminApi.OnMenuOpenPre(player, this, menu);
         if (!onMenuOpenPreResult)
@@ -121,11 +145,28 @@ public class DynamicMenu : IDynamicMenu
                         }
                     }
                     if (!Main.AdminApi.OnOptionRenderPre(player, this, menu, option)) continue;
-                    menu.AddMenuOption(OptionTitle(player, option), (_, _) => {
-                        if(!Main.AdminApi.OnOptionExecutedPre(player, this, menu, option)) return; 
-                        option.OnExecute(player, option);
-                        if(!Main.AdminApi.OnOptionExecutedPost(player, this, menu, option)) return; 
-                    }, option.Disabled);
+
+                    if ((int)Type != 4)
+                    {
+                        menu.AddMenuOption(OptionTitle(player, option), (_, _) =>
+                        {
+                            if (!Main.AdminApi.OnOptionExecutedPre(player, this, menu, option)) return;
+                            option.OnExecute(player, option);
+                            if (!Main.AdminApi.OnOptionExecutedPost(player, this, menu, option)) return;
+                        }, option.Disabled);
+                    }
+                    else
+                    {
+                        screenMenu.AddItem(OptionTitle(player, option), (_, _) =>
+                        {
+                            if (!Main.AdminApi.OnOptionExecutedPre(player, this, menu, option)) return;
+                            option.OnExecute(player, option);
+                            if (!Main.AdminApi.OnOptionExecutedPost(player, this, menu, option)) return;
+                        }, option.Disabled);
+                    }
+                    
+
+
                     options.Remove(option);
                     if (!Main.AdminApi.OnOptionRenderPost(player, this, menu, option)) continue;
                 }
@@ -145,11 +186,26 @@ public class DynamicMenu : IDynamicMenu
                         }
                     }
                     if (!Main.AdminApi.OnOptionRenderPre(player, this, menu, option)) continue;
-                    menu.AddMenuOption(OptionTitle(player, option), (_, _) => {
-                        if(!Main.AdminApi.OnOptionExecutedPre(player, this, menu, option)) return; 
-                        option.OnExecute(player, option);
-                        if(!Main.AdminApi.OnOptionExecutedPost(player, this, menu, option)) return; 
-                    }, option.Disabled); 
+
+                    if ((int)Type != 4)
+                    {
+                        menu.AddMenuOption(OptionTitle(player, option), (_, _) =>
+                        {
+                            if (!Main.AdminApi.OnOptionExecutedPre(player, this, menu, option)) return;
+                            option.OnExecute(player, option);
+                            if (!Main.AdminApi.OnOptionExecutedPost(player, this, menu, option)) return;
+                        }, option.Disabled);
+                    }
+                    else
+                    {
+                        screenMenu.AddItem(OptionTitle(player, option), (_, _) =>
+                        {
+                            if (!Main.AdminApi.OnOptionExecutedPre(player, this, menu, option)) return;
+                            option.OnExecute(player, option);
+                            if (!Main.AdminApi.OnOptionExecutedPost(player, this, menu, option)) return;
+                        }, option.Disabled);
+                    }
+
                     Main.AdminApi.OnOptionRenderPost(player, this, menu, option);
                 }
             } else {
@@ -174,15 +230,33 @@ public class DynamicMenu : IDynamicMenu
                     }
                 }
                 if (!Main.AdminApi.OnOptionRenderPre(player, this, menu, option)) continue;
-                menu.AddMenuOption(OptionTitle(player, option), (_, _) => {
-                    if(!Main.AdminApi.OnOptionExecutedPre(player, this, menu, option)) return; 
-                    option.OnExecute(player, option);
-                    if(!Main.AdminApi.OnOptionExecutedPost(player, this, menu, option)) return; 
-                }, option.Disabled);
+
+                if ((int)Type != 4)
+                {
+                    menu.AddMenuOption(OptionTitle(player, option), (_, _) =>
+                    {
+                        if (!Main.AdminApi.OnOptionExecutedPre(player, this, menu, option)) return;
+                        option.OnExecute(player, option);
+                        if (!Main.AdminApi.OnOptionExecutedPost(player, this, menu, option)) return;
+                    }, option.Disabled);
+                }
+                else
+                {
+                    screenMenu.AddItem(OptionTitle(player, option), (_, _) =>
+                    {
+                        if (!Main.AdminApi.OnOptionExecutedPre(player, this, menu, option)) return;
+                        option.OnExecute(player, option);
+                        if (!Main.AdminApi.OnOptionExecutedPost(player, this, menu, option)) return;
+                    }, option.Disabled);
+                }
+
                 Main.AdminApi.OnOptionRenderPost(player, this, menu, option);
             }
         }
-        menu.Open(player); 
+
+        if ((int)Type != 4)
+            menu.Open(player); 
+            
         Main.AdminApi.OnMenuOpenPost(player, this, menu);
         Options = oldOptions;
 

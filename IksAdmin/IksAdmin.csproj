@@ -17,16 +17,20 @@
     <ProjectReference Include="..\IksAdminApi\IksAdminApi.csproj"/>
     <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.310"/>
     <Reference Include="../RequirmentsApi/MenuManagerApi.dll"/>
+    <Reference Include="../RequirmentsApi/CS2ScreenMenuAPI.dll"/>
   </ItemGroup>
 
   <Target Name="ExportDllsAfterBuild" AfterTargets="Build">
     <ItemGroup>
       <SelectedDlls Include="$(TargetPath)"/>
+      <SelectedDlls Include="$(OutputPath)\IksAdmin.pdb"/>
       <SelectedDlls Include="$(OutputPath)\IksAdminApi.dll"/>
+      <SelectedDlls Include="$(OutputPath)\IksAdminApi.pdb"/>
       <SelectedDlls Include="$(OutputPath)\AutoMapper.dll"/>
       <SelectedDlls Include="$(OutputPath)\CoreRcon.dll"/>
       <SelectedDlls Include="$(OutputPath)\Dapper.dll"/>
       <SelectedDlls Include="$(OutputPath)\MenuManagerApi.dll"/>
+      <SelectedDlls Include="$(OutputPath)\CS2ScreenMenuAPI.dll"/>
       <SelectedDlls Include="$(OutputPath)\MySqlConnector.dll"/>
       <SelectedDlls Include="$(OutputPath)\Newtonsoft.Json.dll"/>
       <SelectedDlls Include="$(OutputPath)\Steam.Models.dll"/>
@@ -36,6 +40,7 @@
 
     <ItemGroup>
       <SharedDlls Include="$(OutputPath)\IksAdminApi.dll"/>
+      <SharedDlls Include="$(OutputPath)\IksAdminApi.pdb"/>
     </ItemGroup>
 
     <ItemGroup>
