@@ -214,6 +214,15 @@ public static class MenuBansManage
             return;
         }
 
+        if (!admin.HasPermissions("blocks_manage.ban_ip"))
+        {
+            _api.CloseMenu(caller);
+            Task.Run(async () => {
+                await BansFunctions.Ban(ban);
+            });
+            return;
+        }
+
         menu.AddMenuOption(Main.GenerateOptionId("bm_ban_steam_id"), _localizer["MenuOption.BanSteamId"], (_, _) => {
             _api.CloseMenu(caller);
             Task.Run(async () => {
