@@ -870,7 +870,7 @@ public class AdminApi : IIksAdminApi
             var admins = await DBAdmins.GetAllAdmins(serverId, false);
 
             var existingAdmin = admins.FirstOrDefault(x =>
-                x.SteamId == admin.SteamId && (serverId == null ? true : x.Servers.Contains(serverId)));
+            x != null && x.SteamId == admin.SteamId && (serverId == null ? true : x.Servers.Contains(serverId)));
 
             var eventData = new EventData("admin_create_pre");
             eventData.Insert<Admin>("actioneer", actioneer);
@@ -1093,6 +1093,12 @@ public class AdminApi : IIksAdminApi
         {
             Main.MenuApi.CloseMenu(player);
         }
+
+        if (Config.MenuType == 4)
+        {
+            CS2ScreenMenuAPI.MenuAPI.CloseActiveMenu(player);
+        }
+
         SharpMenu.MenuManager.CloseActiveMenu(player);
     }
 

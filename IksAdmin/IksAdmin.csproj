@@ -15,7 +15,7 @@
     <PackageReference Include="mysqlconnector" Version="2.3.7"/>
     <PackageReference Include="SteamWebAPI2" Version="4.4.1"/>
     <ProjectReference Include="..\IksAdminApi\IksAdminApi.csproj"/>
-    <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.310"/>
+    <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.323"/>
     <Reference Include="../RequirmentsApi/MenuManagerApi.dll"/>
     <Reference Include="../RequirmentsApi/CS2ScreenMenuAPI.dll"/>
   </ItemGroup>

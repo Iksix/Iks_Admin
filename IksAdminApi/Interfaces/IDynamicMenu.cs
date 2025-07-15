@@ -3,7 +3,7 @@ using CounterStrikeSharp.API.Modules.Menu;
 
 namespace IksAdminApi;
 
-public interface IDynamicMenu
+public interface IDynamicMenu : IMenu
 {
     public string Id {get; set;}
     public string Title {get; set;}

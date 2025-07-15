@@ -15,11 +15,14 @@ namespace IksAdmin.Menu;
 public class DynamicMenu : IDynamicMenu
 {
     public string Id {get; set;}
+
     public string Title {get; set;} = "Dynamic Menu";
     public MenuColors TitleColor {get; set;}
     public MenuType Type {get; set;} = MenuType.Default;
     public Action<CCSPlayerController>? BackAction {get; set;} = null;
+    public List<ChatMenuOption> MenuOptions { get; }
     public PostSelectAction PostSelectAction {get; set;} = PostSelectAction.Nothing;
+    public bool ExitButton { get; set; }
     public List<IDynamicMenuOption> Options {get; set;} = new();
     private bool _backOptionRendered = false;
     public DynamicMenu(string id, string title, MenuType type = (MenuType)3, MenuColors titleColor = MenuColors.Default, PostSelectAction postSelectAction = PostSelectAction.Nothing, Action<CCSPlayerController>? backAction = null, IDynamicMenu? backMenu = null)
@@ -79,8 +82,10 @@ public class DynamicMenu : IDynamicMenu
             case 4: // [SCREEN MENU API]
                 screenMenu = new ScreenMenu.Menu(player, Main.AdminApi.Plugin)
                 {
-                    Title = MenuTitle(player)
+                    Title = MenuTitle(player),
+                    MenuType = ScreenMenu.MenuType.Both,
                 };
+                menu = this;
                 break;
             default:
                 menu = new CenterHtmlMenu(MenuTitle(player), Main.AdminApi.Plugin);
@@ -96,7 +101,6 @@ public class DynamicMenu : IDynamicMenu
             {
                 0 => PostSelect.Close,
                 1 => PostSelect.Reset,
-                2 => PostSelect.Nothing,
                 _ => PostSelect.Nothing
             };
         }
@@ -368,6 +372,33 @@ public class DynamicMenu : IDynamicMenu
         }
         var option = new DynamicMenuOption(id, title, onExecute, color, disabled, viewFlags);
         Options.Add(option);
+    }
+    
+    [Obsolete("AddMenuOption(string display, Action<CCSPlayerController, ChatMenuOption> onSelect, bool disabled) is deprecated, please use AddMenuOption(string id, string title, Action<CCSPlayerController, IDynamicMenuOption> onExecute, MenuColors? color, bool disabled, string viewFlags) instead.")]
+    public ChatMenuOption AddMenuOption(string display, Action<CCSPlayerController, ChatMenuOption> onSelect, bool disabled = false)
+    {
+        var menuOption = new ChatMenuOption(display, disabled, onSelect);
+        menuOption.Disabled = disabled;
+        
+        AddMenuOption(display, display, (controller, option) =>
+        {
+            onSelect(controller, menuOption);
+        });
+        
+        return menuOption;
+    }
+    
+    public void Open(CCSPlayerController player)
+    {
+        Open(player, true);
+    }
+    
+    public void OpenToAll()
+    {
+        foreach (var player in PlayersUtils.GetOnlinePlayers())
+        {
+            Open(player, true);
+        }
     }
 }
 

@@ -19,7 +19,7 @@ public static class MenuUtils
     {
         var menu = _api.CreateMenu(
             GenerateMenuId(idPrefix + "_select_player"),
-            customTitle ?? _localizer["MenuTitle." + "HELP_SelectPlayer"],
+            customTitle ?? _localizer["MenuTitle." + "Other.SelectPlayer"],
             titleColor: MenuColors.Gold,
             backMenu: backMenu
         );
