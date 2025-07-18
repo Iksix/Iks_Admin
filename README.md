@@ -1,3 +1,5 @@
+![Github All Releases](https://img.shields.io/github/downloads/iksix/Iks_Admin/total?style=flat-square&color=red&.svg)
+
 # IksAdmin 3.0
 Прога для обновления старой базы на новую: [тык*](https://github.com/Iksix/DbUpdaterApp/tree/main)
 ### Важно:
