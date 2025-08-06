@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.18" />
+      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\IksAdmin.Api.Application\IksAdmin.Api.Application.csproj" />
+      <ProjectReference Include="..\IksAdmin.Api.Contracts\IksAdmin.Api.Contracts.csproj" />
+      <ProjectReference Include="..\IksAdmin.Api.Entities\IksAdmin.Api.Entities.csproj" />
+    </ItemGroup>
+
+</Project>

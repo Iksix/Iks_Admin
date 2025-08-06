@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>IksAdmin.Api</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\IksAdmin.Api.Application\IksAdmin.Api.Application.csproj" />
+      <ProjectReference Include="..\IksAdmin.Infrastructure.MySql\IksAdmin.Infrastructure.MySql.csproj" />
+      <ProjectReference Include="..\XUtils\XUtils.csproj" />
+    </ItemGroup>
+
+</Project>
