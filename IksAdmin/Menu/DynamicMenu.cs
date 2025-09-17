@@ -82,8 +82,7 @@ public class DynamicMenu : IDynamicMenu
             case 4: // [SCREEN MENU API]
                 screenMenu = new ScreenMenu.Menu(player, Main.AdminApi.Plugin)
                 {
-                    Title = MenuTitle(player),
-                    MenuType = ScreenMenu.MenuType.Both,
+                    Title = MenuTitle(player)
                 };
                 menu = this;
                 break;

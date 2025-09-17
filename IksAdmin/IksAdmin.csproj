@@ -11,13 +11,13 @@
 
   <ItemGroup>
     <PackageReference Include="CoreRcon" Version="5.4.1"/>
+    <PackageReference Include="CS2ScreenMenuAPI" Version="*" />
     <PackageReference Include="dapper" Version="2.1.35"/>
     <PackageReference Include="mysqlconnector" Version="2.3.7"/>
     <PackageReference Include="SteamWebAPI2" Version="4.4.1"/>
     <ProjectReference Include="..\IksAdminApi\IksAdminApi.csproj"/>
-    <PackageReference Include="CounterStrikeSharp.Api" Version="1.0.323"/>
+    <PackageReference Include="CounterStrikeSharp.Api" Version="*"/>
     <Reference Include="../RequirmentsApi/MenuManagerApi.dll"/>
-    <Reference Include="../RequirmentsApi/CS2ScreenMenuAPI.dll"/>
   </ItemGroup>
 
   <Target Name="ExportDllsAfterBuild" AfterTargets="Build">
