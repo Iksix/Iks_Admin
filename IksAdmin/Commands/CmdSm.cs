@@ -50,7 +50,7 @@ public static class CmdSm
 
         Task.Run(async () => {
             var result = await _api.SendRconToServer(server, cmd);
-            Server.NextFrame(() => {
+            Server.NextWorldUpdate(() => {
                 caller.Print(_localizer["ActionSuccess.RconSuccess"]);
                 caller.Print(result, toConsole: true);
             }); 
@@ -62,7 +62,7 @@ public static class CmdSm
         _api.ReloadConfigs();
         Task.Run(async () => {
             await _api.ReloadDataFromDb();
-            Server.NextFrame(() => {
+            Server.NextWorldUpdate(() => {
                 caller.Print("Configs and data reloaded");
             });
         });

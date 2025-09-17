@@ -29,7 +29,7 @@ public static class Helper
     public static void Print(CCSPlayerController? player, string message)
     {
         AdminUtils.LogDebug("Print: " + message);
-        Server.NextFrame(() => {
+        Server.NextWorldUpdate(() => {
             player.Print(message, Main.AdminApi.Localizer["Tag"]);
         });
     }
@@ -41,7 +41,7 @@ public static class Helper
             Console.WriteLine(message);
             return;
         }
-        Server.NextFrame(() => {
+        Server.NextWorldUpdate(() => {
             var controller = PlayersUtils.GetControllerBySteamId(steamId);
             controller.Print(message, Main.AdminApi.Localizer["Tag"]);
         });
@@ -54,14 +54,14 @@ public static class Helper
             Console.WriteLine(message);
             return;
         }
-        Server.NextFrame(() => {
+        Server.NextWorldUpdate(() => {
             var controller = PlayersUtils.GetControllerBySteamId(admin.SteamId);
             controller.Print(message, Main.AdminApi.Localizer["Tag"]);
         });
     }
     public static void Reply(CommandInfo info, string message)
     {
-        Server.NextFrame(() => {
+        Server.NextWorldUpdate(() => {
             info.Reply(message, Main.AdminApi.Localizer["Tag"]);
         });
     }

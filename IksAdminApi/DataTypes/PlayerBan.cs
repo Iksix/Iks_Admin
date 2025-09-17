@@ -75,7 +75,15 @@ public class PlayerBan
 
         if (AdminUtils.Config().MirrorsIp.Contains(Ip)) Ip = null;
     }
-
+    
+    /// <summary>
+    /// Creates a new player ban for executing
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="reason"></param>
+    /// <param name="duration">In minutes!</param>
+    /// <param name="serverId"></param>
+    /// <param name="banType"></param>
     public PlayerBan(PlayerInfo player, string reason, int duration, int? serverId = null, sbyte banType = 0)
     {
         SteamId = player.SteamId;

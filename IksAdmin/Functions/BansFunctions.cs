@@ -8,7 +8,9 @@ public static class BansFunctions
     public static AdminApi AdminApi = Main.AdminApi;
     public static async Task Ban(PlayerBan ban)
     {
-        if (BansConfig.Config.BanOnAllServers) {
+        AdminUtils.LogDebug("=== Ban func ===");
+        if (BansConfig.Config.BanOnAllServers)
+        {
             ban.ServerId = null;
         }
         

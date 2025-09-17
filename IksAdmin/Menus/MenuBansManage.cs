@@ -183,10 +183,10 @@ public static class MenuBansManage
                 if (time.Key < caller.Admin()!.MinBanTime)
                     continue;
             }
-            if (reason.MinTime != 0 && time.Key > reason.MinTime) {
+            if (reason.MinTime != 0 && time.Key > reason.MinTime * 60) {
                 continue;
             }
-            if (reason.MaxTime != 0 && (time.Key > reason.MaxTime || time.Key == 0)) {
+            if (reason.MaxTime != 0 && (time.Key > reason.MaxTime * 60 || time.Key == 0)) {
                 continue;
             }
 

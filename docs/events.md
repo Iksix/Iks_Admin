@@ -39,3 +39,12 @@
 ### `async` "admin_delete_pre" - удаление админа
 - `"actioneer" <Admin>`
 - `"new_admin" <Admin>`
+### `"disconnect_player_pre"` - Вызывается при использование функции DisconnectPlayers из AdminApi
+- `"player" <CCSPlayerController>` 
+- `"reason" <string>` 
+- `"instantly" <bool>` 
+- `"custom_message_template" <string?>` 
+- `"admin" <Admin?>` 
+- `"custom_by_admin_template" <string?>` 
+- `"disconnection_reason" <NetworkDisconnectionReason?>` 
+- `"disconnected_by" <string>` 

@@ -40,7 +40,7 @@ public static class CmdBans
 
     public static void AddBan(CCSPlayerController? caller, List<string> args, CommandInfo info)
     {
-        //css_addban <steamId> <time> <reason> (для оффлайн бана, так же можно использовать для онлайн бана)
+        AdminUtils.LogDebug("=== Ban cmd ===");
         var steamId = args[0];
         var time = args[1];
         if (!int.TryParse(time, out int timeInt)) throw new ArgumentException("Time is not a number");
@@ -58,13 +58,18 @@ public static class CmdBans
             ip = target.GetIp();
         }
         var adminId = caller.Admin()!.Id;
+        AdminUtils.LogDebug("Ban cmd 1");
         Task.Run(async () => {
+            AdminUtils.LogDebug("Ban cmd 2");
             if (_api.Config.WebApiKey != "") 
             {
+                AdminUtils.LogDebug("Ban cmd 3");
                 var playerSummaryResponse = await _api.GetPlayerSummaries(ulong.Parse(steamId));
+                AdminUtils.LogDebug("Ban cmd 4");
                 if (playerSummaryResponse != null)
                     name = playerSummaryResponse!.PersonaName;
             }
+            AdminUtils.LogDebug("Ban cmd 5");
             var ban = new PlayerBan(
                 steamId,
                 ip,
@@ -73,10 +78,14 @@ public static class CmdBans
                 timeInt,
                 serverId: _api.ThisServer.Id
             );
-            if (BansConfig.Config.BanOnAllServers) {
+            AdminUtils.LogDebug("Ban cmd 6");
+            if (BansConfig.Config.BanOnAllServers)
+            {
                 ban.ServerId = null;
             }
+            AdminUtils.LogDebug("Ban cmd 7");
             ban.AdminId = adminId;
+            AdminUtils.LogDebug("Ban cmd 8");
             await BansFunctions.Ban(ban);
         });
     }

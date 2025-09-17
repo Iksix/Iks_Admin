@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
@@ -34,7 +35,7 @@ public static class CmdBase
             if (args.Count > 0 && args[0] == "all")
                 await _api.ReloadDataFromDb();
             else await _api.ReloadDataFromDb(false);
-            Server.NextFrame(() => {
+            Server.NextWorldUpdate(() => {
                 caller.Print( "DB data reloaded \u2714");
             });
         });
@@ -78,24 +79,7 @@ public static class CmdBase
 
     public static void Hide(CCSPlayerController caller, List<string> args, CommandInfo info)
     {
-        if (HidenPlayers.Contains(caller))
-        {
-            HidenPlayers.Remove(caller);
-            _api.HidenAdmins.Remove(caller.Admin()!);
-            caller.Print(_localizer["Message.Hide_off"]);
-            caller.ChangeTeam(CsTeam.Spectator);
-            return;
-        }
-        HidenPlayers.Add(caller);
-        _api.HidenAdmins.Remove(caller.Admin()!);
-        _api.HidenAdmins.Add(caller.Admin()!);
-        FirstMessage.Add(caller);
-        Server.ExecuteCommand("sv_disable_teamselect_menu 1");
-        if (caller.PlayerPawn.Value != null && caller.PawnIsAlive)
-            caller.PlayerPawn.Value.CommitSuicide(true, false);
-        _api!.Plugin.AddTimer(1.0f, () => { Server.NextFrame(() => caller.ChangeTeam(CsTeam.Spectator)); HidenPlayers.Add(caller); FirstMessage.Add(caller); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
-        _api.Plugin.AddTimer(1.4f, () => { Server.NextFrame(() => caller.ChangeTeam(CsTeam.None)); caller.Print(_localizer["Message.Hide_on"]); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
-        _api.Plugin.AddTimer(2.0f, () => { Server.NextFrame(() => Server.ExecuteCommand("sv_disable_teamselect_menu 0")); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
+        _api.Hide(caller.Admin()!);
     }
 
     public static void Status(CCSPlayerController? caller, List<string> args, CommandInfo info)

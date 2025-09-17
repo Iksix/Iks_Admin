@@ -137,7 +137,7 @@ public static class CmdAdminManage
         var callerAdmin = caller.Admin();
         Task.Run(async () => {
             await _api.DeleteAdmin(callerAdmin!, admin);
-            Server.NextFrame(() => {
+            Server.NextWorldUpdate(() => {
                 caller.Print(_localizer["ActionSuccess.AdminDeleted"]);
             });
         });

@@ -42,7 +42,7 @@ public static class AdminUtils
     {
         if (CoreApi != null)
         {
-            Server.NextFrame(() => {
+            Server.NextWorldUpdate(() => {
                 var data = new EventData("error");
                 data.Insert("text", message);
                 data.Invoke();
@@ -224,7 +224,7 @@ public static class AdminUtils
         message = eventData.Get<string>("message");
         tag = eventData.Get<string>("tag");
         
-        Server.NextFrame(() =>
+        Server.NextWorldUpdate(() =>
         {
             if (player == null)
             {

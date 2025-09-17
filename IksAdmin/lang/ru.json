@@ -225,5 +225,8 @@
     // v16
     "Announce.Rename": "Админ {red}{admin}{white} переименовал игрока {red}{name}{white} в {red}{newName}{white}!",
     "Message.OnRename": "Введите новый ник игрока: !s1mple",
-    "MenuOption.PM.Rename": "Переименовать игрока"
+    "MenuOption.PM.Rename": "Переименовать игрока",
+    
+    // v19 ===
+    "Message.FakeHideMessage" : "Игрок {red}{name} отключился."
 }

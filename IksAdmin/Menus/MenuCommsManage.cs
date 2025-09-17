@@ -138,7 +138,7 @@ public static class MenuCommsManage
             }
             menu.AddMenuOption("cm_mute_sp_" + p.GetSteamId(), p.PlayerName + postfix, (_, _) =>
             {
-                OpenSelectMuteReasonMenu(caller, new PlayerInfo(p));
+                OpenSelectMuteReasonMenu(caller, new PlayerInfo(p), menu);
             }, disabled: !_api.CanDoActionWithPlayer(caller.GetSteamId(), p.GetSteamId()) || p.GetComms().HasMute() || p.GetComms().HasSilence());
         }
         
@@ -161,7 +161,7 @@ public static class MenuCommsManage
             }
             menu.AddMenuOption("cm_gag_sp_" + p.GetSteamId(), p.PlayerName + postfix, (_, _) =>
             {
-                OpenSelectGagReasonMenu(caller, new PlayerInfo(p));
+                OpenSelectGagReasonMenu(caller, new PlayerInfo(p), menu);
             }, disabled: !_api.CanDoActionWithPlayer(caller.GetSteamId(), p.GetSteamId()) || p.GetComms().HasGag() || p.GetComms().HasSilence());
         }
         
@@ -188,16 +188,16 @@ public static class MenuCommsManage
             }
             menu.AddMenuOption("cm_gag_sp_" + p.GetSteamId(), p.PlayerName + postfix, (_, _) =>
             {
-                OpenSelectSilenceReasonMenu(caller, new PlayerInfo(p));
+                OpenSelectSilenceReasonMenu(caller, new PlayerInfo(p), menu);
             }, disabled: !_api.CanDoActionWithPlayer(caller.GetSteamId(), p.GetSteamId()) || p.GetComms().HasGag() || p.GetComms().HasMute() || p.GetComms().HasSilence());
         }
         
         menu.Open(caller);
     }
 
-    private static void OpenSelectMuteReasonMenu(CCSPlayerController caller, PlayerInfo target)
+    private static void OpenSelectMuteReasonMenu(CCSPlayerController caller, PlayerInfo target, IDynamicMenu? backMenu = null)
     {
-        var menu = _api.CreateMenu(Main.MenuId("cm_mute_reason"), _localizer["MenuTitle.Other.SelectReason"]);
+        var menu = _api.CreateMenu(Main.MenuId("cm_mute_reason"), _localizer["MenuTitle.Other.SelectReason"], backMenu: backMenu);
         var config = MutesConfig.Config;
         var reasons = config.Reasons;
         menu.AddMenuOption("own_reason" ,_localizer["MenuOption.Other.OwnReason"], (_, _) => {
@@ -243,9 +243,9 @@ public static class MenuCommsManage
         menu.Open(caller);
     }
     
-    private static void OpenSelectGagReasonMenu(CCSPlayerController caller, PlayerInfo target)
+    private static void OpenSelectGagReasonMenu(CCSPlayerController caller, PlayerInfo target, IDynamicMenu? backMenu = null)
     {
-        var menu = _api.CreateMenu(Main.MenuId("cm_gag_reason"), _localizer["MenuTitle.Other.SelectReason"]);
+        var menu = _api.CreateMenu(Main.MenuId("cm_gag_reason"), _localizer["MenuTitle.Other.SelectReason"], backMenu: backMenu);
         var config = GagsConfig.Config;
         var reasons = config.Reasons;
         menu.AddMenuOption("own_reason" ,_localizer["MenuOption.Other.OwnReason"], (_, _) => {
@@ -290,9 +290,9 @@ public static class MenuCommsManage
         }
         menu.Open(caller);
     }
-    private static void OpenSelectSilenceReasonMenu(CCSPlayerController caller, PlayerInfo target)
+    private static void OpenSelectSilenceReasonMenu(CCSPlayerController caller, PlayerInfo target, IDynamicMenu? backMenu = null)
     {
-        var menu = _api.CreateMenu(Main.MenuId("cm_silence_reason"), _localizer["MenuTitle.Other.SelectReason"]);
+        var menu = _api.CreateMenu(Main.MenuId("cm_silence_reason"), _localizer["MenuTitle.Other.SelectReason"], backMenu: backMenu);
         var config = SilenceConfig.Config;
         var reasons = config.Reasons;
         menu.AddMenuOption("own_reason" ,_localizer["MenuOption.Other.OwnReason"], (_, _) => {
@@ -376,10 +376,10 @@ public static class MenuCommsManage
                 if (time.Key < caller.Admin()!.MinMuteTime)
                     continue;
             }
-            if (reason.MinTime != 0 && time.Key > reason.MinTime) {
+            if (reason.MinTime != 0 && time.Key > reason.MinTime * 60) {
                 continue;
             }
-            if (reason.MaxTime != 0 && (time.Key > reason.MaxTime || time.Key == 0)) {
+            if (reason.MaxTime != 0 && (time.Key > reason.MaxTime * 60 || time.Key == 0)) {
                 continue;
             }
             menu.AddMenuOption("mute_time_" + time.Key, time.Value, (_, _) => {
@@ -432,10 +432,10 @@ public static class MenuCommsManage
                 if (time.Key < caller.Admin()!.MinGagTime)
                     continue;
             }
-            if (reason.MinTime != 0 && time.Key > reason.MinTime) {
+            if (reason.MinTime != 0 && time.Key > reason.MinTime * 60) {
                 continue;
             }
-            if (reason.MaxTime != 0 && (time.Key > reason.MaxTime || time.Key == 0)) {
+            if (reason.MaxTime != 0 && (time.Key > reason.MaxTime * 60 || time.Key == 0)) {
                 continue;
             }
             menu.AddMenuOption("gag_time_" + time.Key, time.Value, (_, _) => {
@@ -488,10 +488,10 @@ public static class MenuCommsManage
                 if (time.Key < caller.Admin()!.MinGagTime || time.Key < caller.Admin()!.MinMuteTime)
                     continue;
             }
-            if (reason.MinTime != 0 && time.Key > reason.MinTime) {
+            if (reason.MinTime != 0 && time.Key > reason.MinTime * 60) {
                 continue;
             }
-            if (reason.MaxTime != 0 && (time.Key > reason.MaxTime || time.Key == 0)) {
+            if (reason.MaxTime != 0 && (time.Key > reason.MaxTime * 60 || time.Key == 0)) {
                 continue;
             }
             menu.AddMenuOption("silence_time_" + time.Key, time.Value, (_, _) => {

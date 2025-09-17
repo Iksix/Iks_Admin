@@ -78,7 +78,7 @@ public static class AdminManageFunctions
                 await DBAdmins.AddServerIdToAdmin(admin.Id, Main.AdminApi.ThisServer.Id);
             }
             await AdminUtils.CoreApi.ReloadDataFromDb();
-            Server.NextFrame(() => {
+            Server.NextWorldUpdate(() => {
                 Helper.Reply(info, "Server Id added to admin ✔");
             });
         });

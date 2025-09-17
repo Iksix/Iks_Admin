@@ -198,6 +198,7 @@ public interface IIksAdminApi
     public void SwitchTeam(Admin admin, CCSPlayerController player, int team, bool announce = true);
     public void Respawn(Admin admin, CCSPlayerController player, bool announce = true);
     public void Rename(Admin admin, CCSPlayerController player, string name, bool announce = true);
+    public void Hide(Admin admin);
     #endregion
     // Groups
     public Task<DBResult> CreateGroup(Group group);
