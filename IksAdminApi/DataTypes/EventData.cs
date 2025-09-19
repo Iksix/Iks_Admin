@@ -25,18 +25,30 @@ public class EventData
 
     private Dictionary<string, Object> _data = new();
     
+    /// <summary>
+    /// Use that for add new data value
+    /// </summary>
     public void Insert(string key, object value)
     {
         _data.Add(key, value);
     }
+    /// <summary>
+    /// Use that for add new data value
+    /// </summary>
     public void Insert<T>(string key, List<T> value)
     {
         _data.Add(key, value);
     }
+    /// <summary>
+    /// Use that for add new data value
+    /// </summary>
     public void Insert<T>(string key, T value)
     {
         _data.Add(key, value);
     }
+    /// <summary>
+    /// Use that for getting exists data value
+    /// </summary>
     public T Get<T>(string key)
     {
         if (!_data.TryGetValue(key, out var value))
@@ -45,6 +57,10 @@ public class EventData
         }
         return (T)value;
     }
+    
+    /// <summary>
+    /// Use that for settings exists data value
+    /// </summary>
     public void Set<T>(string key, T value)
     {
         if (!_data.ContainsKey(key))

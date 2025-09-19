@@ -935,14 +935,14 @@ public class AdminApi : IIksAdminApi
     {
 
         var edata = new EventData("disconnect_player_pre");
-        edata.Set("player", player);
-        edata.Set("reason", reason);
-        edata.Set("instantly", instantly);
-        edata.Set("custom_message_template", customMessageTemplate);
-        edata.Set("admin", admin);
-        edata.Set("custom_by_admin_template", customByAdminTemplate);
-        edata.Set("disconnection_reason", disconnectionReason);
-        edata.Set("disconnected_by", disconnectedBy);
+        edata.Insert("player", player);
+        edata.Insert("reason", reason);
+        edata.Insert("instantly", instantly);
+        edata.Insert("custom_message_template", customMessageTemplate);
+        edata.Insert("admin", admin);
+        edata.Insert("custom_by_admin_template", customByAdminTemplate);
+        edata.Insert("disconnection_reason", disconnectionReason);
+        edata.Insert("disconnected_by", disconnectedBy);
 
         if (edata.Invoke() != HookResult.Continue)
         {
