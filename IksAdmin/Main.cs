@@ -33,8 +33,6 @@ public class Main : BasePlugin
     public static List<PlayerInfo> LastClientVoices = new();
     public static Dictionary<string, int> LastClientVoicesTime = new();
 
-
-
     public static string MenuId(string id)
     {
         return $"iksadmin:menu:{id}";
@@ -45,6 +43,7 @@ public class Main : BasePlugin
     }
     public override void Load(bool hotReload)
     {
+        AdminUtils.MainThreadId = Thread.CurrentThread.ManagedThreadId;
         AdminUtils.CoreInstance = this;
         AdminApi = new AdminApi(this, Localizer, ModuleDirectory);
         AdminModule.Api = AdminApi;
@@ -92,6 +91,38 @@ public class Main : BasePlugin
                 }
             }
         }, TimerFlags.REPEAT);
+        
+        AddTimer(1, () => {
+            // Проверка кулдауна на то прошёл ли он, и если да то уведомление об этом игрока и удаление его из переменной
+
+            var cooldowns = AdminApi.TimeCooldowns;
+
+            foreach (var (steamId, cooldown) in cooldowns)
+            {
+                var player = PlayersUtils.GetControllerBySteamId(steamId);
+                
+                foreach (var (key, data) in cooldown)
+                {
+                    var elapsedSeconds = AdminUtils.CurrentTimestamp() - data.LastUse;
+
+                    var cdSettings = AdminApi.CooldownsConfig.ForTime[key];
+
+                    if (elapsedSeconds > cdSettings.Time)
+                    {
+                        AdminApi.TimeCooldowns[steamId].Remove(key);
+                        
+                        if (player != null)
+                        {
+                            player.Print(Localizer["Message.CooldownPassed"].OReplace(new
+                            {
+                                function = key
+                            }));    
+                        }
+                    }
+                }
+            }
+            
+        }, TimerFlags.REPEAT);
     }
 
     private void OnClientVoice(int playerSlot)
@@ -138,6 +169,7 @@ public class Main : BasePlugin
     private void OnAuthorized(int playerSlot, SteamID steamId)
     {
         var steamId64 = steamId.SteamId64.ToString();
+        var uSteamId64 = steamId.SteamId64;
         var player = Utilities.GetPlayerFromSlot(playerSlot);
         var disconnected = AdminApi.DisconnectedPlayers.FirstOrDefault(x => x.SteamId == steamId64);
         AdminApi.DisconnectedPlayers.Remove(disconnected!);
@@ -148,11 +180,12 @@ public class Main : BasePlugin
             AdminApi.Comms.Remove(comm);
         }
         Task.Run(async () => {
+            await AdminApi.SetCookies(uSteamId64);
             await AdminApi.ReloadInfractions(steamId64, ip, true);
-            Server.NextWorldUpdate(() =>
+            Server.NextFrame(() =>
             {
                 AdminApi.OnFullConnectInvoke(steamId64, ip ?? "");
-                var admin = player.Admin();
+                var admin = AdminUtils.Admin(steamId64);
                 if (admin == null) return;
                 if (CoreConfig.Config.AutoUpdateDatabaseNames)
                 {
@@ -721,13 +754,15 @@ public class Main : BasePlugin
     public HookResult OnChangeTeam(EventPlayerTeam @event, GameEventInfo info)
     {
         var player = @event.Userid;
-        if (player == null || !player.IsValid || player.IsBot || !CmdBase.HidenPlayers.Contains(player))
+        if (player == null || !player.IsValid || player.IsBot || !AdminApi.HidenAdmins.Contains(player.Admin()!))
         {
             return HookResult.Continue;
         }
         @event.Silent = true;
+        info.DontBroadcast = true;
         if (CmdBase.FirstMessage.Contains(player))
         {
+            AdminUtils.PrintToServer(Localizer["Message.FakeHideMessage"].AReplace(["name"], [player.PlayerName]), "");
             CmdBase.FirstMessage.Remove(player);
             return HookResult.Continue;
         }
@@ -762,6 +797,13 @@ public class Main : BasePlugin
             action.Value.Invoke();
             MenuPM.OnRoundEndChangeTeam.Remove(action.Key);
         }
+        return HookResult.Continue;
+    }
+    
+    [GameEventHandler]
+    public HookResult OnRoundStart(EventRoundEnd @event, GameEventInfo info)
+    {
+        AdminApi.RoundCooldowns.Clear();
         return HookResult.Continue;
     }
 

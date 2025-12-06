@@ -8,6 +8,9 @@ public static class BansFunctions
     public static AdminApi AdminApi = Main.AdminApi;
     public static async Task Ban(PlayerBan ban)
     {
+        if (AdminApi.CheckCooldown(ban.Admin!.USteamId, "ban"))
+            return;
+        
         AdminUtils.LogDebug("=== Ban func ===");
         if (BansConfig.Config.BanOnAllServers)
         {
@@ -37,6 +40,9 @@ public static class BansFunctions
 
     public static async Task Unban(Admin admin, string steamId, string reason)
     {
+        if (AdminApi.CheckCooldown(admin.USteamId, "unban"))
+            return;
+        
         AdminUtils.LogDebug("Trying to unban... " + steamId);
         var result = await AdminApi.Unban(admin, steamId, reason);
         AdminUtils.LogDebug("Unban result: " + result.QueryStatus);
@@ -58,6 +64,9 @@ public static class BansFunctions
     }
     public static async Task UnbanIp(Admin admin, string ip, string reason)
     {
+        if (AdminApi.CheckCooldown(admin.USteamId, "unbanip"))
+            return;
+        
         AdminUtils.LogDebug("Trying to unban ip... " + ip);
         var result = await AdminApi.UnbanIp(admin, ip, reason);
         AdminUtils.LogDebug("Unban ip result: " + result.QueryStatus);

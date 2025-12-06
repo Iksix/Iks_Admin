@@ -1,0 +1,14 @@
+{
+    "ForRound" : {
+//        "rename" : { // Все кроме флага z могут использовать rename 1 раз за раунд
+//            "UsesForRound" : 1,
+//            "ImmunityFlags" : [ "z" ]
+//        }
+    },
+    "ForTime" : {
+//        "rename" : { // У всех кроме флага z кд на использование rename в 10 секунд
+//            "Time" : 10,
+//            "ImmunityFlags" : [ "z" ]
+//        }
+    }
+}

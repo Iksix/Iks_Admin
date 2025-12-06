@@ -11,7 +11,6 @@
 
   <ItemGroup>
     <PackageReference Include="CoreRcon" Version="5.4.1"/>
-    <PackageReference Include="CS2ScreenMenuAPI" Version="*" />
     <PackageReference Include="dapper" Version="2.1.35"/>
     <PackageReference Include="mysqlconnector" Version="2.3.7"/>
     <PackageReference Include="SteamWebAPI2" Version="4.4.1"/>
@@ -30,7 +29,6 @@
       <SelectedDlls Include="$(OutputPath)\CoreRcon.dll"/>
       <SelectedDlls Include="$(OutputPath)\Dapper.dll"/>
       <SelectedDlls Include="$(OutputPath)\MenuManagerApi.dll"/>
-      <SelectedDlls Include="$(OutputPath)\CS2ScreenMenuAPI.dll"/>
       <SelectedDlls Include="$(OutputPath)\MySqlConnector.dll"/>
       <SelectedDlls Include="$(OutputPath)\Newtonsoft.Json.dll"/>
       <SelectedDlls Include="$(OutputPath)\Steam.Models.dll"/>

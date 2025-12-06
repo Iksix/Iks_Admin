@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using Microsoft.Extensions.Logging;
 
 namespace IksAdminApi;
 
@@ -11,6 +12,12 @@ public class Admin
     public static GetCurrentImmunityMethod GetCurrentImmunityFunc = null!;
     public int Id {get; set;}
     public string SteamId {get; set;} = "";
+
+    public ulong USteamId
+    {
+        get => ulong.TryParse(SteamId, out ulong id) ? id : 0;
+    }
+
     public string Name {get; set;}
     public string? Flags {get; set;}
     public int? Immunity {get; set;}
@@ -28,6 +35,13 @@ public class Admin
     public string CurrentName {get {
         if (!CoreConfig.Config.UseOnlineAdminsName)
             return Name;
+
+        if (!AdminUtils.IsMainThread())
+        {
+            AdminUtils.CoreInstance.Logger.LogWarning("Executing Admin.CurrentName in non-main thread");
+            return Name;
+        }
+        
         var controller = PlayersUtils.GetControllerBySteamId(SteamId);
         if (controller == null)
             return Name;

@@ -9,6 +9,9 @@ public static class MutesFunctions
 
     public static async Task Mute(PlayerComm mute)
     {
+        if (AdminApi.CheckCooldown(mute.Admin!.USteamId, "mute"))
+            return;
+        
         AdminUtils.LogDebug("Add mute... " + mute.SteamId);
         var result = await AdminApi.AddMute(mute);
         AdminUtils.LogDebug("Mute result: " + result.QueryStatus);
@@ -30,6 +33,9 @@ public static class MutesFunctions
     }
     public static async Task Unmute(Admin admin, string steamId, string reason)
     {
+        if (AdminApi.CheckCooldown(admin.USteamId, "unmute"))
+            return;
+        
         AdminUtils.LogDebug("Trying to unmute... " + steamId);
         var existingComm = (await AdminApi.GetActiveComms(steamId)).GetMute();
         if (existingComm == null)

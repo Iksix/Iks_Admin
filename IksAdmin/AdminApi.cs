@@ -15,6 +15,9 @@ using Microsoft.Extensions.Localization;
 using MySqlConnector;
 using SteamWebAPI2.Interfaces;
 using SteamWebAPI2.Utilities;
+using Dapper;
+using CommandDefinition = CounterStrikeSharp.API.Core.Commands.CommandDefinition;
+using Cookie = IksAdminApi.Cookie;
 using CoreConfig = IksAdminApi.CoreConfig;
 
 namespace IksAdmin;
@@ -22,8 +25,18 @@ namespace IksAdmin;
 public class AdminApi : IIksAdminApi
 {
 
+    // V 19
+    public Dictionary<ulong, Dictionary<string, RoundCooldownData>> RoundCooldowns = [];
+    public Dictionary<ulong, Dictionary<string, TimeCooldownData>> TimeCooldowns = [];
+    // ====
 
-    public IksAdminApi.CoreConfig Config { get; set; } 
+    public IksAdminApi.CoreConfig Config { get; set; }
+    public BansConfig BansConfig => BansConfig.Config;
+    public GagsConfig GagsConfig => GagsConfig.Config;
+    public MutesConfig MutesConfig => MutesConfig.Config;
+    public SilenceConfig SilenceConfig => SilenceConfig.Config;
+    public KicksConfig KicksConfig => KicksConfig.Config;
+    public CooldownsConfig CooldownsConfig { get; set; } = new();
     public BasePlugin Plugin { get; set; } 
     public IStringLocalizer Localizer { get; set; }
     public Dictionary<string, SortMenu[]> SortMenus { get; set; } = new();
@@ -192,7 +205,7 @@ public class AdminApi : IIksAdminApi
         builder.Database = Config.Database;
         builder.UserID = Config.User;
         builder.Port = uint.Parse(Config.Port);
-        builder.ConnectionTimeout = 5;
+        builder.ConnectionTimeout = 20;
         DB.ConnectionString = builder.ConnectionString;
         Localizer = localizer;
         ModuleDirectory = moduleDirectory;
@@ -211,6 +224,9 @@ public class AdminApi : IIksAdminApi
         new MutesConfig().Set();
         new GagsConfig().Set();
         new SilenceConfig().Set();
+
+        CooldownsConfig =
+            CooldownsConfig.ReadOrCreate(AdminUtils.ConfigsDir + "/IksAdmin/cooldowns.json", new CooldownsConfig());
     }
 
     public async Task ReloadDataFromDb(bool onAllServers = true)
@@ -271,11 +287,6 @@ public class AdminApi : IIksAdminApi
         if (Main.MenuApi != null)
         {
             Main.MenuApi.CloseMenu(player);
-        }
-
-        if (Config.MenuType == 4)
-        {
-            CS2ScreenMenuAPI.MenuAPI.CloseActiveMenu(player);
         }
 
         CounterStrikeSharp.API.Modules.Menu.MenuManager.CloseActiveMenu(player);
@@ -574,6 +585,7 @@ public class AdminApi : IIksAdminApi
                 info.Reply(Localizer["Error.DifferentNumberOfArgs"].Value.Replace("{usage}", usage), tagString);
                 return;
             }
+            
             try
             {
                 var onCommandUsedPre = OnCommandUsedPre?.Invoke(p, args, info) ?? HookResult.Continue;
@@ -600,6 +612,12 @@ public class AdminApi : IIksAdminApi
         };
         var definition = new CommandDefinition("css_" + command, description, callback);
         Plugin.CommandManager.RegisterCommand(definition);
+
+        if (!RegistredCommands.ContainsKey(_commandInitializer))
+        {
+            RegistredCommands.Add(_commandInitializer, new ());
+        }
+        
         RegistredCommands[_commandInitializer].Add(new CommandModel { 
             Command = "css_" + command, 
             Definition = definition,
@@ -1763,7 +1781,7 @@ public class AdminApi : IIksAdminApi
         Server.ExecuteCommand("sv_disable_teamselect_menu 1");
         if (caller.PlayerPawn.Value != null && caller.PawnIsAlive)
             caller.PlayerPawn.Value.CommitSuicide(true, false);
-        Plugin.AddTimer(1.0f, () => { Server.NextWorldUpdate(() => caller.ChangeTeam(CsTeam.Spectator)); HidenAdmins.Add(admin); CmdBase.FirstMessage.Add(caller); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
+        Plugin.AddTimer(1.0f, () => { Server.NextWorldUpdate(() => caller.ChangeTeam(CsTeam.Spectator)); CmdBase.FirstMessage.Add(caller); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
         Plugin.AddTimer(1.4f, () => { Server.NextWorldUpdate(() => caller.ChangeTeam(CsTeam.None)); caller.Print(Localizer["Message.Hide_on"]); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
         Plugin.AddTimer(2.0f, () => { Server.NextWorldUpdate(() => Server.ExecuteCommand("sv_disable_teamselect_menu 0")); }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
     }
@@ -1874,8 +1892,218 @@ public class AdminApi : IIksAdminApi
         return await DBWarns.GetAllActiveForAdmin(admin.Id);
     }
 
+    private Dictionary<ulong, Dictionary<string, Cookie>> _cookies = [];
+    
+    public async Task SetCookies(ulong steamId)
+    {
+        try
+        {
+            await using var conn = new MySqlConnection(DbConnectionString);
+            await conn.OpenAsync();
+
+            var result = await conn.QueryAsync<Cookie>(@"
+        select 
+            steam_id as steamId,
+            cookie_key as cookieKey,
+            cookie_value as cookieValue,
+            server_id as serverId
+            from iks_cookies
+        where steam_id = @steamId
+        ", new
+            {
+                steamId
+            });
+
+            Dictionary<string, Cookie> cookies = [];
+
+            foreach (var cookie in result)
+            {
+                if (!cookies.TryAdd(cookie.Key, cookie))
+                {
+                    if (cookie.ServerId == ThisServer.Id)
+                        cookies[cookie.Key] = cookie;
+                }
+            }
+
+            _cookies[steamId] = cookies;
+        
+            Server.NextFrame(() =>
+            {
+                CookiesLoaded?.Invoke(steamId);
+            });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+
+    public void SetCookie(ulong steamId, string key, string value, bool toAllServers = false)
+    {
+        if (!_cookies.ContainsKey(steamId))
+            throw new Exception("Cookies not found");
+        
+        var cookie = new Cookie(steamId, key, value, toAllServers ? null : ThisServer.Id);
+        _cookies[steamId][key] = cookie;
+
+        Task.Run(async () =>
+        {
+            await using var conn = new MySqlConnection(DbConnectionString);
+            await conn.OpenAsync();
+
+            await conn.ExecuteAsync(@"
+            delete from iks_cookies where steam_id = @steamId and cookie_key = @key and server_id = @serverId;
+            insert into iks_cookies(steam_id, cookie_key, cookie_value, server_id)
+            values (@steamId, @key, @value, @serverId);
+            ",
+                new
+                {
+                    steamId,
+                    key,
+                    value,
+                    serverId = cookie.ServerId
+                });
+        });
+    }
+
+    public Cookie? GetCookie(ulong steamId, string key)
+    {
+        if (!_cookies.TryGetValue(steamId, out var cookies))
+            return null;
+        
+        if (!cookies.TryGetValue(key, out var cookie))
+            return null;
+
+        return cookie;
+    }
+
+    public event Action<ulong>? CookiesLoaded;
+    
+    public class RoundCooldownData
+    {
+        public int UsesForRound = 1;
+    }
+
+    public class TimeCooldownData
+    {
+        public long LastUse = AdminUtils.CurrentTimestamp();
+    }
+
+    
+    public void SetCooldownForRound(ulong steamId, string key, CooldownForRound cooldownSettings)
+    {
+        if (RoundCooldowns.ContainsKey(steamId))
+        {
+            if (RoundCooldowns[steamId].TryGetValue(key, out var roundCooldown))
+            {
+                roundCooldown.UsesForRound++;
+            }
+            else
+            {
+                RoundCooldowns[steamId][key] = new RoundCooldownData();
+            }
+        }
+        else
+        {
+            RoundCooldowns[steamId] = [];
+            RoundCooldowns[steamId][key] = new RoundCooldownData();
+        }
+    }
+
+    public void SetCooldownForTime(ulong steamId, string key, CooldownForTime cooldownSettings)
+    {
+        if (!TimeCooldowns.ContainsKey(steamId))
+            TimeCooldowns[steamId] = [];
+        TimeCooldowns[steamId][key] = new TimeCooldownData();
+    }
+
+    public bool CheckCooldown(ulong steamId, string key)
+    {
+        var admin = AdminUtils.ServerAdmin(steamId.ToString());        
+        
+        // Если ключ есть в кд по раундам
+        if (CooldownsConfig.ForRound.TryGetValue(key, out var cdrSettings))
+        {
+            // Проверка на то есть ли у админа иммунитет от кд
+            if (admin != null && cdrSettings.ImmunityFlags.Any(x => admin.CurrentFlags.Contains(x)))
+                return false;
+            
+            // Есть ли кд у игрока
+            if (RoundCooldowns.TryGetValue(steamId, out var cdData))
+            {
+                // Есть ли среди них с нужным нам ключём
+                if (cdData.TryGetValue(key, out var cooldown))
+                {
+                    // В кд ли нужный ключ
+                    if (cooldown.UsesForRound >= cdrSettings.UsesForRound)
+                    {
+                        Server.NextFrame(() =>
+                        {
+                            var player = PlayersUtils.GetControllerBySteamId(steamId);
+                            
+                            if (player != null)
+                            {
+                                player.Print(Localizer["ActionError.InCooldownForRound"]);
+                            }
+                        });
+                        
+                        return true;
+                    }
+                }
+            }
+
+            // Обновление кд
+            SetCooldownForRound(steamId, key, cdrSettings);
+        } 
+        // Проверка на кд на время
+        else if (CooldownsConfig.ForTime.TryGetValue(key, out var cdtSettings))
+        {
+            // Проверка на то есть ли у админа иммунитет от кд
+            if (admin != null && cdtSettings.ImmunityFlags.Any(x => admin.CurrentFlags.Contains(x)))
+                return false;
+            
+            // Есть ли кд у игрока
+            if (TimeCooldowns.TryGetValue(steamId, out var cdData))
+            {
+                // Есть ли среди них с нужным нам ключём
+                if (cdData.TryGetValue(key, out var cooldown))
+                {
+                    // В кд ли нужный ключ
+                    var elapsedSeconds = AdminUtils.CurrentTimestamp() - cooldown.LastUse;
+                    if (elapsedSeconds <= cdtSettings.Time)
+                    {
+                        var timeForReload = cdtSettings.Time - elapsedSeconds;
+                        
+                        Server.NextFrame(() =>
+                        {
+                            var player = PlayersUtils.GetControllerBySteamId(steamId);
+                            
+                            if (player != null)
+                            {
+                                player.Print(Localizer["ActionError.InCooldownForTime"].OReplace(new
+                                {
+                                    time = timeForReload
+                                }));
+                            }
+                        });
+                        
+                        return true;
+                    }
+                }
+            }
+
+            // Обновление кд
+            SetCooldownForTime(steamId, key, cdtSettings);
+        }
+
+        return false;
+    }
+
     public void Slay(Admin admin, CCSPlayerController player, bool announce = true)
     {
+        if (CheckCooldown(admin.USteamId, "slay"))
+            return;
+        
         AdminUtils.LogDebug($"Slaying player {player.PlayerName}...");
         var eventData = new EventData("slay_player_pre");
         eventData.Insert("admin", admin);
@@ -1898,6 +2126,9 @@ public class AdminApi : IIksAdminApi
     }
     public void Kick(Admin admin, CCSPlayerController player, string reason, bool announce = true)
     {
+        if (CheckCooldown(admin.USteamId, "kick"))
+            return;
+        
         AdminUtils.LogDebug($"Kicking player {player.PlayerName}...");
         var eventData = new EventData("kick_player_pre");
         eventData.Insert("admin", admin);
@@ -1924,6 +2155,9 @@ public class AdminApi : IIksAdminApi
 
     public void Respawn(Admin admin, CCSPlayerController player, bool announce = true)
     {
+        if (CheckCooldown(admin.USteamId, "respawn"))
+            return;
+        
         AdminUtils.LogDebug($"Respawning player {player.PlayerName}...");
         var eventData = new EventData("respawn_player_pre");
         eventData.Insert("admin", admin);
@@ -1946,6 +2180,9 @@ public class AdminApi : IIksAdminApi
     }
     public void ChangeTeam(Admin admin, CCSPlayerController player, int team, bool announce = true)
     {
+        if (CheckCooldown(admin.USteamId, "changeteam"))
+            return;
+        
         AdminUtils.LogDebug($"Change team for player {player.PlayerName}...");
         var eventData = new EventData("c_team_player_pre");
         eventData.Insert("admin", admin);
@@ -1970,6 +2207,9 @@ public class AdminApi : IIksAdminApi
     }
     public void SwitchTeam(Admin admin, CCSPlayerController player, int team, bool announce = true)
     {
+        if (CheckCooldown(admin.USteamId, "switchteam"))
+            return;
+        
         AdminUtils.LogDebug($"Switch team for player {player.PlayerName}...");
         var eventData = new EventData("s_team_player_pre");
         eventData.Insert("admin", admin);
@@ -1998,6 +2238,9 @@ public class AdminApi : IIksAdminApi
 
     public void Rename(Admin admin, CCSPlayerController player, string name, bool announce = true)
     {
+        if (CheckCooldown(admin.USteamId, "rename"))
+            return;
+        
         AdminUtils.LogDebug($"Switch team for player {player.PlayerName}...");
         var eventData = new EventData("rename_player_pre");
         eventData.Insert("admin", admin);

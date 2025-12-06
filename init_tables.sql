@@ -34,7 +34,7 @@ create table if not exists iks_admins(
 create table if not exists iks_admin_to_server(
     id int not null auto_increment primary key,
     admin_id int not null,
-    server_id int not null,
+    server_id int default null,
     foreign key (admin_id) references iks_admins(id),
     foreign key (server_id) references iks_servers(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -105,3 +105,14 @@ create table if not exists iks_groups_limitations(
     foreign key (group_id) references iks_groups(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- V 19
+
+create table if not exists iks_cookies(
+    id int not null auto_increment primary key,
+    steam_id bigint not null,
+    cookie_key varchar(255) not null, 
+    cookie_value text not null,
+    server_id int default null,
+    index idx_iks_cookies_steam_id (steam_id),
+    foreign key (server_id) references iks_servers(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;

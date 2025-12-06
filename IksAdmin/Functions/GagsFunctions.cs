@@ -9,6 +9,9 @@ public static class GagsFunctions
 
     public static async Task Gag(PlayerComm gag)
     {
+        if (AdminApi.CheckCooldown(gag.Admin!.USteamId, "gag"))
+            return;
+        
         AdminUtils.LogDebug("Add gag... " + gag.SteamId);
         var result = await AdminApi.AddGag(gag);
         AdminUtils.LogDebug("Gag result: " + result.QueryStatus);
@@ -30,6 +33,9 @@ public static class GagsFunctions
     }
     public static async Task Ungag(Admin admin, string steamId, string reason)
     {
+        if (AdminApi.CheckCooldown(admin.USteamId, "ungag"))
+            return;
+        
         AdminUtils.LogDebug("Trying to ungag... " + steamId);
         var existingComm = (await AdminApi.GetActiveComms(steamId)).GetGag();
         if (existingComm == null)

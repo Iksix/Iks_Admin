@@ -50,6 +50,10 @@ public static class PlayersUtils
     {
         return Utilities.GetPlayers().FirstOrDefault(x => x != null && x.IsValid && x.AuthorizedSteamID != null && x.AuthorizedSteamID.SteamId64.ToString() == steamId);
     }
+    public static CCSPlayerController? GetControllerBySteamId(ulong steamId)
+    {
+        return Utilities.GetPlayers().FirstOrDefault(x => x != null && x.IsValid && x.AuthorizedSteamID != null && x.AuthorizedSteamID.SteamId64 == steamId);
+    }
     public static CCSPlayerController? GetControllerByUid(uint userId)
     {
         return Utilities.GetPlayers().FirstOrDefault(x => x != null && x.IsValid && x.Connected == PlayerConnectedState.PlayerConnected && x.UserId == userId);

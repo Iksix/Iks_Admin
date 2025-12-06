@@ -1,3 +1,4 @@
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
 using IksAdmin.Functions;
@@ -47,7 +48,7 @@ public static class CmdBans
         var reason = string.Join(" ", args.Skip(2));
         string? name = null;
         string? ip = null;
-        var target = PlayersUtils.GetControllerBySteamId(steamId);
+        var target = PlayersUtils.GetControllerBySteamIdUnsafe(steamId);
         if (!_api.CanDoActionWithPlayer(caller.GetSteamId(), steamId))
         {
             caller.Print(_api.Localizer["ActionError.NotEnoughPermissionsForAction"]);
@@ -56,6 +57,7 @@ public static class CmdBans
         if (target != null)
         {
             ip = target.GetIp();
+            Server.ExecuteCommand("kickid " + target.UserId);
         }
         var adminId = caller.Admin()!.Id;
         AdminUtils.LogDebug("Ban cmd 1");

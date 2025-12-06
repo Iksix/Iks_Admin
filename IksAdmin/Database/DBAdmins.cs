@@ -30,13 +30,14 @@ public static class DBAdmins
         {
             await using var conn = new MySqlConnection(DB.ConnectionString);
             await conn.OpenAsync();
+            
             var adminsToServer = (await conn.QueryAsync<AdminToServer>(@"
             select
             admin_id as adminId,
             server_id as serverId
             from iks_admin_to_server
             ")).ToList();
-            Main.AdminApi.AdminsToServer = adminsToServer;
+            Main.AdminApi.AdminsToServer = adminsToServer ;
         }
         catch (MySqlException e)
         {

@@ -12,7 +12,7 @@ public static class DB
     {
         try
         {
-            using var conn = new MySqlConnection(ConnectionString);
+            await using var conn = new MySqlConnection(ConnectionString);
             await conn.OpenAsync();
             await conn.QueryAsync(@"
                 create table if not exists iks_servers(
@@ -124,7 +124,18 @@ public static class DB
                     limitation_key varchar(64) not null,
                     limitation_value varchar(32) not null,
                     foreign key (group_id) references iks_groups(id)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;"
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+                create table if not exists iks_cookies(
+                    id int not null auto_increment primary key,
+                    steam_id bigint not null,
+                    cookie_key varchar(255) not null, 
+                    cookie_value text not null,
+                    server_id int default null,
+                    index idx_iks_cookies_steam_id (steam_id),
+                    foreign key (server_id) references iks_servers(id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+"
                 );
 
         if (await conn.QuerySingleAsync<int>(@"select count(*) from iks_admins") == 0)

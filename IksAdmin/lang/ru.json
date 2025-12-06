@@ -136,7 +136,7 @@
     "Error.MustBeANumber" : "{red}Параметр должен быть числом!!! ✖",
     "Error.NotEnoughPermissions" : "{red}Недостаточно прав для использования команды ✖",
     "Error.DifferentNumberOfArgs" : "{red}Неправильное кол-во аргументов ✖\n{red}Использование: \n{usage}",
-    "Error.ArgumentException" : "{red}Неправильный какого-то аргумента ✖\n{red}Использование: \n{usage}",
+    "Error.ArgumentException" : "{red}Неправильный параметр какого-то аргумента ✖\n{red}Использование: \n{usage}",
     "Error.OtherCommandError" : "{red}При выполнении команды возникла ошибка ✖\n{red}Использование: \n{usage}",
     
     "ActionError.Other" : "{red}Возникла неизвестная ошибка обратитесь к владельцу сервера ✖", // Значит что ошибка выводится в консоль, чекаем там
@@ -228,5 +228,8 @@
     "MenuOption.PM.Rename": "Переименовать игрока",
     
     // v19 ===
-    "Message.FakeHideMessage" : "Игрок {red}{name} отключился."
+    "Message.FakeHideMessage" : "Игрок {red}{name} отключился.",
+    "Message.CooldownPassed" : "Вы снова можете пользоваться функцией {red}{function}",
+    "ActionError.InCooldownForRound" : "{red}Вы больше не можете использовать эту функцию до следующего раунда!",
+    "ActionError.InCooldownForTime" : "{red}Вы не можете использовать эту функцию ещё {time} сек!"
 }

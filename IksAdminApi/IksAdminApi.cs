@@ -14,7 +14,16 @@ public interface IIksAdminApi
     public List<PlayerComm> Comms {get; set;}
     public List<Warn> Warns {get; set;}
 
-    public CoreConfig Config { get; set; }
+    // CONFIGS ===
+    public CoreConfig Config { get; }
+    public BansConfig BansConfig { get; }
+    public GagsConfig GagsConfig { get; }
+    public MutesConfig MutesConfig { get; }
+    public SilenceConfig SilenceConfig { get; }
+    public KicksConfig KicksConfig { get; }
+    public CooldownsConfig CooldownsConfig { get; }
+    
+    // ===
     public IStringLocalizer Localizer { get; set; }
     public BasePlugin Plugin { get; set; } 
     public string ModuleDirectory { get; set; }
@@ -213,4 +222,22 @@ public interface IIksAdminApi
     public Task<List<Warn>> GetAllWarns();
     public Task<List<Warn>> GetAllWarnsByAdmin(Admin admin);
     public Task<List<Warn>> GetAllWarnsForAdmin(Admin admin);
+    
+    
+    // V 3.19 ===
+    void SetCookie(ulong steamId, string key, string value, bool toAllServers = false);
+    Cookie? GetCookie(ulong steamId, string key);
+    event Action<ulong> CookiesLoaded;
+
+    // void SetCooldownForRound(ulong steamId, string key, CooldownForRound cooldownSettings);
+    // void SetCooldownForTime(ulong steamId, string key, CooldownForTime cooldownSettings);
+
+    /// <summary>
+    /// Проверяет наличие КД у ключа для стим айди <br/>
+    /// Возвращает true если кулдаун есть <br/>
+    /// В этом случае нужно отменить выполнение своей функции
+    /// </summary>
+    bool CheckCooldown(ulong steamId, string key);
+
+    // V 3.19 ---
 }

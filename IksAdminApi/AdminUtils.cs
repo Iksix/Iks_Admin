@@ -23,7 +23,26 @@ public static class AdminUtils
     public static ConfigGetter GetConfigMethod = null!;
     public delegate Group? GetGroupFromIdMethod(int id);
     public static GetGroupFromIdMethod GetGroupFromIdFunc = null!;
-    public static string ConfigsDir {get => CoreApi.Plugin.ModuleDirectory + "/../../configs/plugins";}
+    public static string ConfigsDir {get => CoreInstance.ModuleDirectory + "/../../configs/plugins";}
+
+    public static int MainThreadId;
+
+    /// <summary>
+    /// Возвращает id потока где исполняется код
+    /// </summary>
+    public static int GetThreadId()
+    {
+        return Thread.CurrentThread.ManagedThreadId;
+    }
+    
+    /// <summary>
+    /// True если выполняется в основном потоке
+    /// </summary>
+    public static bool IsMainThread()
+    {
+        return GetThreadId() == Thread.CurrentThread.ManagedThreadId;
+    }
+    
     public static string[] BlockedIdentifiers(string key) 
     {
         return CoreApi.Config.BlockedIdentifiers.FirstOrDefault(x => x.Key == key).Value;
@@ -207,6 +226,30 @@ public static class AdminUtils
         }
         return input;
     }
+
+    public static string OReplace(this LocalizedString localizer, object keyValues)
+    {
+        return OReplace(localizer.Value, keyValues);
+    }
+    public static string OReplace(this string input, object keyValues)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        var type = keyValues.GetType();
+        var props = type.GetProperties();
+
+        string result = input;
+
+        foreach (var prop in props)
+        {
+            string placeholder = "{" + prop.Name + "}";
+            string value = prop.GetValue(keyValues)?.ToString() ?? "";
+            result = result.Replace(placeholder, value);
+        }
+
+        return result;
+    }
     public static void Print(this CCSPlayerController? player, string message, string? tag = null, bool toConsole = false)
     {
         if (message.Trim() == "") return;
@@ -266,6 +309,17 @@ public static class AdminUtils
         return steamId!.SteamId64.ToString();
     }
 
+    public static ulong GetUSteamId(this CCSPlayerController? player)
+    {
+        if (player == null) return 0;
+        if (player.IsBot)
+        {
+            throw new Exception("Trying to get bot steam id");
+        }
+        var steamId = player.AuthorizedSteamID;
+        return steamId!.SteamId64;
+    }
+    
     public static bool IsConsoleId(string steamId)
     {
         return steamId.ToLower() == "console";

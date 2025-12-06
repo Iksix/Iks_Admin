@@ -9,6 +9,9 @@ public static class SilenceFunctions
 
     public static async Task Silence(PlayerComm comm)
     {
+        if (AdminApi.CheckCooldown(comm.Admin!.USteamId, "silence"))
+            return;
+        
         AdminUtils.LogDebug("Add silence... " + comm.SteamId);
         var result = await AdminApi.AddComm(comm);
         AdminUtils.LogDebug("Silence result: " + result.QueryStatus);
@@ -30,6 +33,9 @@ public static class SilenceFunctions
     }
     public static async Task UnSilence(Admin admin, string steamId, string reason)
     {
+        if (AdminApi.CheckCooldown(admin!.USteamId, "unsilence"))
+            return;
+        
         AdminUtils.LogDebug("Trying to unsilence... " + steamId);
         var existingComm = (await AdminApi.GetActiveComms(steamId)).GetSilence();
         if (existingComm == null)
