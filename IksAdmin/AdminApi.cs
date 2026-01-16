@@ -210,9 +210,13 @@ public class AdminApi : IIksAdminApi
         Localizer = localizer;
         ModuleDirectory = moduleDirectory;
         DbConnectionString = builder.ConnectionString;
-        Task.Run(async () => {
-            await ReloadDataFromDb();
+        Server.NextFrame(() =>
+        {
+            Task.Run(async () => {
+                await ReloadDataFromDb();
+            });
         });
+        
     }
 
     public void ReloadConfigs()
@@ -231,7 +235,6 @@ public class AdminApi : IIksAdminApi
 
     public async Task ReloadDataFromDb(bool onAllServers = true)
     {
-        
         var serverModel = new ServerModel(
             Config.ServerId,
             Config.ServerIp,
@@ -254,7 +257,7 @@ public class AdminApi : IIksAdminApi
             {
                 _ = SendRconToAllServers("css_am_reload", true);
             }
-            Server.NextWorldUpdate(() => {
+            Server.NextFrame(() => {
                 List<int> adminsSlots = new();
                 foreach (var admin in oldAdmins)
                 {
@@ -982,7 +985,7 @@ public class AdminApi : IIksAdminApi
         disconnectionReason = disconnectionReason ?? NetworkDisconnectionReason.NETWORK_DISCONNECT_KICKED;
         if (!advanced || instantly) 
         {
-            player.Disconnect((NetworkDisconnectionReason)disconnectionReason);
+            player.Disconnect(NetworkDisconnectionReason.NETWORK_DISCONNECT_KICKED);
             return;
         }
         Main.BlockTeamChange.Add(player);
@@ -1002,14 +1005,15 @@ public class AdminApi : IIksAdminApi
             });
         }
         Plugin.AddTimer(Config.AdvancedKickTime, () => {
-            if (player != null!)
+
+            if (player.IsValid)
             {
                 player.ClearHtmlMessage();
 
-                player.Disconnect((NetworkDisconnectionReason)disconnectionReason);
-
-                edata.Invoke("disconnect_player_post");
+                player.Disconnect(NetworkDisconnectionReason.NETWORK_DISCONNECT_KICKED);
             }
+
+            edata.Invoke("disconnect_player_post");
         });
     }
 

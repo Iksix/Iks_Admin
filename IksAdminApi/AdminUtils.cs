@@ -40,7 +40,7 @@ public static class AdminUtils
     /// </summary>
     public static bool IsMainThread()
     {
-        return GetThreadId() == Thread.CurrentThread.ManagedThreadId;
+        return GetThreadId() == MainThreadId;
     }
     
     public static string[] BlockedIdentifiers(string key) 

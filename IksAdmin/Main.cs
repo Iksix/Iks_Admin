@@ -10,13 +10,14 @@ using IksAdmin.Commands;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Timers;
 using IksAdmin.Menus;
+using Microsoft.Extensions.Logging;
 using CoreConfig = IksAdminApi.CoreConfig;
 namespace IksAdmin;
 
 public class Main : BasePlugin
 {
     public override string ModuleName => "IksAdmin";
-    public override string ModuleVersion => "3.0 v19";
+    public override string ModuleVersion => "3.0 v20";
     public override string ModuleAuthor => "iks [Discord: iks__]";
 
     public static IMenuApi MenuApi = null!;
@@ -237,6 +238,13 @@ public class Main : BasePlugin
     private HookResult OnSay(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (player == null) return HookResult.Continue;
+
+        if (player.AuthorizedSteamID == null && !player.IsBot)
+        {
+            Logger.LogError("Player is not authorized and not bot in OnSay command listener.");
+            return HookResult.Continue;
+        }
+        
         bool toTeam = commandInfo.GetArg(0) == "say_team";
         var msg = commandInfo.GetCommandString;
         if (toTeam)
@@ -754,7 +762,7 @@ public class Main : BasePlugin
     public HookResult OnChangeTeam(EventPlayerTeam @event, GameEventInfo info)
     {
         var player = @event.Userid;
-        if (player == null || !player.IsValid || player.IsBot || !AdminApi.HidenAdmins.Contains(player.Admin()!))
+        if (player == null || !player.IsValid || player.IsBot || @event.Team != 0 || !AdminApi.HidenAdmins.Contains(player.Admin()!))
         {
             return HookResult.Continue;
         }
