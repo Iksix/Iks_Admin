@@ -41,7 +41,7 @@ public static class CmdSm
             caller.Print(_localizer["ActionError.ServerNotFound"]);
             return;
         }
-        if (!caller.Admin()!.IsConsole && caller.Admin()!.Servers.All(id => id != server.Id) && !caller.Admin()!.Servers.Contains(-1))
+        if (!caller.Admin()!.IsConsole && caller.Admin()!.Servers.All(id => id != server.Id) && !caller.Admin()!.Servers.Contains(null))
         {
             caller.Print(_localizer["ActionError.NotEnoughPermissionsForRcon"]);
             return;
